@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard - Incident Report</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .incident-type-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .incident-type-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .incident-type-card.selected {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .upload-zone {
+            border: 2px dashed #4a5568;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-zone.dragover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .form-section {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .progress-indicator {
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            transition: width 0.3s ease;
+        }
+        
+        .map-container {
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .file-preview {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .notification {
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .grid-cols-5 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-section {
+                margin: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <div class="bg-slate-800 border-b border-slate-700 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="bg-gray-600 hover:bg-gray-700 p-2 rounded-lg transition-colors">
+                        <i class="ri-arrow-left-line text-xl"></i>
+                    </button>
+                    <h1 class="text-2xl font-bold">Incident Report</h1>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm text-gray-300">
+                        Progress: <span id="progress-percentage">0%</span>
+                    </div>
+                    <div class="w-32 h-2 bg-gray-700 rounded-full">
+                        <div id="progress-bar" class="progress-indicator rounded-full" style="width: 0%"></div>
+                    </div>
+                    <div id="user-info" class="text-sm text-gray-300"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Incident Type Selection -->
+        <div class="form-section p-6 mb-8">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="ri-alert-line text-red-400 mr-3"></i>
+                Select Incident Type
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4" id="incident-types">
+                <div class="incident-type-card bg-slate-700 border border-slate-600 rounded-lg p-4 text-center" data-type="security-breach">
+                    <i class="ri-shield-cross-line text-3xl text-red-400 mb-2"></i>
+                    <h3 class="font-semibold mb-1">Security Breach</h3>
+                    <p class="text-xs text-gray-400">Unauthorized access</p>
+                </div>
+                <div class="incident-type-card bg-slate-700 border border-slate-600 rounded-lg p-4 text-center" data-type="suspicious-activity">
+                    <i class="ri-eye-line text-3xl text-yellow-400 mb-2"></i>
+                    <h3 class="font-semibold mb-1">Suspicious Activity</h3>
+                    <p class="text-xs text-gray-400">Unusual behavior</p>
+                </div>
+                <div class="incident-type-card bg-slate-700 border border-slate-600 rounded-lg p-4 text-center" data-type="system-malfunction">
+                    <i class="ri-bug-line text-3xl text-orange-400 mb-2"></i>
+                    <h3 class="font-semibold mb-1">System Malfunction</h3>
+                    <p class="text-xs text-gray-400">Technical issues</p>
+                </div>
+                <div class="incident-type-card bg-slate-700 border border-slate-600 rounded-lg p-4 text-center" data-type="email-phishing">
+                    <i class="ri-mail-line text-3xl text-purple-400 mb-2"></i>
+                    <h3 class="font-semibold mb-1">Email Phishing</h3>
+                    <p class="text-xs text-gray-400">Suspicious emails</p>
+                </div>
+                <div class="incident-type-card bg-slate-700 border border-slate-600 rounded-lg p-4 text-center" data-type="other">
+                    <i class="ri-more-line text-3xl text-gray-400 mb-2"></i>
+                    <h3 class="font-semibold mb-1">Other</h3>
+                    <p class="text-xs text-gray-400">Custom incident</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <form id="incident-form" class="space-y-8">
+            <!-- Incident Details Section -->
+            <div class="form-section p-6">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="ri-file-text-line text-blue-400 mr-3"></i>
+                    Incident Details
+                    <span class="text-red-400 text-sm ml-2">*Required</span>
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Date & Time *</label>
+                        <input type="datetime-local" id="incident-datetime" name="datetime" 
+                               class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Priority Level *</label>
+                        <select id="priority-level" name="priority" 
+                                class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                required>
+                            <option value="">Select Priority</option>
+                            <option value="high">High - Immediate attention required</option>
+                            <option value="medium">Medium - Important but not urgent</option>
+                            <option value="low">Low - Can be addressed later</option>
+                        </select>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium mb-2">Incident Title *</label>
+                        <input type="text" id="incident-title" name="title" 
+                               placeholder="Brief description of the incident" 
+                               class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               required>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium mb-2">Detailed Description *</label>
+                        <textarea id="incident-description" name="description" rows="4" 
+                                  placeholder="Provide a detailed description of what happened, when it occurred, and any relevant context..." 
+                                  class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y" 
+                                  required></textarea>
+                        <div class="text-xs text-gray-400 mt-1">Characters: <span id="description-count">0</span>/1000</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button Section -->
+            <div class="form-section p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <div class="flex items-center space-x-4">
+                        <button type="button" id="save-draft-btn" 
+                                class="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors">
+                            <i class="ri-save-line"></i>
+                            <span>Save as Draft</span>
+                        </button>
+                        <div id="auto-save-status" class="text-sm text-gray-400"></div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div id="submission-status" class="text-sm text-gray-400"></div>
+                        <button type="submit" id="submit-btn" 
+                                class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg flex items-center space-x-2 transition-colors">
+                            <i class="ri-send-plane-line"></i>
+                            <span>Submit Report</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Status Tracking Modal -->
+    <div id="status-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-slate-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-600 flex items-center justify-center">
+                    <i class="ri-check-line text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Report Submitted Successfully!</h3>
+                <p class="text-gray-300 mb-4">Your incident report has been submitted to the IT Security team.</p>
+                
+                <div class="bg-slate-700 rounded-lg p-4 mb-4">
+                    <div class="text-sm text-gray-300 mb-2">Incident ID:</div>
+                    <div id="incident-id" class="text-lg font-mono text-green-400">INC-2024-001234</div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button onclick="closeStatusModal()" class="flex-1 bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded transition-colors">
+                        Close
+                    </button>
+                    <button onclick="goBack()" class="flex-1 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition-colors">
+                        Return to Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="fixed top-20 right-4 z-50 space-y-2"></div>
+
+    <!-- Include authentication script -->
+    <script src="js/auth.js"></script>
+    
+    <script>
+        // Global variables
+        let currentUser = null;
+        let selectedIncidentType = null;
+        let formProgress = 0;
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            initializeForm();
+            setupEventListeners();
+            setCurrentDateTime();
+        });
+        
+        function checkAuthentication() {
+            const checkAuth = () => {
+                if (!window.cyberGuardAuth) {
+                    setTimeout(checkAuth, 100);
+                    return;
+                }
+                
+                if (!window.cyberGuardAuth.isAuthenticated()) {
+                    showNotification('Please log in to submit incident reports', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                    return;
+                }
+                
+                currentUser = window.cyberGuardAuth.getCurrentUser();
+                document.getElementById('user-info').textContent = `Logged in as: ${currentUser.fullname}`;
+            };
+            
+            checkAuth();
+        }
+        
+        function initializeForm() {
+            // Setup form validation
+            setupFormValidation();
+            
+            // Initialize character counters
+            updateCharacterCount();
+        }
+        
+        function setupEventListeners() {
+            // Incident type selection
+            document.querySelectorAll('.incident-type-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    selectIncidentType(this.dataset.type, this);
+                });
+            });
+            
+            // Form submission
+            document.getElementById('incident-form').addEventListener('submit', handleFormSubmission);
+            document.getElementById('save-draft-btn').addEventListener('click', saveDraft);
+            
+            // Character count
+            document.getElementById('incident-description').addEventListener('input', updateCharacterCount);
+            
+            // Form change tracking
+            document.getElementById('incident-form').addEventListener('input', updateProgress);
+            document.getElementById('incident-form').addEventListener('change', updateProgress);
+        }
+        
+        function setCurrentDateTime() {
+            const now = new Date();
+            const datetime = now.toISOString().slice(0, 16);
+            document.getElementById('incident-datetime').value = datetime;
+        }
+        
+        function selectIncidentType(type, element) {
+            // Remove previous selection
+            document.querySelectorAll('.incident-type-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select new type
+            element.classList.add('selected');
+            selectedIncidentType = type;
+            
+            updateProgress();
+            showNotification(`Selected: ${element.querySelector('h3').textContent}`, 'success');
+        }
+        
+        function updateCharacterCount() {
+            const textarea = document.getElementById('incident-description');
+            const counter = document.getElementById('description-count');
+            const maxLength = 1000;
+            
+            const currentLength = textarea.value.length;
+            counter.textContent = currentLength;
+            
+            if (currentLength > maxLength * 0.9) {
+                counter.className = 'text-red-400';
+            } else if (currentLength > maxLength * 0.7) {
+                counter.className = 'text-yellow-400';
+            } else {
+                counter.className = 'text-gray-400';
+            }
+        }
+        
+        function updateProgress() {
+            const form = document.getElementById('incident-form');
+            const formData = new FormData(form);
+            let filledFields = 0;
+            let totalFields = 0;
+            
+            // Count required fields
+            const requiredFields = ['datetime', 'priority', 'title', 'description'];
+            requiredFields.forEach(field => {
+                totalFields++;
+                if (formData.get(field) && formData.get(field).trim()) {
+                    filledFields++;
+                }
+            });
+            
+            // Add weights for other completed items
+            if (selectedIncidentType) {
+                filledFields += 1;
+                totalFields += 1;
+            } else {
+                totalFields += 1;
+            }
+            
+            formProgress = Math.round((filledFields / totalFields) * 100);
+            
+            // Update progress bar
+            document.getElementById('progress-bar').style.width = formProgress + '%';
+            document.getElementById('progress-percentage').textContent = formProgress + '%';
+        }
+        
+        function setupFormValidation() {
+            const form = document.getElementById('incident-form');
+            const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+            
+            inputs.forEach(input => {
+                input.addEventListener('blur', validateField);
+                input.addEventListener('input', clearValidationError);
+            });
+        }
+        
+        function validateField(event) {
+            const field = event.target;
+            const value = field.value.trim();
+            
+            if (field.hasAttribute('required') && !value) {
+                showFieldError(field, 'This field is required');
+                return false;
+            }
+            
+            clearFieldError(field);
+            return true;
+        }
+        
+        function clearValidationError(event) {
+            clearFieldError(event.target);
+        }
+        
+        function showFieldError(field, message) {
+            field.classList.add('border-red-500');
+            
+            // Remove existing error message
+            const existingError = field.parentNode.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Add error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message text-red-400 text-xs mt-1';
+            errorDiv.textContent = message;
+            field.parentNode.appendChild(errorDiv);
+        }
+        
+        function clearFieldError(field) {
+            field.classList.remove('border-red-500');
+            
+            const errorMessage = field.parentNode.querySelector('.error-message');
+            if (errorMessage) {
+                errorMessage.remove();
+            }
+        }
+        
+        function handleFormSubmission(event) {
+            event.preventDefault();
+            
+            // Validate form
+            if (!validateForm()) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Show loading
+            showLoadingOverlay('Submitting your report...');
+            
+            // Simulate submission delay
+            setTimeout(() => {
+                submitReport();
+            }, 1500);
+        }
+        
+        function validateForm() {
+            const form = document.getElementById('incident-form');
+            const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+            let isValid = true;
+            
+            // Validate incident type selection
+            if (!selectedIncidentType) {
+                showNotification('Please select an incident type', 'error');
+                isValid = false;
+            }
+            
+            // Validate required fields
+            requiredFields.forEach(field => {
+                if (!validateField({ target: field })) {
+                    isValid = false;
+                }
+            });
+            
+            return isValid;
+        }
+        
+        function submitReport() {
+            // Generate incident ID
+            const incidentId = 'INC-' + new Date().getFullYear() + '-' + 
+                              String(Date.now()).slice(-6);
+            
+            // Collect form data
+            const formData = {
+                id: incidentId,
+                type: selectedIncidentType,
+                datetime: document.getElementById('incident-datetime').value,
+                priority: document.getElementById('priority-level').value,
+                title: document.getElementById('incident-title').value,
+                description: document.getElementById('incident-description').value,
+                submittedBy: currentUser.fullname,
+                submittedAt: new Date().toISOString(),
+                status: 'submitted'
+            };
+            
+            // Store in localStorage
+            let incidents = JSON.parse(localStorage.getItem('cyberguard_incidents') || '[]');
+            incidents.push(formData);
+            localStorage.setItem('cyberguard_incidents', JSON.stringify(incidents));
+            
+            // Update user progress
+            if (window.cyberGuardAuth) {
+                window.cyberGuardAuth.updateProgress('incident_reports', 1);
+            }
+            
+            // Hide loading and show success modal
+            hideLoadingOverlay();
+            showSuccessModal(incidentId);
+            
+            // Clear form
+            clearForm();
+        }
+        
+        function showSuccessModal(incidentId) {
+            document.getElementById('incident-id').textContent = incidentId;
+            document.getElementById('status-modal').classList.remove('hidden');
+        }
+        
+        function closeStatusModal() {
+            document.getElementById('status-modal').classList.add('hidden');
+        }
+        
+        function clearForm() {
+            document.getElementById('incident-form').reset();
+            selectedIncidentType = null;
+            
+            // Clear selections
+            document.querySelectorAll('.incident-type-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Reset progress
+            updateProgress();
+            setCurrentDateTime();
+        }
+        
+        function saveDraft(silent = false) {
+            const formData = {
+                type: selectedIncidentType,
+                datetime: document.getElementById('incident-datetime').value,
+                priority: document.getElementById('priority-level').value,
+                title: document.getElementById('incident-title').value,
+                description: document.getElementById('incident-description').value,
+                savedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('cyberguard_incident_draft', JSON.stringify(formData));
+            
+            if (!silent) {
+                showNotification('Draft saved successfully', 'success');
+            }
+            
+            document.getElementById('auto-save-status').textContent = 
+                'Last saved: ' + new Date().toLocaleTimeString();
+        }
+        
+        function loadDraft() {
+            const draft = localStorage.getItem('cyberguard_incident_draft');
+            if (!draft) return;
+            
+            try {
+                const formData = JSON.parse(draft);
+                
+                // Load form data
+                if (formData.type) {
+                    const typeCard = document.querySelector(`[data-type="${formData.type}"]`);
+                    if (typeCard) {
+                        selectIncidentType(formData.type, typeCard);
+                    }
+                }
+                
+                if (formData.datetime) document.getElementById('incident-datetime').value = formData.datetime;
+                if (formData.priority) document.getElementById('priority-level').value = formData.priority;
+                if (formData.title) document.getElementById('incident-title').value = formData.title;
+                if (formData.description) document.getElementById('incident-description').value = formData.description;
+                
+                updateProgress();
+                updateCharacterCount();
+                
+                showNotification('Draft loaded', 'info');
+            } catch (error) {
+                console.error('Error loading draft:', error);
+            }
+        }
+        
+        function goBack() {
+            if (confirm('Are you sure you want to leave? Any unsaved changes will be lost.')) {
+                window.location.href = 'index.html';
+            }
+        }
+        
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            
+            const notification = document.createElement('div');
+            notification.className = `px-4 py-3 rounded-lg shadow-lg text-white max-w-sm ${getNotificationColor(type)}`;
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="${getNotificationIcon(type)}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 4000);
+        }
+        
+        function getNotificationColor(type) {
+            switch (type) {
+                case 'success': return 'bg-green-600';
+                case 'error': return 'bg-red-600';
+                case 'warning': return 'bg-yellow-600';
+                default: return 'bg-blue-600';
+            }
+        }
+        
+        function getNotificationIcon(type) {
+            switch (type) {
+                case 'success': return 'ri-check-line';
+                case 'error': return 'ri-close-line';
+                case 'warning': return 'ri-alert-line';
+                default: return 'ri-information-line';
+            }
+        }
+        
+        function showLoadingOverlay(message) {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.querySelector('p').textContent = message;
+                overlay.classList.remove('hidden');
+            }
+        }
+        
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+            }
+        }
+    </script>
+    
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-slate-800 rounded-lg p-6 text-center">
+            <div class="loading-spinner w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p class="text-lg font-medium">Processing your report...</p>
+            <p class="text-sm text-gray-400 mt-2">Please wait while we submit your incident report</p>
+        </div>
+    </div>
+</body>
+</html>

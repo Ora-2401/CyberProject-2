@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Phishing Training Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        .warning { background: #fff3cd; border-color: #ffeaa7; }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: green;
+            font-weight: bold;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Enhanced Phishing Training - Feature Test</h1>
+        <p>This file demonstrates the enhanced features added to the phishing training module.</p>
+        
+        <div class="test-section success">
+            <h2>✅ Authentication Integration</h2>
+            <ul class="feature-list">
+                <li>Integrated with <code>auth.js</code> authentication system</li>
+                <li>User sign-in required to access training</li>
+                <li>Real-time user info display in top-right corner</li>
+                <li>Progress tracking tied to authenticated user</li>
+                <li>Automatic authentication modal for unauthenticated users</li>
+            </ul>
+        </div>
+        
+        <div class="test-section info">
+            <h2>📊 Comprehensive User Tracking</h2>
+            <ul class="feature-list">
+                <li>Session-based tracking with unique session IDs</li>
+                <li>Real-time engagement metrics (time spent, interactions, focus)</li>
+                <li>Click, scroll, and focus event tracking</li>
+                <li>Mouse movement and keystroke monitoring</li>
+                <li>Tab switching and page visibility detection</li>
+                <li>Automatic session data persistence to localStorage</li>
+            </ul>
+        </div>
+        
+        <div class="test-section info">
+            <h2>🎯 Interactive Training Elements</h2>
+            <ul class="feature-list">
+                <li>Knowledge checkpoints with completion tracking</li>
+                <li>Interactive email simulators with assessment buttons</li>
+                <li>Red flag indicators for phishing detection practice</li>
+                <li>Real-time feedback for email assessments</li>
+                <li>Progress indicators for all training components</li>
+                <li>Certificate generation upon completion</li>
+            </ul>
+        </div>
+        
+        <div class="test-section warning">
+            <h2>⚡ Real-time Analytics Dashboard</h2>
+            <ul class="feature-list">
+                <li>Live session statistics in bottom-left tracker</li>
+                <li>Time spent monitoring with minute:second format</li>
+                <li>Section completion counter (0/5 format)</li>
+                <li>Interaction count tracking</li>
+                <li>Focus score percentage calculation</li>
+                <li>Visual progress indicators throughout</li>
+            </ul>
+        </div>
+        
+        <div class="test-section success">
+            <h2>🔄 Cross-File Integration</h2>
+            <ul class="feature-list">
+                <li>Common CSS integration for consistent styling</li>
+                <li>Navigation buttons to other training modules</li>
+                <li>Centralized authentication system usage</li>
+                <li>Progress synchronization across modules</li>
+                <li>Shared user session management</li>
+            </ul>
+        </div>
+        
+        <div class="test-section info">
+            <h2>💾 Data Persistence & Analytics</h2>
+            <ul class="feature-list">
+                <li>Session data saved to localStorage</li>
+                <li>Training completion tracking</li>
+                <li>User engagement metrics storage</li>
+                <li>Certificate generation with user details</li>
+                <li>Historical session data (last 50 sessions)</li>
+                <li>Completion timestamps and duration tracking</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h2>🚀 How to Test</h2>
+            <ol>
+                <li>Open <code>phishing-training.html</code> in your browser</li>
+                <li>Sign in when prompted (registration required if first time)</li>
+                <li>Observe the user info display in top-right corner</li>
+                <li>Watch the engagement tracker in bottom-left corner</li>
+                <li>Complete knowledge checkpoints by clicking them</li>
+                <li>Try the email simulators and assessment buttons</li>
+                <li>Answer the quiz questions</li>
+                <li>Watch for training completion notification</li>
+                <li>Generate completion certificate</li>
+                <li>Check browser localStorage for session data</li>
+            </ol>
+        </div>
+        
+        <div class="test-section warning">
+            <h2>📈 Data Structure Examples</h2>
+            <h3>Session Data Structure:</h3>
+            <pre><code>{
+  sessionId: "phishing_1735123456789_abc123def",
+  userId: "user@example.com",
+  startTime: 1735123456789,
+  endTime: 1735123456789,
+  sectionsViewed: Set(5),
+  checkpointsCompleted: Set(4),
+  simulationsCompleted: Set(2),
+  quizCompleted: true,
+  interactions: Array(45),
+  timeSpent: 180000,
+  engagementMetrics: {
+    totalTime: 180000,
+    activeTime: 165000,
+    tabSwitches: 2,
+    scrollDepth: 85
+  }
+}</code></pre>
+        </div>
+        
+        <div class="test-section success">
+            <h2>✨ Key Enhancements Summary</h2>
+            <p>The phishing training module now includes:</p>
+            <ul class="feature-list">
+                <li><strong>Full Authentication Integration:</strong> Works seamlessly with the global auth system</li>
+                <li><strong>Comprehensive Analytics:</strong> Tracks every user interaction and engagement metric</li>
+                <li><strong>Interactive Learning:</strong> Multiple interactive elements beyond basic content</li>
+                <li><strong>Progress Tracking:</strong> Real-time progress updates and completion tracking</li>
+                <li><strong>Cross-Module Integration:</strong> Proper navigation and shared state management</li>
+                <li><strong>Data Persistence:</strong> All user activity is tracked and stored</li>
+                <li><strong>Certificate Generation:</strong> Automated completion certificates</li>
+                <li><strong>Responsive Design:</strong> Works well across different screen sizes</li>
+            </ul>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="phishing-training.html" style="display: inline-block; padding: 12px 24px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+                🎯 Test Enhanced Phishing Training
+            </a>
+        </div>
+    </div>
+</body>
+</html>

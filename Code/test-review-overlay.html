@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Review Overlay - CyberGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link href="common.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            margin: 0;
+            padding: 50px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .test-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, var(--hygiene-primary), #34d399);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .test-info {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🚀 Review Overlay Test</h1>
+        <div class="test-info">
+            <p>Click the button below to test the advanced review overlay with all cutting-edge features:</p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Holographic effects & floating particles</li>
+                <li>Neural network visualizations</li>
+                <li>Quantum-style interactive elements</li>
+                <li>Advanced animations & transitions</li>
+                <li>Real-time search & filtering</li>
+                <li>Cyber-themed design language</li>
+            </ul>
+        </div>
+        
+        <button class="test-btn" onclick="openReviewPage()">
+            <i class="ri-book-open-line"></i>
+            Open Advanced Review Overlay
+        </button>
+        
+        <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+            Use <strong>ESC</strong> key or click outside to close the overlay
+        </p>
+    </div>
+
+    <script src="hygiene-script.js"></script>
+    <script>
+        // Initialize with some test data
+        trackingData = {
+            startTime: Date.now() - 1800000, // 30 minutes ago
+            activitiesCompleted: ['passwords', 'updates'],
+            timeSpent: 30,
+            passwordsChecked: 5,
+            securityScore: 75,
+            tipsLearned: new Set(['passwords-tip-1', 'passwords-tip-2', 'updates-tip-1']),
+            moduleCompleted: false,
+            sessionsCount: 1,
+            totalTimeSpent: 30,
+            deviceUpdatesChecked: 3,
+            browsingTipsCompleted: 2
+        };
+        
+        currentUser = {
+            email: 'test@example.com',
+            fullname: 'Test User'
+        };
+        
+        console.log('Test environment initialized');
+        console.log('Tracking data:', trackingData);
+    </script>
+</body>
+</html>

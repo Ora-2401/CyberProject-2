@@ -1,0 +1,4150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberGuard - Cybersecurity Awareness Portal</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1e40af",
+              secondary: "#dc2626",
+            },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <script src="js/auth.js"></script>
+
+    <style>
+      :where([class^="ri-"])::before {
+        content: "\f3c2";
+      }
+
+      .hero-bg {
+        background-image: url("https://readdy.ai/api/search-image?query=Modern%20cybersecurity%20command%20center%20with%20multiple%20monitors%20displaying%20network%20security%20data%2C%20digital%20threat%20analysis%20screens%2C%20blue%20and%20dark%20color%20scheme%2C%20professional%20security%20operations%20center%20environment%2C%20high-tech%20atmosphere%20with%20glowing%20interfaces%2C%20clean%20modern%20workspace%20with%20security%20analysts%20working%2C%20sophisticated%20cyber%20defense%20visualization&width=1920&height=1080&seq=hero-cyber&orientation=landscape");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      :root {
+        --primary: #1e40af;
+        --secondary: #dc2626;
+        --dark: #0f172a;
+        --light: #f8fafc;
+        --gray: #94a3b8;
+      }
+
+      body {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: var(--light);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        margin-bottom: 40px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .logo {
+        font-family: "Pacifico", cursive;
+        font-size: 2rem;
+        color: white;
+        text-decoration: none;
+      }
+
+      .page-title {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+
+      .page-title h1 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .page-title p {
+        font-size: 1.1rem;
+        color: var(--gray);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      .training-modules {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 50px;
+      }
+
+      .module-card {
+        background: rgba(30, 41, 59, 0.7);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .module-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      .module-header {
+        padding: 25px;
+        position: relative;
+      }
+
+      .module-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        font-size: 2rem;
+      }
+
+      .phishing .module-icon {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      }
+
+      .hygiene .module-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+      }
+
+      .ransomware .module-icon {
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
+      }
+
+      .quiz .module-icon {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      }
+
+      .module-title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+      }
+
+      .module-description {
+        color: var(--gray);
+        line-height: 1.6;
+        margin-bottom: 25px;
+      }
+
+      .progress-container {
+        margin-bottom: 25px;
+      }
+
+      .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        color: var(--gray);
+      }
+
+      .progress-bar {
+        height: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        border-radius: 5px;
+      }
+
+      .phishing .progress-fill {
+        width: 75%;
+        background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+      }
+
+      .hygiene .progress-fill {
+        width: 90%;
+        background: linear-gradient(90deg, #10b981, #059669);
+      }
+
+      .ransomware .progress-fill {
+        width: 45%;
+        background: linear-gradient(90deg, #ef4444, #b91c1c);
+      }
+
+      .quiz .progress-fill {
+        width: 85%;
+        background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+      }
+
+      .module-footer {
+        padding: 0 25px 25px;
+      }
+
+      .action-btn {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        text-decoration: none;
+      }
+
+      .phishing .action-btn {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+      }
+
+      .hygiene .action-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+      }
+
+      .ransomware .action-btn {
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
+        color: white;
+      }
+
+      .quiz .action-btn {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+      }
+
+      .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .action-btn i {
+        margin-right: 8px;
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--primary);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transform: translateX(200%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      footer {
+        text-align: center;
+        padding: 40px 20px;
+        margin-top: 70px;
+        color: var(--gray);
+        font-size: 0.9rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      @media (max-width: 768px) {
+        .training-modules {
+          grid-template-columns: 1fr;
+        }
+
+        .page-title h1 {
+          font-size: 2rem;
+        }
+      }
+      
+      /* Cyber-Themed Animations */
+      @keyframes scan {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+      
+      @keyframes energy-wave {
+        0% {
+          transform: translateX(-100%) rotate(45deg);
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(100%) rotate(45deg);
+          opacity: 0;
+        }
+      }
+      
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+      
+      @keyframes button-energy {
+        0% {
+          transform: translateX(-100%) skewX(-45deg);
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(100%) skewX(-45deg);
+          opacity: 0;
+        }
+      }
+      
+      @keyframes glow-pulse {
+        0%, 100% {
+          box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+      }
+      
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      
+      /* Enhanced Module Card Animations */
+      .module-card {
+        animation: float 6s ease-in-out infinite;
+        animation-delay: calc(var(--card-index, 0) * 0.5s);
+      }
+      
+      .module-card:nth-child(1) { --card-index: 0; }
+      .module-card:nth-child(2) { --card-index: 1; }
+      .module-card:nth-child(3) { --card-index: 2; }
+      .module-card:nth-child(4) { --card-index: 3; }
+      
+      /* Energy Wave Animations */
+      .animate-scan {
+        animation: scan 2s ease-in-out infinite;
+      }
+      
+      .animate-energy-wave {
+        animation: energy-wave 1.5s ease-in-out infinite;
+      }
+      
+      .animate-shimmer {
+        animation: shimmer 2s ease-in-out infinite;
+      }
+      
+      .animate-button-energy {
+        animation: button-energy 0.6s ease-out;
+      }
+      
+      /* Holographic Effects */
+      .group:hover .animate-scan {
+        animation-duration: 1.5s;
+      }
+      
+      .group:hover .animate-energy-wave {
+        animation-duration: 1s;
+      }
+      
+      /* Module Card Entrance Animation */
+      .module-card {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: moduleCardEntrance 0.8s ease-out forwards, float 6s ease-in-out infinite;
+        animation-delay: calc(var(--card-index, 0) * 0.2s), calc(var(--card-index, 0) * 0.5s + 1s);
+      }
+      
+      @keyframes moduleCardEntrance {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      /* Quantum Button Effects */
+      .group-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+      
+      /* Progress Bar Enhanced Animation */
+      .progress-fill {
+        background: linear-gradient(90deg, currentColor, transparent, currentColor);
+        background-size: 200% 100%;
+        animation: progressShine 2s ease-in-out infinite;
+      }
+      
+      @keyframes progressShine {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-white">
+    <!-- Header Section -->
+    <header
+      class="fixed top-0 left-0 right-0 bg-slate-900 text-white z-50 shadow-lg h-20 flex items-center"
+    >
+      <div class="w-full px-6 py-4">
+  <div class="flex items-center justify-between h-full">
+          <div class="flex items-center space-x-8">
+            <div class="text-2xl font-['Pacifico'] text-white">CyberGuard</div>
+            <nav class="hidden lg:flex space-x-8">
+              <a href="#home" class="hover:text-blue-300 transition-colors"
+                >Home</a
+              >
+              <a href="#about" class="hover:text-blue-300 transition-colors"
+                >About</a
+              >
+              <a href="#training" class="hover:text-blue-300 transition-colors"
+                >Training</a
+              >
+              <a href="#threats" class="hover:text-blue-300 transition-colors"
+                >Threat Intel</a
+              >
+              <a href="#resources" class="hover:text-blue-300 transition-colors"
+                >Resources</a
+              >
+              <a href="#contact" class="hover:text-blue-300 transition-colors"
+                >Contact</a
+              >
+              <!-- CTA Button: Report an Incident -->
+              <a
+                href="incident-report.html"
+                class="report-incident-btn flex items-center justify-center font-bold text-white bg-red-600 hover:bg-red-700 transition-colors border border-red-700 rounded-full px-6 py-2 shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                title="Report an Incident"
+              >
+                <span style="font-size:1.2em; margin-right:0.5em;">&#9888;</span>
+                <span style="font-size:1em; letter-spacing:0.5px;">Report an Incident</span>
+              </a>
+            </nav>
+          </div>
+
+          <!-- User Avatar and Auth Buttons -->
+          <div class="flex items-center space-x-4">
+            <!-- User Avatar (shown when logged in) -->
+            <div
+              id="user-avatar"
+              class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer hidden"
+              onclick="toggleUserMenu()"
+            >
+              <!-- Initials will be added by JavaScript -->
+            </div>
+
+            <!-- Auth Buttons (shown when not logged in) -->
+            <div id="auth-buttons" class="flex items-center space-x-2">
+              <a
+                href="login.html"
+                class="bg-slate-800 text-white px-4 py-2 rounded-button hover:bg-slate-700 transition-colors"
+              >
+                Login
+              </a>
+              <a
+                href="register.html"
+                class="bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-700 transition-colors"
+              >
+                Sign Up
+              </a>
+            </div>
+
+            <button class="lg:hidden text-white" id="mobile-menu-btn">
+              <div class="w-6 h-6 flex items-center justify-center">
+                <i class="ri-menu-line"></i>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Menu Dropdown -->
+      <div
+        id="user-menu"
+        class="absolute right-4 top-16 bg-slate-800 rounded-lg shadow-xl py-2 hidden"
+        style="min-width: 200px"
+      >
+        <div class="px-4 py-2 border-b border-slate-700">
+          <div class="font-semibold" id="menu-user-name">User Name</div>
+          <div class="text-sm text-slate-300" id="menu-user-email">
+            user@example.com
+          </div>
+        </div>
+        <a href="UserAuthentication.html" class="block px-4 py-2 hover:bg-slate-700"
+          ><i class="ri-user-line mr-2"></i>My Profile</a
+        >
+        <a href="UserAuthentication.html#progress" class="block px-4 py-2 hover:bg-slate-700"
+          ><i class="ri-book-line mr-2"></i>Training Progress</a
+        >
+        <a href="#training" class="block px-4 py-2 hover:bg-slate-700"
+          ><i class="ri-medal-line mr-2"></i>Leaderboard</a
+        >
+        <a href="#" onclick="openSettings()" class="block px-4 py-2 hover:bg-slate-700"
+          ><i class="ri-settings-line mr-2"></i>Settings</a
+        >
+        <div class="border-t border-slate-700"></div>
+        <button
+          onclick="logout()"
+          class="block w-full text-left px-4 py-2 hover:bg-slate-700 text-red-400"
+        >
+          Sign Out
+        </button>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div class="lg:hidden bg-slate-800 hidden" id="mobile-menu">
+        <div class="px-6 py-4 space-y-4">
+          <a href="#home" class="block hover:text-blue-300">Home</a>
+          <a href="#about" class="block hover:text-blue-300">About</a>
+          <a href="#training" class="block hover:text-blue-300">Training</a>
+          <a href="#threats" class="block hover:text-blue-300">Threat Intel</a>
+          <a href="#resources" class="block hover:text-blue-300">Resources</a>
+          <a href="#contact" class="block hover:text-blue-300">Contact</a>
+          <div id="mobile-auth-section" class="pt-4 border-t border-slate-700">
+            <a
+              href="login.html"
+              class="block mb-2 text-center bg-slate-800 text-white px-4 py-2 rounded-button hover:bg-slate-700"
+              >Login</a
+            >
+            <a
+              href="register.html"
+              class="block text-center bg-primary text-white px-4 py-2 rounded-button hover:bg-blue-700"
+              >Sign Up</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Notification Element -->
+    <div class="notification" id="notification"></div>
+
+    <!--home Section-->
+    <section id="home" class="hero-bg min-h-screen flex items-center relative">
+      <div class="absolute inset-0 bg-slate-900 bg-opacity-60"></div>
+      <div class="w-full px-6 relative z-10">
+        <div class="max-w-7xl mx-auto">
+          <div class="text-white max-w-2xl">
+            <h1 class="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
+              Stay Safe.<br />
+              <span class="text-blue-400">Stay Secure.</span>
+            </h1>
+            <p class="text-xl mb-8 text-gray-200 leading-relaxed">
+              Protect your organization with comprehensive cybersecurity
+              training, real-time threat intelligence, and rapid incident
+              response capabilities.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a
+                href="https://readdy.ai/home/2bd15267-1194-4375-aca6-20642778bc80/fd2b1bee-adf8-4433-90c7-3806cebde581"
+                data-readdy="true"
+                class="inline-block"
+              >
+                <button
+                  class="bg-primary text-white px-8 py-4 !rounded-button hover:bg-blue-700 transition-colors text-lg font-semibold whitespace-nowrap"
+                >
+                  <div
+                    class="w-5 h-5 flex items-center justify-center inline-block mr-2"
+                  >
+                    <i class="ri-play-circle-line"></i>
+                  </div>
+                  Start Training
+                </button>
+              </a>
+              <a href="#threats" class="inline-block">
+                <button
+                  class="border-2 border-white text-white px-8 py-4 !rounded-button hover:bg-white hover:text-slate-900 transition-colors text-lg font-semibold whitespace-nowrap"
+                >
+                  <div
+                    class="w-5 h-5 flex items-center justify-center inline-block mr-2"
+                  >
+                    <i class="ri-eye-line"></i>
+                  </div>
+                  Learn to Spot Threats
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--about Section-->
+    <section id="about" class="py-20 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-bold text-gray-900 mb-4">
+            Our Cybersecurity Commitment
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            We're dedicated to building a security-first culture through
+            comprehensive training, proactive threat monitoring, and rapid
+            incident response capabilities.
+          </p>
+        </div>
+            <div class="grid lg:grid-cols-4 gap-12 mb-20">
+          <div class="text-center">
+            <div
+              class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-lg"
+            >
+              <img
+                src="images/Lesego.jpeg"
+                alt="Security Team Lead"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Lesego Mphahlele</h3>
+            <p class="text-primary font-semibold mb-2">
+              Team Lead - Cybersecurity
+            </p>
+            <p class="text-gray-600">
+              2+ years in cybersecurity leadership, specializing in enterprise
+              threat management and security architecture.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-lg"
+            >
+              <img
+                src="images/Pearl.jpeg"
+                alt="Security Analyst"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Pearl Dlomu</h3>
+            <p class="text-primary font-semibold mb-2">
+              Security Analyst
+            </p>
+            <p class="text-gray-600">
+              Specialist in threat analysis and vulnerability assessment with expertise
+              in security monitoring and incident detection.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-lg"
+            >
+              <img
+                src="images/Tshepiso.jpeg"
+                alt="Incident Response Lead"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">
+              Tshepiso Monama
+            </h3>
+            <p class="text-primary font-semibold mb-2">
+              Incident Response Specialist
+            </p>
+            <p class="text-gray-600">
+              Expert in digital forensics and rapid response protocols, with
+              extensive experience in threat hunting and malware analysis.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-lg"
+            >
+              <img
+                src="images/Oratile.jpeg"
+                alt="Security Training Manager"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Oratile Modubu</h3>
+            <p class="text-primary font-semibold mb-2">
+              Security Training Manager
+            </p>
+            <p class="text-gray-600">
+              Develops comprehensive security awareness programs and leads
+              organization-wide cybersecurity education initiatives.
+            </p>
+          </div>
+        </div>
+    </section>
+
+    <!--training Section-->
+    <section id="training" class="py-20 bg-white text-dark">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-bold text-gray-900 mb-4">
+            Security Training Modules
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Interactive training programs designed to enhance your cybersecurity
+            knowledge and skills.
+          </p>
+        </div>
+
+        <!-- Training Modules Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16">
+          <!-- Phishing Module -->
+          <div
+            class="module-card bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-blue-300 group relative"
+            data-module="phishing"
+          >
+            <!-- Scanning Animation Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-scan pointer-events-none"></div>
+            
+            <!-- Holographic Border Effect -->
+            <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/20 via-transparent to-blue-400/20 animate-pulse"></div>
+            </div>
+            
+            <div class="p-8 relative z-10">
+              <div
+                class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-200 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 relative overflow-hidden"
+              >
+                <!-- Icon Energy Wave Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-400/30 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-energy-wave rounded-xl"></div>
+                <i class="ri-mail-line text-blue-600 text-2xl relative z-10 group-hover:text-blue-700 transition-colors duration-300"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-300">
+                Phishing Awareness
+              </h3>
+              <p class="text-gray-600 mb-6 line-height-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                Learn to identify and avoid phishing attacks through interactive
+                simulations.
+              </p>
+
+              <div class="mb-6">
+                <div class="flex justify-between text-sm text-gray-500 mb-2">
+                  <span>Progress</span>
+                  <span class="progress-text">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+                  <!-- Progress Bar Shimmer Effect -->
+                  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-blue-300/50 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"></div>
+                  <div
+                    class="bg-blue-600 h-2 rounded-full progress-fill transition-all duration-500 group-hover:bg-blue-500 relative z-10"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+
+              <button
+                onclick="startTraining('phishing')"
+                class="block w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-all duration-300 font-medium text-center cursor-pointer border-none relative overflow-hidden group-btn"
+              >
+                <!-- Button Energy Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-button-energy"></div>
+                <span class="relative z-10">Continue Training</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Cyber Hygiene Module -->
+          <div
+            class="module-card bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-green-300 group relative"
+            data-module="hygiene"
+          >
+            <!-- Scanning Animation Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-green-100/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-scan pointer-events-none"></div>
+            
+            <!-- Holographic Border Effect -->
+            <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-green-400/20 via-transparent to-green-400/20 animate-pulse"></div>
+            </div>
+            
+            <div class="p-8 relative z-10">
+              <div
+                class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-green-200 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 relative overflow-hidden"
+              >
+                <!-- Icon Energy Wave Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-green-400/30 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-energy-wave rounded-xl"></div>
+                <i class="ri-shield-check-line text-green-600 text-2xl relative z-10 group-hover:text-green-700 transition-colors duration-300"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-700 transition-colors duration-300">
+                Cyber Hygiene Tips
+              </h3>
+              <p class="text-gray-600 mb-6 line-height-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                Master essential security practices for password management and
+                safe browsing.
+              </p>
+
+              <div class="mb-6">
+                <div class="flex justify-between text-sm text-gray-500 mb-2">
+                  <span>Progress</span>
+                  <span class="progress-text">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+                  <!-- Progress Bar Shimmer Effect -->
+                  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-green-300/50 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"></div>
+                  <div
+                    class="bg-green-600 h-2 rounded-full progress-fill transition-all duration-500 group-hover:bg-green-500 relative z-10"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+
+              <button
+                onclick="window.location.href='hygiene-activity.html'"
+                class="block w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-all duration-300 font-medium text-center cursor-pointer border-none relative overflow-hidden group-btn"
+              >
+                <!-- Button Energy Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-button-energy"></div>
+                <span class="relative z-10">Review Tips</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Ransomware Module -->
+          <div
+            class="module-card bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-red-300 group relative"
+            data-module="ransomware"
+          >
+            <!-- Scanning Animation Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-red-100/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-scan pointer-events-none"></div>
+            
+            <!-- Holographic Border Effect -->
+            <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-red-400/20 via-transparent to-red-400/20 animate-pulse"></div>
+            </div>
+            
+            <div class="p-8 relative z-10">
+              <div
+                class="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-red-200 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 relative overflow-hidden"
+              >
+                <!-- Icon Energy Wave Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-red-400/30 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-energy-wave rounded-xl"></div>
+                <i class="ri-lock-line text-red-600 text-2xl relative z-10 group-hover:text-red-700 transition-colors duration-300"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-red-700 transition-colors duration-300">
+                Ransomware Simulation
+              </h3>
+              <p class="text-gray-600 mb-6 line-height-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                Experience controlled ransomware scenarios to understand attack
+                vectors.
+              </p>
+
+              <div class="mb-6">
+                <div class="flex justify-between text-sm text-gray-500 mb-2">
+                  <span>Progress</span>
+                  <span class="progress-text">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+                  <!-- Progress Bar Shimmer Effect -->
+                  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-red-300/50 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"></div>
+                  <div
+                    class="bg-red-600 h-2 rounded-full progress-fill transition-all duration-500 group-hover:bg-red-500 relative z-10"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+
+              <button
+                onclick="startTraining('ransomware')"
+                class="block w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-all duration-300 font-medium text-center cursor-pointer border-none relative overflow-hidden group-btn"
+              >
+                <!-- Button Energy Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-button-energy"></div>
+                <span class="relative z-10">Start Simulation</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quiz Module -->
+          <div
+            class="module-card bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-purple-300 group relative"
+            data-module="quiz"
+          >
+            <!-- Scanning Animation Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-purple-100/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-scan pointer-events-none"></div>
+            
+            <!-- Holographic Border Effect -->
+            <div class="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400/20 via-transparent to-purple-400/20 animate-pulse"></div>
+            </div>
+            
+            <div class="p-8 relative z-10">
+              <div
+                class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-purple-200 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 relative overflow-hidden"
+              >
+                <!-- Icon Energy Wave Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-400/30 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-energy-wave rounded-xl"></div>
+                <i class="ri-question-line text-purple-600 text-2xl relative z-10 group-hover:text-purple-700 transition-colors duration-300"></i>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-700 transition-colors duration-300">
+                Security Quiz Challenge
+              </h3>
+              <p class="text-gray-600 mb-6 line-height-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                Test your cybersecurity knowledge with interactive quizzes.
+              </p>
+
+              <div class="mb-6">
+                <div class="flex justify-between text-sm text-gray-500 mb-2">
+                  <span>Best Score</span>
+                  <span class="progress-text">0 pts</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+                  <!-- Progress Bar Shimmer Effect -->
+                  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-purple-300/50 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"></div>
+                  <div
+                    class="bg-purple-600 h-2 rounded-full progress-fill transition-all duration-500 group-hover:bg-purple-500 relative z-10"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+
+              <button
+                onclick="window.location.href='quiz-arena.html'"
+                class="block w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-all duration-300 font-medium text-center cursor-pointer border-none relative overflow-hidden group-btn"
+              >
+                <!-- Button Energy Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-button-energy"></div>
+                <span class="relative z-10">Take Quiz</span>
+              </button>
+            </div>
+          </div>
+
+          
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="bg-gray-50 rounded-2xl p-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+            Training Leaderboard
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-gray-200">
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    Rank
+                  </th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    Name
+                  </th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    Department
+                  </th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    Score
+                  </th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    Completion
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-table-body">
+                <!-- Dynamic leaderboard data will be populated here -->
+                <tr class="border-b border-gray-100">
+                  <td colspan="5" class="py-8 text-center text-gray-500">
+                    <i class="ri-trophy-line text-4xl mb-2 block"></i>
+                    No training data available yet.<br>
+                    <span class="text-sm">Complete training modules to see leaderboard rankings.</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-6 text-center">
+            <button onclick="refreshLeaderboard()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              <i class="ri-refresh-line mr-2"></i>Refresh Leaderboard
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--threats Section-->
+    <section id="threats" class="py-20 bg-slate-900 text-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-bold mb-4">Threat Intelligence Dashboard</h2>
+          <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+            Stay informed with real-time threat alerts, security bulletins, and
+            global cyberattack monitoring.
+          </p>
+        </div>
+        
+        <!-- Real-time Status Bar -->
+        <div class="bg-green-900 bg-opacity-30 border border-green-500 rounded-lg p-4 mb-8">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <span class="text-green-300 font-semibold">System Status: Online</span>
+            </div>
+            <div class="text-sm text-gray-300">
+              Last Updated: <span id="last-update-time">--:--</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid lg:grid-cols-3 gap-8 mb-16">
+          <!-- Live Threat Alerts Feed -->
+          <div class="bg-slate-800 rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-bold flex items-center">
+                <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></div>
+                Live Threat Alerts
+              </h3>
+              <button 
+                onclick="refreshThreatAlerts()" 
+                class="text-blue-400 hover:text-blue-300 transition-colors"
+                id="refresh-btn"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-refresh-line"></i>
+                </div>
+              </button>
+            </div>
+            
+            <!-- Alert Counter -->
+            <div class="mb-4 text-center">
+              <div class="text-2xl font-bold text-red-400" id="alert-count">0</div>
+              <div class="text-xs text-gray-400">Active Alerts</div>
+            </div>
+            
+            <div id="threat-alerts-container" class="space-y-4 max-h-80 overflow-y-auto">
+              <!-- Dynamic threat alerts will be populated here -->
+            </div>
+            
+            <!-- Auto-refresh toggle -->
+            <div class="mt-4 pt-4 border-t border-slate-700">
+              <label class="flex items-center space-x-2 text-sm">
+                <input type="checkbox" id="auto-refresh" checked class="rounded">
+                <span class="text-gray-300">Auto-refresh (30s)</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Weekly Security Bulletins -->
+          <div class="bg-slate-800 rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-bold">Security Bulletins</h3>
+              <select id="bulletin-filter" class="bg-slate-700 text-white text-sm rounded px-2 py-1 border border-slate-600">
+                <option value="all">All Bulletins</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            
+            <div id="bulletins-container" class="space-y-4 max-h-80 overflow-y-auto">
+              <!-- Dynamic security bulletins will be populated here -->
+            </div>
+            
+            <div class="mt-4 pt-4 border-t border-slate-700">
+              <button 
+                onclick="showAllBulletins()" 
+                class="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+              >
+                View All Bulletins Archive →
+              </button>
+            </div>
+          </div>
+          
+          <!-- Threat Statistics -->
+          <div class="bg-slate-800 rounded-2xl p-6">
+            <h3 class="text-xl font-bold mb-4">Real-time Statistics</h3>
+            <div class="space-y-6">
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm text-gray-300">Blocked Threats Today</span>
+                  <span class="font-bold text-green-400" id="blocked-threats">0</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2">
+                  <div id="blocked-progress" class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm text-gray-300">Phishing Attempts</span>
+                  <span class="font-bold text-yellow-400" id="phishing-attempts">0</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2">
+                  <div id="phishing-progress" class="bg-yellow-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm text-gray-300">Malware Detected</span>
+                  <span class="font-bold text-red-400" id="malware-detected">0</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2">
+                  <div id="malware-progress" class="bg-red-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm text-gray-300">DDoS Attacks</span>
+                  <span class="font-bold text-purple-400" id="ddos-attacks">0</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2">
+                  <div id="ddos-progress" class="bg-purple-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Trend indicator -->
+            <div class="mt-6 pt-4 border-t border-slate-700">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-300">24h Trend</span>
+                <span id="trend-indicator" class="font-semibold">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Interactive World Map -->
+        <div class="bg-slate-800 rounded-2xl p-8">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold">Global Cyberattack Map</h3>
+            <div class="flex items-center space-x-4">
+              <select id="map-filter" class="bg-slate-700 text-white text-sm rounded px-3 py-1 border border-slate-600">
+                <option value="all">All Attacks</option>
+                <option value="ransomware">Ransomware</option>
+                <option value="phishing">Phishing</option>
+                <option value="ddos">DDoS</option>
+                <option value="malware">Malware</option>
+              </select>
+              <button 
+                onclick="toggleMapAnimation()" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                id="animation-toggle"
+              >
+                Pause
+              </button>
+            </div>
+          </div>
+          
+          <!-- Map Container -->
+          <div class="relative h-96 rounded-xl overflow-hidden bg-slate-900">
+            <div id="world-map" class="w-full h-full"></div>
+            
+            <!-- Map Legend -->
+            <div class="absolute top-4 left-4 bg-slate-700 bg-opacity-90 rounded-lg p-4">
+              <h4 class="font-semibold mb-3 text-sm">Attack Types</h4>
+              <div class="space-y-2 text-xs">
+                <div class="flex items-center space-x-2">
+                  <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span>Ransomware</span>
+                  <span class="text-gray-400">(<span id="ransomware-count">0</span>)</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <span>Phishing</span>
+                  <span class="text-gray-400">(<span id="phishing-count">0</span>)</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span>DDoS</span>
+                  <span class="text-gray-400">(<span id="ddos-count">0</span>)</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                  <span>Malware</span>
+                  <span class="text-gray-400">(<span id="malware-count">0</span>)</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Live Attack Counter -->
+            <div class="absolute bottom-4 right-4 bg-slate-700 bg-opacity-90 rounded-lg p-4">
+              <div class="text-center">
+                <div id="active-threats-count" class="text-2xl font-bold text-red-400">0</div>
+                <div class="text-sm text-gray-300">Active Threats</div>
+                <div class="text-xs text-gray-400 mt-1">
+                  Last 24h: <span id="total-24h">0</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Map Controls -->
+            <div class="absolute bottom-4 left-4 bg-slate-700 bg-opacity-90 rounded-lg p-2">
+              <div class="flex space-x-2">
+                <button 
+                  onclick="zoomIn()" 
+                  class="bg-slate-600 hover:bg-slate-500 text-white px-2 py-1 rounded text-xs transition-colors"
+                >
+                  <i class="ri-add-line"></i>
+                </button>
+                <button 
+                  onclick="zoomOut()" 
+                  class="bg-slate-600 hover:bg-slate-500 text-white px-2 py-1 rounded text-xs transition-colors"
+                >
+                  <i class="ri-subtract-line"></i>
+                </button>
+                <button 
+                  onclick="resetZoom()" 
+                  class="bg-slate-600 hover:bg-slate-500 text-white px-2 py-1 rounded text-xs transition-colors"
+                >
+                  <i class="ri-home-line"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Attack Timeline -->
+          <div class="mt-6 bg-slate-700 rounded-lg p-4">
+            <h4 class="font-semibold mb-3">Recent Attack Timeline</h4>
+            <div id="attack-timeline" class="space-y-2 max-h-32 overflow-y-auto">
+              <!-- Timeline entries will be populated here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--incident-report Section
+    <section id="incident-report" class="py-20 bg-gray-50">
+      <div class="max-w-4xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-bold text-gray-900 mb-4">
+            Report a Security Incident
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Quickly report security incidents or suspicious activities. Our
+            response team will investigate immediately.
+          </p>
+        </div>
+        <div class="bg-white rounded-2xl p-8 shadow-lg">
+          <form class="space-y-6">
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2"
+                  >Your Name</label
+                >
+                <input
+                  type="text"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                  placeholder="Enter your full name"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2"
+                  >Email Address</label
+                >
+                <input
+                  type="email"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                  placeholder="your.email@company.com"
+                />
+              </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2"
+                  >Department</label
+                >
+                <div class="relative">
+                  <button
+                    type="button"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-left bg-white pr-8"
+                  >
+                    Select Department
+                  </button>
+                  <div
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center"
+                  >
+                    <i class="ri-arrow-down-s-line text-gray-400"></i>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2"
+                  >Incident Priority</label
+                >
+                <div class="relative">
+                  <button
+                    type="button"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-left bg-white pr-8"
+                  >
+                    Select Priority Level
+                  </button>
+                  <div
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center"
+                  >
+                    <i class="ri-arrow-down-s-line text-gray-400"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >Incident Description</label
+              >
+              <textarea
+                rows="6"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                placeholder="Please provide detailed information about the security incident, including when it occurred, what you observed, and any potential impact..."
+              ></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >Supporting Files</label
+              >
+              <div
+                class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition-colors"
+              >
+                <div class="w-12 h-12 mx-auto mb-4 text-gray-400">
+                  <i class="ri-upload-cloud-2-line text-4xl"></i>
+                </div>
+                <p class="text-gray-600 mb-2">
+                  Drag and drop files here, or click to browse
+                </p>
+                <p class="text-sm text-gray-500">
+                  Support for screenshots, logs, and documents (Max 10MB)
+                </p>
+                <input
+                  type="file"
+                  class="hidden"
+                  multiple
+                  accept=".jpg,.jpeg,.png,.pdf,.txt,.log"
+                />
+              </div>
+            </div>
+            <div class="flex items-start space-x-3">
+              <div class="relative">
+                <input type="checkbox" id="urgent" class="sr-only" />
+                <div
+                  class="w-5 h-5 border-2 border-gray-300 rounded cursor-pointer flex items-center justify-center"
+                >
+                  <i class="ri-check-line text-white text-sm hidden"></i>
+                </div>
+              </div>
+              <label for="urgent" class="text-sm text-gray-600 cursor-pointer">
+                This is an urgent security incident requiring immediate
+                attention
+              </label>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 pt-6">
+              <button
+                type="submit"
+                class="bg-secondary text-white px-8 py-3 !rounded-button hover:bg-red-700 transition-colors font-semibold whitespace-nowrap"
+              >
+                <div
+                  class="w-5 h-5 flex items-center justify-center inline-block mr-2"
+                >
+                  <i class="ri-send-plane-line"></i>
+                </div>
+                Submit Report
+              </button>
+              <button
+                type="button"
+                class="border border-gray-300 text-gray-700 px-8 py-3 !rounded-button hover:bg-gray-50 transition-colors font-semibold whitespace-nowrap"
+              >
+                Save as Draft
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="mt-12 bg-blue-50 rounded-2xl p-8">
+          <div class="flex items-start space-x-4">
+            <div
+              class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center flex-shrink-0"
+            >
+              <i class="ri-phone-line text-white text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">
+                Emergency Hotline
+              </h3>
+              <p class="text-gray-600 mb-4">
+                For critical security incidents requiring immediate response,
+                call our 24/7 emergency hotline:
+              </p>
+              <div class="text-2xl font-bold text-primary">
+                +1 (555) 123-SECURITY
+              </div>
+              <p class="text-sm text-gray-500 mt-2">
+                Available 24/7 • Average response time: 5 minutes
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    -->
+
+    <!--news-events Section-->
+    <section id="news-events" class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-bold text-gray-900 mb-4">
+            Security News & Events
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Stay updated with the latest cybersecurity training sessions,
+            awareness campaigns, and security events.
+          </p>
+          <div class="mt-8">
+            <button onclick="viewMoreEvents()" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium inline-flex items-center">
+              <i class="ri-calendar-event-line mr-2"></i>
+              View All Events & Register
+            </button>
+          </div>
+        </div>
+        <!-- Enhanced Events Layout -->
+        <div class="grid lg:grid-cols-3 gap-8 mb-12">
+          <!-- Upcoming Training Sessions -->
+          <div class="lg:col-span-2">
+            <div class="flex items-center justify-between mb-8">
+              <h3 class="text-2xl font-bold text-gray-900 flex items-center">
+                <i class="ri-calendar-check-line text-primary mr-3"></i>
+                Upcoming Training Sessions
+              </h3>
+              <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm font-medium">
+                3 Sessions Available
+              </span>
+            </div>
+            
+            <!-- Timeline Layout for Events -->
+            <div class="relative space-y-6">
+              <!-- Timeline Line -->
+              <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+              <!-- Event 1 - Advanced Phishing Detection -->
+              <div class="relative flex items-start space-x-6">
+                <!-- Timeline Dot -->
+                <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 relative z-10">
+                  18
+                </div>
+                
+                <!-- Event Card -->
+                <div class="flex-1 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border-l-4 border-blue-600 hover:shadow-lg transition-all duration-300">
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="flex items-center space-x-2 mb-2">
+                        <span class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold uppercase tracking-wide">
+                          Workshop
+                        </span>
+                        <span class="text-blue-600 text-sm font-medium">
+                          Level: Advanced
+                        </span>
+                      </div>
+                      <h4 class="text-xl font-bold text-gray-900 mb-2">
+                        Advanced Phishing Detection Workshop
+                      </h4>
+                      <p class="text-gray-600 mb-4">
+                        Interactive hands-on workshop covering latest phishing techniques,
+                        detection methods, and practical defense strategies.
+                      </p>
+                      <div class="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-4">
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-calendar-line text-blue-600"></i>
+                          <span><strong>Dec 18, 2024</strong></span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-time-line text-blue-600"></i>
+                          <span>2:00 PM - 4:00 PM</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-map-pin-line text-blue-600"></i>
+                          <span>Conference Room A / Virtual</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-group-line text-blue-600"></i>
+                          <span>15/20 spots available</span>
+                        </div>
+                      </div>
+                      <div class="flex items-center space-x-3">
+                        <span class="text-green-600 font-semibold text-sm">
+                          🟢 Registration Open
+                        </span>
+                        <span class="text-gray-500 text-sm">•</span>
+                        <span class="text-gray-600 text-sm">CPE Credits: 2 hours</span>
+                      </div>
+                    </div>
+                    <div class="ml-6 flex flex-col space-y-2">
+                      <button onclick="registerForEvent('phishing-workshop-dec18')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium whitespace-nowrap">
+                        Register Now
+                      </button>
+                      <button onclick="toggleEventDetails('event1')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Expandable Details -->
+                  <div id="event1-details" class="hidden mt-6 pt-6 border-t border-blue-200">
+                    <h5 class="font-semibold text-gray-900 mb-3">What You'll Learn:</h5>
+                    <ul class="text-gray-600 text-sm space-y-2 mb-4">
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-green-600 mt-0.5"></i>
+                        <span>Advanced phishing email analysis techniques</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-green-600 mt-0.5"></i>
+                        <span>URL and attachment scanning methodologies</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-green-600 mt-0.5"></i>
+                        <span>Real-world case studies and hands-on exercises</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-green-600 mt-0.5"></i>
+                        <span>Implementation of organizational phishing defenses</span>
+                      </li>
+                    </ul>
+                    <div class="flex items-center space-x-4 text-sm text-gray-600">
+                      <span><strong>Instructor:</strong> Dr. Sarah Chen, CISSP</span>
+                      <span><strong>Prerequisites:</strong> Basic cybersecurity knowledge</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Event 2 - Incident Response Simulation -->
+              <div class="relative flex items-start space-x-6">
+                <!-- Timeline Dot -->
+                <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 relative z-10">
+                  22
+                </div>
+                
+                <!-- Event Card -->
+                <div class="flex-1 bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-6 border-l-4 border-green-600 hover:shadow-lg transition-all duration-300">
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="flex items-center space-x-2 mb-2">
+                        <span class="bg-green-600 text-white px-2 py-1 rounded text-xs font-semibold uppercase tracking-wide">
+                          Simulation
+                        </span>
+                        <span class="text-green-600 text-sm font-medium">
+                          Level: Intermediate
+                        </span>
+                      </div>
+                      <h4 class="text-xl font-bold text-gray-900 mb-2">
+                        Incident Response Simulation
+                      </h4>
+                      <p class="text-gray-600 mb-4">
+                        Hands-on simulation exercise for security incident response procedures
+                        and crisis management protocols.
+                      </p>
+                      <div class="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-4">
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-calendar-line text-green-600"></i>
+                          <span><strong>Dec 22, 2024</strong></span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-time-line text-green-600"></i>
+                          <span>10:00 AM - 12:00 PM</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-map-pin-line text-green-600"></i>
+                          <span>Security Operations Center</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-group-line text-green-600"></i>
+                          <span>8/12 spots available</span>
+                        </div>
+                      </div>
+                      <div class="flex items-center space-x-3">
+                        <span class="text-green-600 font-semibold text-sm">
+                          🟢 Registration Open
+                        </span>
+                        <span class="text-gray-500 text-sm">•</span>
+                        <span class="text-gray-600 text-sm">CPE Credits: 2 hours</span>
+                      </div>
+                    </div>
+                    <div class="ml-6 flex flex-col space-y-2">
+                      <button onclick="registerForEvent('incident-response-dec22')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium whitespace-nowrap">
+                        Register Now
+                      </button>
+                      <button onclick="toggleEventDetails('event2')" class="text-green-600 hover:text-green-700 text-sm font-medium">
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Expandable Details -->
+                  <div id="event2-details" class="hidden mt-6 pt-6 border-t border-green-200">
+                    <h5 class="font-semibold text-gray-900 mb-3">Simulation Scenario:</h5>
+                    <ul class="text-gray-600 text-sm space-y-2 mb-4">
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-green-600 mt-0.5"></i>
+                        <span>Multi-vector cyber attack simulation</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-green-600 mt-0.5"></i>
+                        <span>Real-time decision making under pressure</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-green-600 mt-0.5"></i>
+                        <span>Team coordination and communication protocols</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-green-600 mt-0.5"></i>
+                        <span>Post-incident analysis and reporting</span>
+                      </li>
+                    </ul>
+                    <div class="flex items-center space-x-4 text-sm text-gray-600">
+                      <span><strong>Facilitator:</strong> Mike Rodriguez, CISM</span>
+                      <span><strong>Prerequisites:</strong> Basic incident response knowledge</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Event 3 - Zero Trust Security Webinar -->
+              <div class="relative flex items-start space-x-6">
+                <!-- Timeline Dot -->
+                <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 relative z-10">
+                  05
+                </div>
+                
+                <!-- Event Card -->
+                <div class="flex-1 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-6 border-l-4 border-purple-600 hover:shadow-lg transition-all duration-300">
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="flex items-center space-x-2 mb-2">
+                        <span class="bg-purple-600 text-white px-2 py-1 rounded text-xs font-semibold uppercase tracking-wide">
+                          Webinar
+                        </span>
+                        <span class="text-purple-600 text-sm font-medium">
+                          Level: Executive
+                        </span>
+                      </div>
+                      <h4 class="text-xl font-bold text-gray-900 mb-2">
+                        Zero Trust Security Webinar
+                      </h4>
+                      <p class="text-gray-600 mb-4">
+                        Strategic session on implementing zero trust architecture
+                        and modern security frameworks in enterprise environments.
+                      </p>
+                      <div class="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-4">
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-calendar-line text-purple-600"></i>
+                          <span><strong>Jan 5, 2025</strong></span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-time-line text-purple-600"></i>
+                          <span>1:00 PM - 2:30 PM</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-global-line text-purple-600"></i>
+                          <span>Virtual Event (Zoom)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <i class="ri-group-line text-purple-600"></i>
+                          <span>Unlimited capacity</span>
+                        </div>
+                      </div>
+                      <div class="flex items-center space-x-3">
+                        <span class="text-orange-600 font-semibold text-sm">
+                          🟠 Early Registration
+                        </span>
+                        <span class="text-gray-500 text-sm">•</span>
+                        <span class="text-gray-600 text-sm">CPE Credits: 1.5 hours</span>
+                      </div>
+                    </div>
+                    <div class="ml-6 flex flex-col space-y-2">
+                      <button onclick="registerForEvent('zero-trust-jan05')" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium whitespace-nowrap">
+                        Register Now
+                      </button>
+                      <button onclick="toggleEventDetails('event3')" class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Expandable Details -->
+                  <div id="event3-details" class="hidden mt-6 pt-6 border-t border-purple-200">
+                    <h5 class="font-semibold text-gray-900 mb-3">Executive Agenda:</h5>
+                    <ul class="text-gray-600 text-sm space-y-2 mb-4">
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-purple-600 mt-0.5"></i>
+                        <span>Zero Trust architecture principles and benefits</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-purple-600 mt-0.5"></i>
+                        <span>Implementation roadmap and strategic planning</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-purple-600 mt-0.5"></i>
+                        <span>Cost-benefit analysis and ROI considerations</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <i class="ri-check-line text-purple-600 mt-0.5"></i>
+                        <span>Q&A with industry experts and case studies</span>
+                      </li>
+                    </ul>
+                    <div class="flex items-center space-x-4 text-sm text-gray-600">
+                      <span><strong>Speaker:</strong> Alex Thompson, CISO</span>
+                      <span><strong>Target:</strong> IT Leaders & Executives</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Enhanced Campaigns & Archive Section -->
+          <div class="lg:col-span-1">
+            <div class="flex items-center justify-between mb-8">
+              <h3 class="text-2xl font-bold text-gray-900 flex items-center">
+                <i class="ri-megaphone-line text-orange-600 mr-3"></i>
+                Security Campaigns
+              </h3>
+              <span class="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
+                Active Now
+              </span>
+            </div>
+            
+            <!-- Current Campaign Highlight -->
+            <div class="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-6 text-white mb-6">
+              <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                  <i class="ri-shield-star-line text-2xl"></i>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold">Cybersecurity Awareness Month</h4>
+                  <p class="text-orange-100 text-sm">December 2024 Campaign</p>
+                </div>
+              </div>
+              <p class="text-white text-sm mb-4 opacity-90">
+                Join our organization-wide initiative to strengthen security awareness
+                and promote best practices across all departments.
+              </p>
+              <div class="flex items-center justify-between">
+                <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs font-medium">
+                  🎯 Goal: 100% Participation
+                </span>
+                <button onclick="joinCampaign('awareness-dec2024')" class="bg-white text-orange-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-50 transition-colors">
+                  Join Campaign
+                </button>
+              </div>
+            </div>
+            <!-- Past Campaigns Timeline -->
+            <div class="space-y-4">
+              <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i class="ri-history-line text-gray-600 mr-2"></i>
+                Recent Campaigns
+              </h4>
+              
+              <!-- Campaign 1 - Cybersecurity Awareness -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleCampaignDetails('campaign1')">
+                <div class="flex items-start space-x-3">
+                  <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <i class="ri-shield-check-line text-green-600 text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                      <h5 class="font-semibold text-gray-900">Cybersecurity Awareness Month</h5>
+                      <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">
+                        Completed
+                      </span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-2">
+                      Organization-wide campaign promoting security best practices.
+                    </p>
+                    <div class="flex items-center space-x-4 text-xs text-gray-500">
+                      <span>📅 October 2024</span>
+                      <span>🎯 98% participation</span>
+                      <span>🏆 15 departments</span>
+                    </div>
+                  </div>
+                  <i id="campaign1-arrow" class="ri-arrow-down-line text-gray-400 transition-transform"></i>
+                </div>
+                
+                <!-- Expandable Details -->
+                <div id="campaign1-details" class="hidden mt-4 pt-4 border-t border-gray-100">
+                  <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span class="font-medium text-gray-700">Activities Completed:</span>
+                      <ul class="text-gray-600 mt-1 space-y-1">
+                        <li>• Security awareness training sessions</li>
+                        <li>• Phishing simulation exercises</li>
+                        <li>• Password security workshops</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <span class="font-medium text-gray-700">Results:</span>
+                      <ul class="text-gray-600 mt-1 space-y-1">
+                        <li>• 40% reduction in security incidents</li>
+                        <li>• 95% phishing detection rate</li>
+                        <li>• 100% MFA adoption</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Campaign 2 - Password Initiative -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleCampaignDetails('campaign2')">
+                <div class="flex items-start space-x-3">
+                  <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <i class="ri-lock-password-line text-blue-600 text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                      <h5 class="font-semibold text-gray-900">Strong Password Initiative</h5>
+                      <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
+                        In Progress
+                      </span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-2">
+                      Company-wide password security upgrade and MFA rollout.
+                    </p>
+                    <div class="flex items-center space-x-4 text-xs text-gray-500">
+                      <span>📅 November 2024</span>
+                      <span>🎯 75% completion</span>
+                      <span>🔒 MFA Enabled</span>
+                    </div>
+                  </div>
+                  <i id="campaign2-arrow" class="ri-arrow-down-line text-gray-400 transition-transform"></i>
+                </div>
+                
+                <!-- Expandable Details -->
+                <div id="campaign2-details" class="hidden mt-4 pt-4 border-t border-gray-100">
+                  <div class="space-y-3">
+                    <div class="bg-blue-50 rounded-lg p-3">
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="font-medium text-blue-900">Progress Overview</span>
+                        <span class="text-blue-600 text-sm font-semibold">75% Complete</span>
+                      </div>
+                      <div class="w-full bg-blue-200 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 text-center text-sm">
+                      <div class="bg-gray-50 rounded p-2">
+                        <div class="font-semibold text-gray-900">1,240</div>
+                        <div class="text-gray-600">Users Enrolled</div>
+                      </div>
+                      <div class="bg-gray-50 rounded p-2">
+                        <div class="font-semibold text-gray-900">930</div>
+                        <div class="text-gray-600">MFA Enabled</div>
+                      </div>
+                      <div class="bg-gray-50 rounded p-2">
+                        <div class="font-semibold text-gray-900">85%</div>
+                        <div class="text-gray-600">Compliance</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Campaign 3 - Social Engineering Defense -->
+              <div class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleCampaignDetails('campaign3')">
+                <div class="flex items-start space-x-3">
+                  <div class="w-12 h-12 rounded-lg bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                    <i class="ri-user-voice-line text-yellow-600 text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                      <h5 class="font-semibold text-gray-900">Social Engineering Defense</h5>
+                      <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">
+                        Starting Soon
+                      </span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-2">
+                      Educational campaign focusing on social engineering prevention.
+                    </p>
+                    <div class="flex items-center space-x-4 text-xs text-gray-500">
+                      <span>📅 December 2024</span>
+                      <span>🎯 Launch Ready</span>
+                      <span>👥 All Staff</span>
+                    </div>
+                  </div>
+                  <i id="campaign3-arrow" class="ri-arrow-down-line text-gray-400 transition-transform"></i>
+                </div>
+                
+                <!-- Expandable Details -->
+                <div id="campaign3-details" class="hidden mt-4 pt-4 border-t border-gray-100">
+                  <div class="space-y-3 text-sm">
+                    <div>
+                      <span class="font-medium text-gray-700">Upcoming Activities:</span>
+                      <ul class="text-gray-600 mt-1 space-y-1">
+                        <li>• Interactive social engineering simulations</li>
+                        <li>• Vishing (voice phishing) awareness training</li>
+                        <li>• Physical security and tailgating prevention</li>
+                        <li>• Department-specific threat briefings</li>
+                      </ul>
+                    </div>
+                    <div class="bg-yellow-50 rounded-lg p-3">
+                      <div class="flex items-center space-x-2">
+                        <i class="ri-lightbulb-line text-yellow-600"></i>
+                        <span class="font-medium text-yellow-900">Expected Outcomes:</span>
+                      </div>
+                      <p class="text-yellow-800 text-sm mt-1">
+                        Improved recognition of social engineering tactics and 
+                        enhanced security culture across the organization.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Archive Link -->
+            <div class="mt-6 pt-6 border-t border-gray-200 text-center">
+              <button onclick="viewMoreEvents()" class="text-primary hover:text-blue-700 font-medium text-sm inline-flex items-center">
+                <i class="ri-archive-line mr-2"></i>
+                View Campaign Archive & Past Events
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Actions Bar -->
+        <div class="bg-gray-50 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 text-center">Quick Actions</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button onclick="viewMoreEvents()" class="bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+              <i class="ri-calendar-event-line text-primary text-2xl mb-2"></i>
+              <div class="text-sm font-medium text-gray-900">All Events</div>
+            </button>
+            <button onclick="registerForEvent('next-available')" class="bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+              <i class="ri-user-add-line text-green-600 text-2xl mb-2"></i>
+              <div class="text-sm font-medium text-gray-900">Quick Register</div>
+            </button>
+            <button onclick="downloadCalendar()" class="bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+              <i class="ri-calendar-download-line text-blue-600 text-2xl mb-2"></i>
+              <div class="text-sm font-medium text-gray-900">Calendar Export</div>
+            </button>
+            <button onclick="viewCertifications()" class="bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+              <i class="ri-award-line text-purple-600 text-2xl mb-2"></i>
+              <div class="text-sm font-medium text-gray-900">Certifications</div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--resources Section-->
+    <section id="resources" class="py-20 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">Security Policies & Resources</h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        Access comprehensive security policies, guidelines, and resources to enhance your cybersecurity knowledge.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+      <!-- Security Policy Manual -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+          <i class="ri-file-text-line text-primary text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">Security Policy Manual</h3>
+        <p class="text-gray-600 mb-6">
+          This manual provides the foundation for organizational security practices: rules for data protection, employee responsibilities, access controls, and policy updates.
+        </p>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-500">PDF • 2.4 MB</span>
+          <a href="SECURITY_POLICY.pdf" download="Security_Policy_Manual.pdf" class="inline-block">
+            <button class="bg-primary text-white px-4 py-2 !rounded-button hover:bg-blue-700 transition-colors text-sm whitespace-nowrap">
+              <div class="w-4 h-4 flex items-center justify-center inline-block mr-1">
+                <i class="ri-download-line"></i>
+              </div> Download
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Incident Response Guide  -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+          <i class="ri-shield-check-line text-green-600 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">Incident Response Guide</h3>
+        <p class="text-gray-600 mb-6">
+          Step-by-step procedures for identifying, containing, and recovering from security incidents.
+        </p>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-500">PDF • 1.8 MB</span>
+          <a href="INCIDENT_RESPONSE.pdf" download="Incident_Response_Guide.pdf" class="inline-block">
+            <button class="bg-green-600 text-white px-4 py-2 !rounded-button hover:bg-green-700 transition-colors text-sm whitespace-nowrap">
+              <div class="w-4 h-4 flex items-center justify-center inline-block mr-1">
+                <i class="ri-download-line"></i>
+              </div> Download
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Phishing Recognition Cheat Sheet  -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center mb-6">
+          <i class="ri-eye-line text-secondary text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">Phishing Recognition Cheat Sheet</h3>
+        <p class="text-gray-600 mb-6">
+          Quick reference guide for identifying and avoiding phishing attacks and suspicious emails.
+        </p>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-500">PDF • 0.5 MB</span>
+          <a href="PHISHING_RECOGNITION.pdf" download="Phishing_Recognition_Cheat_Sheet.pdf" class="inline-block">
+            <button class="bg-secondary text-white px-4 py-2 !rounded-button hover:bg-red-700 transition-colors text-sm whitespace-nowrap">
+              <div class="w-4 h-4 flex items-center justify-center inline-block mr-1">
+                <i class="ri-download-line"></i>
+              </div> Download
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Password Security Guidelines -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+          <i class="ri-lock-password-line text-purple-600 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">Password Security Guidelines</h3>
+        <p class="text-gray-600 mb-6">
+          Best practices for creating, managing, and securing passwords across all systems.
+        </p>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-500">PDF • 0.8 MB</span>
+          <a href="PASSWORD_SECURITY.pdf" download="Password_Security_Guidelines.pdf" class="inline-block">
+            <button class="bg-purple-600 text-white px-4 py-2 !rounded-button hover:bg-purple-700 transition-colors text-sm whitespace-nowrap">
+              <div class="w-4 h-4 flex items-center justify-center inline-block mr-1">
+                <i class="ri-download-line"></i>
+              </div> Download
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Remote Work Security -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="w-16 h-16 bg-yellow-100 rounded-xl flex items-center justify-center mb-6">
+          <i class="ri-wifi-line text-yellow-600 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">Remote Work Security</h3>
+        <p class="text-gray-600 mb-6">
+          Secure remote work with VPN, encrypted Wi-Fi, device updates, locked screens, and separating personal from work devices.
+        </p>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-500">PDF • 1.2 MB</span>
+          <a href="REMOTE_WORK SECURITY.pdf" download="Remote_Work_Security.pdf" class="inline-block">
+            <button class="bg-yellow-600 text-white px-4 py-2 !rounded-button hover:bg-yellow-700 transition-colors text-sm whitespace-nowrap">
+              <div class="w-4 h-4 flex items-center justify-center inline-block mr-1">
+                <i class="ri-download-line"></i>
+              </div> Download
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Mobile Device Security -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+        <div class="w-16 h-16 bg-indigo-100 rounded-xl flex items-center justify-center mb-6">
+          <i class="ri-smartphone-line text-indigo-600 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-3">Mobile Device Security</h3>
+        <p class="text-gray-600 mb-6">
+          Keep devices secure with strong passcodes, trusted apps, updates, encryption, and remote wipe capability.
+        </p>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-500">PDF • 1.0 MB</span>
+          <a href="MOBILE_DEVICE SECURITY.pdf" download="Mobile_Device_Security.pdf" class="inline-block">
+            <button class="bg-indigo-600 text-white px-4 py-2 !rounded-button hover:bg-indigo-700 transition-colors text-sm whitespace-nowrap">
+              <div class="w-4 h-4 flex items-center justify-center inline-block mr-1">
+                <i class="ri-download-line"></i>
+              </div> Download
+            </button>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+    <!--contact Section-->
+    <section id="contact" class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-bold text-gray-900 mb-4">
+            Contact Security Team
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Get in touch with our cybersecurity experts for questions, support,
+            or security consultations.
+          </p>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-12">
+          <div>
+            <div class="bg-primary text-white rounded-2xl p-8 mb-8">
+              <div class="flex items-center space-x-4 mb-6">
+                <div
+                  class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center"
+                >
+                  <i class="ri-phone-line text-white text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold">24/7 Security Hotline</h3>
+                  <p class="text-blue-100">Emergency incident reporting</p>
+                </div>
+              </div>
+              <div class="text-3xl font-bold mb-2">+1 (555) 123-SECURITY</div>
+              <p class="text-blue-100">
+                Available 24/7 for critical security incidents
+              </p>
+            </div>
+            <form class="space-y-6">
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2"
+                    >First Name</label
+                  >
+                  <input
+                    type="text"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                    placeholder="John"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2"
+                    >Last Name</label
+                  >
+                  <input
+                    type="text"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2"
+                  >Email Address</label
+                >
+                <input
+                  type="email"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                  placeholder="john.doe@company.com"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2"
+                  >Subject</label
+                >
+                <input
+                  type="text"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                  placeholder="Security consultation request"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2"
+                  >Message</label
+                >
+                <textarea
+                  rows="5"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                  placeholder="Please describe your security question or consultation needs..."
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                class="bg-primary text-white px-8 py-3 !rounded-button hover:bg-blue-700 transition-colors font-semibold whitespace-nowrap"
+              >
+                <div
+                  class="w-5 h-5 flex items-center justify-center inline-block mr-2"
+                >
+                  <i class="ri-send-plane-line"></i>
+                </div>
+                Send Message
+              </button>
+            </form>
+          </div>
+          <div>
+            <div class="bg-gray-50 rounded-2xl p-8 mb-8">
+              <h3 class="text-xl font-bold text-gray-900 mb-6">
+                Security Office Location
+              </h3>
+              <div class="space-y-4 mb-6">
+                <div class="flex items-start space-x-3"> 
+                  <div class="w-5 h-5 flex items-center justify-center mt-1">
+                    <i class="ri-map-pin-line text-primary"></i>
+                  </div>
+                  <div>
+                    <p class="font-semibold text-gray-900">
+                      CyberGuard Security Center
+                    </p>
+                    <p class="text-gray-600">
+                      1234 Security Boulevard<br />Cyber City, CC 12345
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-mail-line text-primary"></i>
+                  </div> 
+                  <p class="text-gray-600">security@cyberguard.com</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-time-line text-primary"></i>
+                  </div>
+                  <p class="text-gray-600">Mon-Fri: 8:00 AM - 16:30 PM</p>
+                </div>
+              </div>
+            </div>
+            <div
+              class="h-80 rounded-2xl overflow-hidden shadow-lg"
+              style="
+                background-image: url('https://public.readdy.ai/gen_page/map_placeholder_1280x720.png');
+                background-size: cover;
+                background-position: center;
+              "
+            >
+              <div
+                class="w-full h-full bg-primary bg-opacity-10 flex items-center justify-center"
+              >
+                <div class="bg-white rounded-lg p-4 shadow-lg">
+                  <div
+                    class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mx-auto mb-2"
+                  >
+                    <i class="ri-map-pin-fill text-white"></i>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 text-center">
+                    Security Office
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--footer Section-->
+    <footer class="bg-slate-900 text-white py-16">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-4 gap-8 mb-12">
+          <div>
+            <div class="text-2xl font-['Pacifico'] text-white mb-4">
+              CyberGuard
+            </div>
+            <p class="text-gray-300 mb-6">
+              Protecting organizations through comprehensive cybersecurity
+              awareness, training, and incident response capabilities.
+            </p>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
+              >
+                <i class="ri-twitter-line"></i>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
+              >
+                <i class="ri-linkedin-line"></i>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
+              >
+                <i class="ri-youtube-line"></i>
+              </a>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#training"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Security Training</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#threats"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Threat Intelligence</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#incident-report"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Report Incident</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#resources"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Resources</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold mb-4">Support</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Help Center</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Contact Us</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Emergency Hotline</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >System Status</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold mb-4">Security Newsletter</h3>
+            <p class="text-gray-300 mb-4">
+              Stay updated with the latest security threats and best practices.
+            </p>
+            <div class="flex gap-2">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                class="flex-1 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-white"
+              />
+              <button
+                class="bg-primary text-white px-4 py-2 !rounded-button hover:bg-blue-700 transition-colors whitespace-nowrap"
+              >
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-slate-800 pt-8">
+          <div class="flex flex-col md:flex-row justify-between items-center">
+            <p class="text-gray-400 text-sm">
+              © 2024 CyberGuard. All rights reserved.
+            </p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white text-sm transition-colors"
+                >Privacy Policy</a
+              >
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white text-sm transition-colors"
+                >Terms of Service</a
+              >
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white text-sm transition-colors"
+                >Security Policy</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script id="mobile-menu-toggle">
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+        const mobileMenu = document.getElementById("mobile-menu");
+        mobileMenuBtn.addEventListener("click", function () {
+          mobileMenu.classList.toggle("hidden");
+        });
+      });
+    </script>
+
+    <script id="form-interactions">
+      document.addEventListener("DOMContentLoaded", function () {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox) => {
+          const container = checkbox.nextElementSibling;
+          const icon = container.querySelector("i");
+          checkbox.addEventListener("change", function () {
+            if (this.checked) {
+              container.classList.add("bg-primary", "border-primary");
+              container.classList.remove("border-gray-300");
+              icon.classList.remove("hidden");
+            } else {
+              container.classList.remove("bg-primary", "border-primary");
+              container.classList.add("border-gray-300");
+              icon.classList.add("hidden");
+            }
+          });
+        });
+        const fileUpload = document.querySelector('input[type="file"]');
+        const uploadArea = fileUpload.parentElement;
+        uploadArea.addEventListener("click", function () {
+          fileUpload.click();
+        });
+        uploadArea.addEventListener("dragover", function (e) {
+          e.preventDefault();
+          this.classList.add("border-primary", "bg-blue-50");
+        });
+        uploadArea.addEventListener("dragleave", function (e) {
+          e.preventDefault();
+          this.classList.remove("border-primary", "bg-blue-50");
+        });
+        uploadArea.addEventListener("drop", function (e) {
+          e.preventDefault();
+          this.classList.remove("border-primary", "bg-blue-50");
+          const files = e.dataTransfer.files;
+          if (files.length > 0) {
+            fileUpload.files = files;
+          }
+        });
+      });
+    </script>
+
+    <script id="smooth-scrolling">
+      document.addEventListener("DOMContentLoaded", function () {
+        const links = document.querySelectorAll('a[href^="#"]');
+        links.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute("href").substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+              const headerHeight =
+                document.querySelector("header").offsetHeight;
+              const targetPosition = targetElement.offsetTop - headerHeight;
+              window.scrollTo({
+                top: targetPosition,
+                behavior: "smooth",
+              });
+            }
+          });
+        });
+        const reportIncidentBtn = document.getElementById(
+          "report-incident-btn"
+        );
+        if (reportIncidentBtn) {
+          reportIncidentBtn.addEventListener("click", function () {
+            const incidentReportSection =
+              document.getElementById("incident-report");
+            if (incidentReportSection) {
+              const headerHeight =
+                document.querySelector("header").offsetHeight;
+              const targetPosition =
+                incidentReportSection.offsetTop - headerHeight;
+              window.scrollTo({
+                top: targetPosition,
+                behavior: "smooth",
+              });
+            }
+          });
+        }
+      });
+    </script>
+
+    <script>
+      function startTraining(module) {
+        // Check if global authentication system is loaded
+        if (!window.cyberGuardAuth) {
+          alert('Authentication system is loading. Please try again in a moment.');
+          return;
+        }
+        
+        // Check if user is authenticated
+        if (!window.cyberGuardAuth.isAuthenticated()) {
+          // Show authentication modal
+          window.cyberGuardAuth.showAuthModal();
+          return;
+        }
+        
+        // User is authenticated - proceed with training
+        const notification = document.getElementById("notification");
+        if (notification) {
+          notification.textContent = `Redirecting to ${getModuleName(module)}...`;
+          notification.classList.add("show");
+
+          // Hide notification after showing
+          setTimeout(() => {
+            notification.classList.remove("show");
+          }, 1000);
+        }
+
+        // Log training access
+        console.log(`User ${window.cyberGuardAuth.getCurrentUser().fullname} accessing ${module} training`);
+
+        // Redirect to appropriate training page
+        setTimeout(() => {
+          switch (module) {
+            case "phishing":
+              window.location.href = "phishing-training.html";
+              break;
+            case "hygiene":
+              window.location.href = "cyber-hygiene.html";
+              break;
+            case "ransomware":
+              window.location.href = "ransomware-simulation.html";
+              break;
+            case "quiz":
+              window.location.href = "security-quiz.html";
+              break;
+            default:
+              console.error('Unknown training module:', module);
+              alert('Training module not found.');
+          }
+        }, 1500);
+      }
+
+      function getModuleName(module) {
+        switch (module) {
+          case "phishing":
+            return "Phishing Awareness Training";
+          case "hygiene":
+            return "Cyber Hygiene Tips";
+          case "ransomware":
+            return "Ransomware Simulation";
+          case "quiz":
+            return "Security Quiz Challenge";
+          default:
+            return "Training Module";
+        }
+      }
+      
+      function openIncidentReport() {
+        // Check if global authentication system is loaded
+        if (!window.cyberGuardAuth) {
+          alert('Authentication system is loading. Please try again in a moment.');
+          return;
+        }
+        
+        // Check if user is authenticated
+        if (!window.cyberGuardAuth.isAuthenticated()) {
+          // Show authentication modal
+          window.cyberGuardAuth.showAuthModal();
+          return;
+        }
+        
+        // User is authenticated - proceed to incident report
+        const notification = document.getElementById("notification");
+        if (notification) {
+          notification.textContent = 'Redirecting to Incident Report System...';
+          notification.classList.add("show");
+
+          // Hide notification after showing
+          setTimeout(() => {
+            notification.classList.remove("show");
+          }, 1000);
+        }
+
+        // Log incident report access
+        console.log(`User ${window.cyberGuardAuth.getCurrentUser().fullname} accessing incident report system`);
+
+        // Redirect to incident report page
+        setTimeout(() => {
+          window.location.href = "incident-report.html";
+        }, 1500);
+      }
+      
+      // Enhanced Security Events Functions
+      function viewMoreEvents() {
+        // Check if global authentication system is loaded
+        if (!window.cyberGuardAuth) {
+          alert('Authentication system is loading. Please try again in a moment.');
+          return;
+        }
+        
+        // Redirect to Security Events page
+        const notification = document.getElementById("notification");
+        if (notification) {
+          notification.textContent = 'Loading Security Events & Registration Portal...';
+          notification.classList.add("show");
+
+          setTimeout(() => {
+            notification.classList.remove("show");
+          }, 1000);
+        }
+
+        setTimeout(() => {
+          window.location.href = "Security-Events.html";
+        }, 1200);
+      }
+      
+      function registerForEvent(eventId) {
+        // Check if global authentication system is loaded
+        if (!window.cyberGuardAuth) {
+          alert('Authentication system is loading. Please try again in a moment.');
+          return;
+        }
+        
+        // Check if user is authenticated
+        if (!window.cyberGuardAuth.isAuthenticated()) {
+          window.cyberGuardAuth.showAuthModal();
+          return;
+        }
+        
+        const currentUser = window.cyberGuardAuth.getCurrentUser();
+        
+        // Store registration in localStorage
+        let registrations = JSON.parse(localStorage.getItem('cyberguard_event_registrations')) || {};
+        if (!registrations[currentUser.email]) {
+          registrations[currentUser.email] = [];
+        }
+        
+        // Check if already registered
+        if (registrations[currentUser.email].includes(eventId)) {
+          alert('You are already registered for this event!');
+          return;
+        }
+        
+        // Add registration
+        registrations[currentUser.email].push(eventId);
+        localStorage.setItem('cyberguard_event_registrations', JSON.stringify(registrations));
+        
+        // Show success notification
+        const notification = document.getElementById("notification");
+        if (notification) {
+          notification.textContent = 'Successfully registered for event! Confirmation email will be sent.';
+          notification.classList.add("show");
+
+          setTimeout(() => {
+            notification.classList.remove("show");
+          }, 3000);
+        }
+        
+        console.log(`User ${currentUser.fullname} registered for event: ${eventId}`);
+        
+        // Update button text
+        const button = document.querySelector(`button[onclick="registerForEvent('${eventId}')"]`);
+        if (button) {
+          button.textContent = 'Registered ✓';
+          button.className = button.className.replace(/bg-\w+-600/, 'bg-green-600');
+          button.disabled = true;
+        }
+      }
+      
+      function toggleEventDetails(eventId) {
+        const details = document.getElementById(`${eventId}-details`);
+        const arrow = document.getElementById(`${eventId}-arrow`);
+        
+        if (details) {
+          if (details.classList.contains('hidden')) {
+            details.classList.remove('hidden');
+            if (arrow) arrow.style.transform = 'rotate(180deg)';
+          } else {
+            details.classList.add('hidden');
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
+          }
+        }
+      }
+      
+      function toggleCampaignDetails(campaignId) {
+        const details = document.getElementById(`${campaignId}-details`);
+        const arrow = document.getElementById(`${campaignId}-arrow`);
+        
+        if (details) {
+          if (details.classList.contains('hidden')) {
+            details.classList.remove('hidden');
+            if (arrow) {
+              arrow.className = arrow.className.replace('ri-arrow-down-line', 'ri-arrow-up-line');
+            }
+          } else {
+            details.classList.add('hidden');
+            if (arrow) {
+              arrow.className = arrow.className.replace('ri-arrow-up-line', 'ri-arrow-down-line');
+            }
+          }
+        }
+      }
+      
+      function joinCampaign(campaignId) {
+        // Check if global authentication system is loaded
+        if (!window.cyberGuardAuth) {
+          alert('Authentication system is loading. Please try again in a moment.');
+          return;
+        }
+        
+        // Check if user is authenticated
+        if (!window.cyberGuardAuth.isAuthenticated()) {
+          window.cyberGuardAuth.showAuthModal();
+          return;
+        }
+        
+        const currentUser = window.cyberGuardAuth.getCurrentUser();
+        
+        // Store campaign participation
+        let campaigns = JSON.parse(localStorage.getItem('cyberguard_campaign_participation')) || {};
+        if (!campaigns[currentUser.email]) {
+          campaigns[currentUser.email] = [];
+        }
+        
+        // Check if already joined
+        if (campaigns[currentUser.email].includes(campaignId)) {
+          alert('You are already participating in this campaign!');
+          return;
+        }
+        
+        // Add participation
+        campaigns[currentUser.email].push(campaignId);
+        localStorage.setItem('cyberguard_campaign_participation', JSON.stringify(campaigns));
+        
+        // Show success notification
+        const notification = document.getElementById("notification");
+        if (notification) {
+          notification.textContent = 'Successfully joined campaign! Check your email for details.';
+          notification.classList.add("show");
+
+          setTimeout(() => {
+            notification.classList.remove("show");
+          }, 3000);
+        }
+        
+        console.log(`User ${currentUser.fullname} joined campaign: ${campaignId}`);
+      }
+      
+      function downloadCalendar() {
+        // Generate and download calendar file for security events
+        const events = [
+          {
+            title: 'Advanced Phishing Detection Workshop',
+            date: '2024-12-18',
+            time: '14:00-16:00',
+            location: 'Conference Room A / Virtual'
+          },
+          {
+            title: 'Incident Response Simulation',
+            date: '2024-12-22',
+            time: '10:00-12:00',
+            location: 'Security Operations Center'
+          },
+          {
+            title: 'Zero Trust Security Webinar',
+            date: '2025-01-05',
+            time: '13:00-14:30',
+            location: 'Virtual Event (Zoom)'
+          }
+        ];
+        
+        let icsContent = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//CyberGuard//Security Events//EN\n';
+        
+        events.forEach(event => {
+          const eventDate = event.date.replace(/-/g, '');
+          const startTime = event.time.split('-')[0].replace(':', '') + '00';
+          const endTime = event.time.split('-')[1].replace(':', '') + '00';
+          
+          icsContent += `BEGIN:VEVENT\n`;
+          icsContent += `DTSTART:${eventDate}T${startTime}\n`;
+          icsContent += `DTEND:${eventDate}T${endTime}\n`;
+          icsContent += `SUMMARY:${event.title}\n`;
+          icsContent += `LOCATION:${event.location}\n`;
+          icsContent += `DESCRIPTION:CyberGuard Security Training Event\n`;
+          icsContent += `END:VEVENT\n`;
+        });
+        
+        icsContent += 'END:VCALENDAR';
+        
+        // Download the file
+        const blob = new Blob([icsContent], { type: 'text/calendar' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'CyberGuard_Security_Events.ics';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        // Show notification
+        const notification = document.getElementById("notification");
+        if (notification) {
+          notification.textContent = 'Calendar file downloaded successfully!';
+          notification.classList.add("show");
+
+          setTimeout(() => {
+            notification.classList.remove("show");
+          }, 2000);
+        }
+      }
+      
+      function viewCertifications() {
+        // Redirect to certifications or show modal
+        alert('Certification tracking feature coming soon! This will display your earned certificates from completed training sessions.');
+      }
+    </script>
+
+    <!-- User Interface Management with Global Auth System -->
+    <script>
+      // Initialize global authentication interface
+      document.addEventListener('DOMContentLoaded', function() {
+        // Wait for global auth system to be ready
+        const initializeAuthUI = () => {
+          if (!window.cyberGuardAuth) {
+            setTimeout(initializeAuthUI, 100);
+            return;
+          }
+          
+          // Initialize UI based on authentication state
+          window.cyberGuardAuth.updateUserInterface();
+          
+          // Update progress displays for authenticated users
+          if (window.cyberGuardAuth.isAuthenticated()) {
+            updateProgressDisplays();
+            refreshLeaderboard();
+          } else {
+            // Show empty leaderboard for non-authenticated users
+            refreshLeaderboard();
+          }
+          
+          // Listen for progress updates
+          window.addEventListener('progressUpdated', (event) => {
+            updateProgressDisplays();
+          });
+        };
+        
+        initializeAuthUI();
+      });
+      
+      function updateProgressDisplays() {
+        if (!window.cyberGuardAuth || !window.cyberGuardAuth.isAuthenticated()) {
+          return;
+        }
+        
+        const currentUser = window.cyberGuardAuth.getCurrentUser();
+        const progress = currentUser.progress || {};
+        
+        // Update training module progress displays
+        const modules = [
+          { name: 'phishing', selector: 'phishing-progress' },
+          { name: 'hygiene', selector: 'hygiene-progress' },
+          { name: 'ransomware', selector: 'ransomware-progress' },
+          { name: 'quiz', selector: 'quiz-progress' },
+          { name: 'incident_reports', selector: 'incident-report-progress' }
+        ];
+        
+        modules.forEach(module => {
+          const progressValue = progress[module.name] || 0;
+          const progressElement = document.querySelector(`[data-module="${module.name}"] .progress-text`);
+          const progressBar = document.querySelector(`[data-module="${module.name}"] .progress-fill`);
+          
+          if (progressElement && progressBar) {
+            if (module.name === 'quiz') {
+              progressElement.textContent = `${progressValue} pts`;
+              const percentage = Math.min(100, (progressValue / 1000) * 100);
+              progressBar.style.width = `${percentage}%`;
+            } else if (module.name === 'incident_reports') {
+              progressElement.textContent = `${progressValue} reports`;
+              // Progress bar always shows 100% for incident reports (always available)
+              progressBar.style.width = '100%';
+            } else {
+              progressElement.textContent = `${progressValue}%`;
+              progressBar.style.width = `${progressValue}%`;
+            }
+          }
+        });
+        
+        // Update leaderboard when progress changes
+        refreshLeaderboard();
+      }
+      
+      function refreshLeaderboard() {
+        if (!window.cyberGuardAuth) {
+          return;
+        }
+        
+        const leaderboardData = window.cyberGuardAuth.getLeaderboardData();
+        const currentUser = window.cyberGuardAuth.getCurrentUser();
+        const tableBody = document.getElementById('leaderboard-table-body');
+        
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = '';
+        
+        if (leaderboardData.length === 0) {
+          tableBody.innerHTML = `
+            <tr class="border-b border-gray-100">
+              <td colspan="5" class="py-8 text-center text-gray-500">
+                <i class="ri-trophy-line text-4xl mb-2 block"></i>
+                No training data available yet.<br>
+                <span class="text-sm">Complete training modules to see leaderboard rankings.</span>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+        
+        leaderboardData.slice(0, 10).forEach((user, index) => {
+          const position = index + 1;
+          const isCurrentUser = currentUser && user.email === currentUser.email;
+          
+          // Determine rank badge color
+          let badgeClass = 'bg-gray-400';
+          if (position === 1) badgeClass = 'bg-yellow-500';
+          else if (position === 2) badgeClass = 'bg-gray-400';
+          else if (position === 3) badgeClass = 'bg-orange-500';
+          
+          // Determine completion badge
+          let completionClass = 'bg-gray-100 text-gray-800';
+          let completionText = `${user.completion}%`;
+          if (user.completion >= 90) {
+            completionClass = 'bg-green-100 text-green-800';
+          } else if (user.completion >= 70) {
+            completionClass = 'bg-blue-100 text-blue-800';
+          } else if (user.completion >= 50) {
+            completionClass = 'bg-yellow-100 text-yellow-800';
+          }
+          
+          const row = document.createElement('tr');
+          row.className = `border-b border-gray-100 ${isCurrentUser ? 'bg-blue-50' : ''}`;
+          row.innerHTML = `
+            <td class="py-3 px-4">
+              <div class="w-8 h-8 ${badgeClass} rounded-full flex items-center justify-center text-white font-bold">
+                ${position}
+              </div>
+            </td>
+            <td class="py-3 px-4 font-semibold ${isCurrentUser ? 'text-blue-600' : ''}">
+              ${user.name}${isCurrentUser ? ' (You)' : ''}
+            </td>
+            <td class="py-3 px-4 text-gray-600">${user.department}</td>
+            <td class="py-3 px-4 font-semibold text-primary">${user.score}</td>
+            <td class="py-3 px-4">
+              <span class="${completionClass} px-2 py-1 rounded-full text-sm">
+                ${completionText}
+              </span>
+            </td>
+          `;
+          
+          tableBody.appendChild(row);
+        });
+      }
+      
+      function openSettings() {
+        if (!window.cyberGuardAuth || !window.cyberGuardAuth.isAuthenticated()) {
+          window.cyberGuardAuth.showAuthModal();
+          return;
+        }
+        
+        // Redirect to profile page for authenticated users
+        window.location.href = 'UserAuthentication.html';
+      }
+      
+      // Admin/Debug Functions (for testing)
+      function exportAllCredentials() {
+        if (window.cyberGuardAuth) {
+          window.cyberGuardAuth.exportAllCredentials();
+        }
+      }
+      
+      function showUserCount() {
+        if (window.cyberGuardAuth) {
+          const userCount = window.cyberGuardAuth.getAllUsers().length;
+          alert(`Total registered users: ${userCount}`);
+        }
+      }
+      
+      // Double-click on logo to access admin functions (for testing)
+      document.addEventListener('DOMContentLoaded', function() {
+        const logo = document.querySelector('.logo');
+        if (logo) {
+          let clickCount = 0;
+          logo.addEventListener('click', function() {
+            clickCount++;
+            if (clickCount === 2) {
+              // Double click detected
+              if (confirm('Access admin functions?')) {
+                const adminChoice = prompt('Choose: 1=Export All Credentials, 2=Show User Count, 3=View All Users');
+                switch(adminChoice) {
+                  case '1':
+                    exportAllCredentials();
+                    break;
+                  case '2':
+                    showUserCount();
+                    break;
+                  case '3':
+                    if (window.cyberGuardAuth) {
+                      const users = window.cyberGuardAuth.getAllUsers();
+                      console.table(users.map(u => ({email: u.email, name: u.fullname, registered: u.registeredAt})));
+                      alert(`User data logged to console. Total: ${users.length}`);
+                    }
+                    break;
+                }
+              }
+              clickCount = 0;
+            }
+            setTimeout(() => { clickCount = 0; }, 500); // Reset after 500ms
+          });
+        }
+      });
+    </script>
+             
+
+    <!-- Threat Intelligence Dashboard JavaScript -->
+    <script>
+      // Threat Intelligence Dashboard Data and Functions
+      let threatData = {
+        alerts: [],
+        bulletins: [],
+        statistics: {
+          blockedThreats: 0,
+          phishingAttempts: 0,
+          malwareDetected: 0,
+          ddosAttacks: 0
+        },
+        mapData: {
+          attacks: [],
+          animation: true
+        }
+      };
+
+      let refreshInterval;
+      let mapChart;
+      let animationEnabled = true;
+
+      // Initialize Threat Intelligence Dashboard
+      document.addEventListener('DOMContentLoaded', function() {
+        initializeThreatDashboard();
+        initializeWorldMap();
+        startAutoRefresh();
+        updateLastUpdateTime();
+      });
+
+      function initializeThreatDashboard() {
+        generateInitialThreatAlerts();
+        generateSecurityBulletins();
+        updateStatistics();
+        setupEventListeners();
+      }
+
+      function setupEventListeners() {
+        // Auto-refresh toggle
+        document.getElementById('auto-refresh').addEventListener('change', function() {
+          if (this.checked) {
+            startAutoRefresh();
+          } else {
+            clearInterval(refreshInterval);
+          }
+        });
+
+        // Bulletin filter
+        document.getElementById('bulletin-filter').addEventListener('change', function() {
+          filterBulletins(this.value);
+        });
+
+        // Map filter
+        document.getElementById('map-filter').addEventListener('change', function() {
+          filterMapAttacks(this.value);
+        });
+      }
+
+      // Live Threat Alerts Functions
+      function generateInitialThreatAlerts() {
+        const alertTypes = [
+          {
+            level: 'critical',
+            color: 'red',
+            messages: [
+              'New ransomware variant detected targeting healthcare systems',
+              'Zero-day exploit discovered in popular web framework',
+              'Large-scale data breach affecting financial institutions',
+              'Advanced persistent threat targeting government agencies'
+            ]
+          },
+          {
+            level: 'high',
+            color: 'yellow',
+            messages: [
+              'Phishing campaign targeting financial institutions',
+              'Malicious JavaScript injections detected',
+              'Suspicious network reconnaissance activity',
+              'Elevated DDoS attack volume in North America'
+            ]
+          },
+          {
+            level: 'medium',
+            color: 'blue',
+            messages: [
+              'Suspicious network activity in Asia-Pacific region',
+              'Unusual authentication patterns detected',
+              'Increased scanning activity from known threat actors',
+              'Social engineering attempts via email campaigns'
+            ]
+          },
+          {
+            level: 'low',
+            color: 'green',
+            messages: [
+              'Minor security configuration anomalies detected',
+              'Routine threat intelligence updates available',
+              'Non-critical vulnerability patches released',
+              'Security awareness training reminders'
+            ]
+          }
+        ];
+
+        // Generate initial alerts
+        for (let i = 0; i < 5; i++) {
+          const alertType = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+          const message = alertType.messages[Math.floor(Math.random() * alertType.messages.length)];
+          const timeAgo = Math.floor(Math.random() * 120) + 1; // 1-120 minutes ago
+          
+          addThreatAlert(alertType.level, message, timeAgo);
+        }
+
+        updateAlertCount();
+      }
+
+      function addThreatAlert(level, message, timeAgo) {
+        const alert = {
+          id: Date.now() + Math.random(),
+          level: level,
+          message: message,
+          timeAgo: timeAgo,
+          timestamp: new Date(Date.now() - timeAgo * 60000)
+        };
+
+        threatData.alerts.unshift(alert);
+        
+        // Keep only last 10 alerts
+        if (threatData.alerts.length > 10) {
+          threatData.alerts = threatData.alerts.slice(0, 10);
+        }
+
+        renderThreatAlerts();
+      }
+
+      function renderThreatAlerts() {
+        const container = document.getElementById('threat-alerts-container');
+        if (!container) return;
+
+        container.innerHTML = threatData.alerts.map(alert => {
+          const colorMap = {
+            critical: 'red',
+            high: 'yellow',
+            medium: 'blue',
+            low: 'green'
+          };
+          
+          const color = colorMap[alert.level];
+          const timeText = alert.timeAgo < 60 ? `${alert.timeAgo} minutes ago` : `${Math.floor(alert.timeAgo / 60)} hours ago`;
+          
+          return `
+            <div class="flex items-start space-x-3 p-3 bg-${color}-900 bg-opacity-30 rounded-lg border-l-4 border-${color}-500 animate-fade-in">
+              <div class="w-2 h-2 bg-${color}-500 rounded-full mt-2 flex-shrink-0 animate-pulse"></div>
+              <div class="flex-1">
+                <p class="font-semibold text-${color}-300 capitalize">${alert.level}</p>
+                <p class="text-sm text-gray-300">${alert.message}</p>
+                <p class="text-xs text-gray-400 mt-1">${timeText}</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function updateAlertCount() {
+        const criticalCount = threatData.alerts.filter(a => a.level === 'critical').length;
+        const highCount = threatData.alerts.filter(a => a.level === 'high').length;
+        const totalActive = criticalCount + highCount;
+        
+        document.getElementById('alert-count').textContent = totalActive;
+      }
+
+      function refreshThreatAlerts() {
+        const refreshBtn = document.getElementById('refresh-btn');
+        refreshBtn.querySelector('i').classList.add('animate-spin');
+        
+        setTimeout(() => {
+          // Generate new alert
+          const alertTypes = ['critical', 'high', 'medium', 'low'];
+          const messages = {
+            critical: ['Critical zero-day vulnerability discovered', 'Major data breach in progress'],
+            high: ['Targeted phishing campaign detected', 'Malware outbreak spreading'],
+            medium: ['Suspicious network activity observed', 'Authentication anomalies detected'],
+            low: ['Routine security scan completed', 'Security policy update available']
+          };
+          
+          const level = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+          const messageList = messages[level];
+          const message = messageList[Math.floor(Math.random() * messageList.length)];
+          
+          addThreatAlert(level, message, Math.floor(Math.random() * 10) + 1);
+          updateAlertCount();
+          updateLastUpdateTime();
+          
+          refreshBtn.querySelector('i').classList.remove('animate-spin');
+        }, 1000);
+      }
+
+      // Security Bulletins Functions
+      function generateSecurityBulletins() {
+        const bulletins = [
+          {
+            id: 'CVE-2024-12345',
+            title: 'Critical vulnerability in popular web framework',
+            level: 'critical',
+            cvss: 9.8,
+            status: 'Patch Available',
+            description: 'Remote code execution vulnerability affecting millions of websites.',
+            date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
+          },
+          {
+            id: 'SA-2024-001',
+            title: 'Security Advisory: Windows Update Recommended',
+            level: 'high',
+            cvss: 7.2,
+            status: 'Update Available',
+            description: 'Multiple security vulnerabilities patched in latest Windows update.',
+            date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
+          },
+          {
+            id: 'TR-2024-Q4-03',
+            title: 'Q4 Threat Report: Supply Chain Attacks Rising',
+            level: 'medium',
+            cvss: null,
+            status: 'Trending',
+            description: 'Quarterly analysis shows 300% increase in supply chain compromises.',
+            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 1 week ago
+          },
+          {
+            id: 'AL-2024-117',
+            title: 'New Phishing Kit Targeting Cryptocurrency Users',
+            level: 'high',
+            cvss: 6.8,
+            status: 'Active Threat',
+            description: 'Advanced phishing kit with AI-generated content targeting crypto wallets.',
+            date: new Date(Date.now() - 3 * 60 * 60 * 1000) // 3 hours ago
+          },
+          {
+            id: 'INFO-2024-022',
+            title: 'Best Practices: Zero Trust Implementation',
+            level: 'low',
+            cvss: null,
+            status: 'Informational',
+            description: 'Updated guidelines for implementing zero trust architecture.',
+            date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // 5 days ago
+          }
+        ];
+
+        threatData.bulletins = bulletins;
+        renderSecurityBulletins();
+      }
+
+      function renderSecurityBulletins(filteredBulletins = null) {
+        const container = document.getElementById('bulletins-container');
+        if (!container) return;
+
+        const bulletins = filteredBulletins || threatData.bulletins;
+        
+        container.innerHTML = bulletins.map(bulletin => {
+          const colorMap = {
+            critical: 'red-600',
+            high: 'yellow-600',
+            medium: 'blue-600',
+            low: 'green-600'
+          };
+          
+          const bgColorMap = {
+            critical: 'red-900',
+            high: 'yellow-900',
+            medium: 'blue-900',
+            low: 'green-900'
+          };
+          
+          const color = colorMap[bulletin.level];
+          const bgColor = bgColorMap[bulletin.level];
+          const timeAgo = getTimeAgo(bulletin.date);
+          
+          return `
+            <div class="border-b border-slate-700 pb-4 hover:bg-${bgColor} hover:bg-opacity-20 p-2 rounded transition-colors cursor-pointer" onclick="showBulletinDetails('${bulletin.id}')">
+              <div class="flex items-start justify-between mb-2">
+                <h4 class="font-semibold text-blue-400 text-sm">${bulletin.id}</h4>
+                <span class="text-xs text-gray-400">${timeAgo}</span>
+              </div>
+              <p class="text-sm text-gray-300 mb-2">${bulletin.title}</p>
+              <div class="flex items-center space-x-2">
+                <span class="bg-${color} text-white px-2 py-1 rounded text-xs capitalize">${bulletin.level}</span>
+                ${bulletin.cvss ? `<span class="text-xs text-gray-400">CVSS: ${bulletin.cvss}</span>` : ''}
+                <span class="text-xs text-gray-400">${bulletin.status}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function filterBulletins(level) {
+        if (level === 'all') {
+          renderSecurityBulletins();
+        } else {
+          const filtered = threatData.bulletins.filter(b => b.level === level);
+          renderSecurityBulletins(filtered);
+        }
+      }
+
+      function showBulletinDetails(bulletinId) {
+        const bulletin = threatData.bulletins.find(b => b.id === bulletinId);
+        if (!bulletin) return;
+        
+        alert(`${bulletin.title}\n\n${bulletin.description}\n\nSeverity: ${bulletin.level.toUpperCase()}\nStatus: ${bulletin.status}${bulletin.cvss ? `\nCVSS Score: ${bulletin.cvss}` : ''}`);
+      }
+
+      function showAllBulletins() {
+        alert('This would open the complete bulletins archive with detailed security advisories, vulnerability reports, and threat intelligence summaries.');
+      }
+
+      // Statistics Functions
+      function updateStatistics() {
+        // Generate realistic random statistics
+        threatData.statistics = {
+          blockedThreats: Math.floor(Math.random() * 2000) + 800,
+          phishingAttempts: Math.floor(Math.random() * 150) + 50,
+          malwareDetected: Math.floor(Math.random() * 80) + 10,
+          ddosAttacks: Math.floor(Math.random() * 25) + 5
+        };
+
+        // Update display
+        document.getElementById('blocked-threats').textContent = threatData.statistics.blockedThreats.toLocaleString();
+        document.getElementById('phishing-attempts').textContent = threatData.statistics.phishingAttempts;
+        document.getElementById('malware-detected').textContent = threatData.statistics.malwareDetected;
+        document.getElementById('ddos-attacks').textContent = threatData.statistics.ddosAttacks;
+
+        // Update progress bars
+        const maxValues = { blocked: 2000, phishing: 200, malware: 100, ddos: 50 };
+        
+        document.getElementById('blocked-progress').style.width = 
+          `${Math.min((threatData.statistics.blockedThreats / maxValues.blocked) * 100, 100)}%`;
+        document.getElementById('phishing-progress').style.width = 
+          `${Math.min((threatData.statistics.phishingAttempts / maxValues.phishing) * 100, 100)}%`;
+        document.getElementById('malware-progress').style.width = 
+          `${Math.min((threatData.statistics.malwareDetected / maxValues.malware) * 100, 100)}%`;
+        document.getElementById('ddos-progress').style.width = 
+          `${Math.min((threatData.statistics.ddosAttacks / maxValues.ddos) * 100, 100)}%`;
+
+        // Update trend indicator
+        const trends = ['↗️ +12% vs yesterday', '↘️ -8% vs yesterday', '→ Stable', '↗️ +25% vs yesterday'];
+        document.getElementById('trend-indicator').textContent = trends[Math.floor(Math.random() * trends.length)];
+      }
+
+      // World Map Functions
+      function initializeWorldMap() {
+        const mapContainer = document.getElementById('world-map');
+        if (!mapContainer) return;
+
+        // Wait for ECharts to load completely
+        if (typeof echarts === 'undefined') {
+          setTimeout(initializeWorldMap, 100);
+          return;
+        }
+
+        // Initialize ECharts instance
+        mapChart = echarts.init(mapContainer, 'dark');
+        
+        generateMapData();
+        
+        // Try to render with world map, fallback to scatter plot if needed
+        setTimeout(() => {
+          try {
+            renderWorldMap();
+          } catch (error) {
+            console.log('World map not available, using scatter plot fallback');
+            renderFallbackMap();
+          }
+        }, 500);
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+          if (mapChart) {
+            mapChart.resize();
+          }
+        });
+        
+        // Start map animation
+        setInterval(() => {
+          if (animationEnabled) {
+            updateMapData();
+          }
+        }, 3000);
+      }
+
+      function renderFallbackMap() {
+        if (!mapChart) return;
+
+        const option = {
+          backgroundColor: '#1e293b',
+          title: {
+            text: 'Global Cyberattack Distribution',
+            left: 'center',
+            top: '5%',
+            textStyle: {
+              color: '#ffffff',
+              fontSize: 16
+            }
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: function(params) {
+              const attack = threatData.mapData.attacks[params.dataIndex];
+              if (attack) {
+                return `
+                  <div style="padding: 8px;">
+                    <strong>${attack.type.toUpperCase()} Attack</strong><br/>
+                    Location: ${attack.city}<br/>
+                    Intensity: ${attack.intensity}/5<br/>
+                    Time: ${attack.timestamp.toLocaleTimeString()}
+                  </div>
+                `;
+              }
+              return '';
+            }
+          },
+          grid: {
+            left: '10%',
+            right: '10%',
+            top: '15%',
+            bottom: '10%'
+          },
+          xAxis: {
+            type: 'value',
+            min: -180,
+            max: 180,
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: { show: false },
+            splitLine: { 
+              show: true,
+              lineStyle: {
+                color: '#4a5568',
+                opacity: 0.3
+              }
+            }
+          },
+          yAxis: {
+            type: 'value',
+            min: -90,
+            max: 90,
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: { show: false },
+            splitLine: { 
+              show: true,
+              lineStyle: {
+                color: '#4a5568',
+                opacity: 0.3
+              }
+            }
+          },
+          series: [
+            {
+              name: 'World Outline',
+              type: 'line',
+              data: [
+                [-180, -60], [180, -60], [180, 60], [-180, 60], [-180, -60]
+              ],
+              lineStyle: {
+                color: '#4a5568',
+                width: 2
+              },
+              symbol: 'none',
+              silent: true
+            },
+            {
+              name: 'Cyber Attacks',
+              type: 'effectScatter',
+              data: threatData.mapData.attacks.map((attack, index) => ({
+                name: `${attack.type} attack in ${attack.city}`,
+                value: [attack.lng, attack.lat, attack.intensity],
+                symbolSize: attack.intensity * 6 + 8,
+                itemStyle: {
+                  color: getAttackColor(attack.type),
+                  shadowBlur: 15,
+                  shadowColor: getAttackColor(attack.type)
+                }
+              })),
+              symbolSize: function (val) {
+                return val[2] * 6 + 8;
+              },
+              showEffectOn: 'emphasis',
+              rippleEffect: {
+                period: 4,
+                scale: 3,
+                brushType: 'stroke'
+              },
+              hoverAnimation: true,
+              emphasis: {
+                scale: true
+              }
+            }
+          ]
+        };
+
+        mapChart.setOption(option, true);
+        
+        // Force resize after setting option
+        setTimeout(() => {
+          if (mapChart) {
+            mapChart.resize();
+          }
+        }, 100);
+      }
+
+      function generateMapData() {
+        const attackTypes = ['ransomware', 'phishing', 'ddos', 'malware'];
+        const worldCities = [
+          { name: 'New York', lat: 40.7128, lng: -74.0060 },
+          { name: 'London', lat: 51.5074, lng: -0.1278 },
+          { name: 'Tokyo', lat: 35.6762, lng: 139.6503 },
+          { name: 'Moscow', lat: 55.7558, lng: 37.6176 },
+          { name: 'Beijing', lat: 39.9042, lng: 116.4074 },
+          { name: 'Sydney', lat: -33.8688, lng: 151.2093 },
+          { name: 'São Paulo', lat: -23.5505, lng: -46.6333 },
+          { name: 'Mumbai', lat: 19.0760, lng: 72.8777 },
+          { name: 'Cairo', lat: 30.0444, lng: 31.2357 },
+          { name: 'Lagos', lat: 6.5244, lng: 3.3792 },
+          { name: 'Berlin', lat: 52.5200, lng: 13.4050 },
+          { name: 'Seoul', lat: 37.5665, lng: 126.9780 },
+          { name: 'Mexico City', lat: 19.4326, lng: -99.1332 },
+          { name: 'Toronto', lat: 43.6532, lng: -79.3832 },
+          { name: 'Singapore', lat: 1.3521, lng: 103.8198 },
+          { name: 'Dubai', lat: 25.2048, lng: 55.2708 },
+          { name: 'Hong Kong', lat: 22.3193, lng: 114.1694 },
+          { name: 'Paris', lat: 48.8566, lng: 2.3522 },
+          { name: 'Los Angeles', lat: 34.0522, lng: -118.2437 },
+          { name: 'Frankfurt', lat: 50.1109, lng: 8.6821 }
+        ];
+
+        threatData.mapData.attacks = [];
+        
+        // Generate initial attacks around major cities
+        for (let i = 0; i < 40; i++) {
+          const city = worldCities[Math.floor(Math.random() * worldCities.length)];
+          const type = attackTypes[Math.floor(Math.random() * attackTypes.length)];
+          
+          // Add some random offset around cities
+          const latOffset = (Math.random() - 0.5) * 10;
+          const lngOffset = (Math.random() - 0.5) * 10;
+          
+          threatData.mapData.attacks.push({
+            id: i,
+            type: type,
+            lat: city.lat + latOffset,
+            lng: city.lng + lngOffset,
+            intensity: Math.floor(Math.random() * 5) + 1,
+            city: city.name,
+            timestamp: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000)
+          });
+        }
+        
+        updateMapCounters();
+      }
+
+      function renderWorldMap() {
+        if (!mapChart) return;
+
+        const option = {
+          backgroundColor: '#1e293b',
+          title: {
+            show: false
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: function(params) {
+              if (params.seriesType === 'effectScatter') {
+                const attack = threatData.mapData.attacks[params.dataIndex];
+                if (attack) {
+                  return `
+                    <div style="padding: 8px;">
+                      <strong>${attack.type.toUpperCase()} Attack</strong><br/>
+                      Location: ${attack.city}<br/>
+                      Intensity: ${attack.intensity}/5<br/>
+                      Time: ${attack.timestamp.toLocaleTimeString()}
+                    </div>
+                  `;
+                }
+              }
+              return params.name;
+            }
+          },
+          geo: {
+            map: 'world',
+            roam: true,
+            zoom: 1.3,
+            center: [0, 20],
+            itemStyle: {
+              areaColor: '#2d3748',
+              borderColor: '#4a5568',
+              borderWidth: 0.5
+            },
+            emphasis: {
+              itemStyle: {
+                areaColor: '#4a5568'
+              }
+            },
+            silent: false
+          },
+          series: [
+            {
+              name: 'Cyber Attacks',
+              type: 'effectScatter',
+              coordinateSystem: 'geo',
+              data: threatData.mapData.attacks.map((attack, index) => ({
+                name: `${attack.type} attack in ${attack.city}`,
+                value: [attack.lng, attack.lat, attack.intensity],
+                symbolSize: attack.intensity * 4 + 6,
+                itemStyle: {
+                  color: getAttackColor(attack.type),
+                  shadowBlur: 10,
+                  shadowColor: getAttackColor(attack.type)
+                }
+              })),
+              symbolSize: function (val) {
+                return val[2] * 4 + 6;
+              },
+              showEffectOn: 'emphasis',
+              rippleEffect: {
+                period: 4,
+                scale: 4,
+                brushType: 'stroke'
+              },
+              hoverAnimation: true,
+              label: {
+                show: false
+              },
+              emphasis: {
+                scale: true,
+                label: {
+                  show: false
+                }
+              },
+              zlevel: 2
+            },
+            {
+              name: 'Attack Waves',
+              type: 'effectScatter',
+              coordinateSystem: 'geo',
+              data: threatData.mapData.attacks.slice(0, 10).map((attack, index) => ({
+                value: [attack.lng, attack.lat, attack.intensity],
+                symbolSize: attack.intensity * 6 + 10
+              })),
+              symbolSize: function (val) {
+                return val[2] * 6 + 10;
+              },
+              showEffectOn: 'render',
+              rippleEffect: {
+                period: 2,
+                scale: 2.5,
+                brushType: 'fill'
+              },
+              itemStyle: {
+                color: function(params) {
+                  const attack = threatData.mapData.attacks[params.dataIndex];
+                  return getAttackColor(attack.type);
+                },
+                opacity: 0.3
+              },
+              zlevel: 1
+            }
+          ]
+        };
+
+        mapChart.setOption(option, true);
+        
+        // Force resize after setting option
+        setTimeout(() => {
+          if (mapChart) {
+            mapChart.resize();
+          }
+        }, 100);
+      }
+
+      function getAttackColor(type) {
+        const colors = {
+          ransomware: '#ef4444',
+          phishing: '#eab308',
+          ddos: '#3b82f6',
+          malware: '#a855f7'
+        };
+        return colors[type] || '#6b7280';
+      }
+
+      function updateMapData() {
+        if (Math.random() < 0.7) { // 70% chance to add new attack
+          const attackTypes = ['ransomware', 'phishing', 'ddos', 'malware'];
+          const worldCities = [
+            { name: 'New York', lat: 40.7128, lng: -74.0060 },
+            { name: 'London', lat: 51.5074, lng: -0.1278 },
+            { name: 'Tokyo', lat: 35.6762, lng: 139.6503 },
+            { name: 'Moscow', lat: 55.7558, lng: 37.6176 },
+            { name: 'Beijing', lat: 39.9042, lng: 116.4074 },
+            { name: 'Sydney', lat: -33.8688, lng: 151.2093 },
+            { name: 'São Paulo', lat: -23.5505, lng: -46.6333 },
+            { name: 'Mumbai', lat: 19.0760, lng: 72.8777 },
+            { name: 'Seoul', lat: 37.5665, lng: 126.9780 },
+            { name: 'Singapore', lat: 1.3521, lng: 103.8198 }
+          ];
+          
+          const city = worldCities[Math.floor(Math.random() * worldCities.length)];
+          const type = attackTypes[Math.floor(Math.random() * attackTypes.length)];
+          
+          const latOffset = (Math.random() - 0.5) * 8;
+          const lngOffset = (Math.random() - 0.5) * 8;
+          
+          const newAttack = {
+            id: Date.now(),
+            type: type,
+            lat: city.lat + latOffset,
+            lng: city.lng + lngOffset,
+            intensity: Math.floor(Math.random() * 5) + 1,
+            city: city.name,
+            timestamp: new Date()
+          };
+          
+          threatData.mapData.attacks.push(newAttack);
+          
+          // Remove old attacks (keep last 80)
+          if (threatData.mapData.attacks.length > 80) {
+            threatData.mapData.attacks = threatData.mapData.attacks.slice(-80);
+          }
+          
+          // Re-render the map (try world map first, fallback to scatter)
+          try {
+            renderWorldMap();
+          } catch (error) {
+            renderFallbackMap();
+          }
+          
+          updateMapCounters();
+          updateActiveThreatsCount();
+          updateAttackTimeline(newAttack);
+        }
+      }
+
+      function updateMapCounters() {
+        const counts = {
+          ransomware: threatData.mapData.attacks.filter(a => a.type === 'ransomware').length,
+          phishing: threatData.mapData.attacks.filter(a => a.type === 'phishing').length,
+          ddos: threatData.mapData.attacks.filter(a => a.type === 'ddos').length,
+          malware: threatData.mapData.attacks.filter(a => a.type === 'malware').length
+        };
+        
+        document.getElementById('ransomware-count').textContent = counts.ransomware;
+        document.getElementById('phishing-count').textContent = counts.phishing;
+        document.getElementById('ddos-count').textContent = counts.ddos;
+        document.getElementById('malware-count').textContent = counts.malware;
+      }
+
+      function updateActiveThreatsCount() {
+        const recentAttacks = threatData.mapData.attacks.filter(attack => 
+          new Date() - attack.timestamp < 24 * 60 * 60 * 1000
+        );
+        
+        document.getElementById('active-threats-count').textContent = threatData.mapData.attacks.length;
+        document.getElementById('total-24h').textContent = recentAttacks.length;
+      }
+
+      function updateAttackTimeline(attack) {
+        const timeline = document.getElementById('attack-timeline');
+        if (!timeline) return;
+        
+        const timelineEntry = document.createElement('div');
+        timelineEntry.className = 'flex items-center space-x-2 text-xs text-gray-300 animate-fade-in';
+        timelineEntry.innerHTML = `
+          <div class="w-2 h-2 rounded-full" style="background-color: ${getAttackColor(attack.type)}"></div>
+          <span class="capitalize">${attack.type}</span>
+          <span>attack detected</span>
+          <span class="text-gray-400">just now</span>
+        `;
+        
+        timeline.insertBefore(timelineEntry, timeline.firstChild);
+        
+        // Keep only last 10 entries
+        while (timeline.children.length > 10) {
+          timeline.removeChild(timeline.lastChild);
+        }
+      }
+
+      function filterMapAttacks(type) {
+        if (!mapChart) return;
+        
+        let filteredAttacks = threatData.mapData.attacks;
+        
+        if (type !== 'all') {
+          filteredAttacks = threatData.mapData.attacks.filter(attack => attack.type === type);
+        }
+        
+        // Try to update the world map first, fallback to scatter plot if needed
+        try {
+          const option = {
+            series: [
+              {
+                name: 'Cyber Attacks',
+                data: filteredAttacks.map((attack, index) => ({
+                  name: `${attack.type} attack in ${attack.city || 'Unknown'}`,
+                  value: [attack.lng, attack.lat, attack.intensity],
+                  symbolSize: attack.intensity * 4 + 6,
+                  itemStyle: {
+                    color: getAttackColor(attack.type),
+                    shadowBlur: 10,
+                    shadowColor: getAttackColor(attack.type)
+                  }
+                }))
+              },
+              {
+                name: 'Attack Waves',
+                data: filteredAttacks.slice(0, 10).map((attack, index) => ({
+                  value: [attack.lng, attack.lat, attack.intensity],
+                  symbolSize: attack.intensity * 6 + 10
+                }))
+              }
+            ]
+          };
+          mapChart.setOption(option);
+        } catch (error) {
+          // Fallback for scatter plot
+          const option = {
+            series: [
+              {
+                name: 'World Outline',
+                // Keep existing outline
+              },
+              {
+                name: 'Cyber Attacks',
+                data: filteredAttacks.map((attack, index) => ({
+                  name: `${attack.type} attack in ${attack.city}`,
+                  value: [attack.lng, attack.lat, attack.intensity],
+                  symbolSize: attack.intensity * 6 + 8,
+                  itemStyle: {
+                    color: getAttackColor(attack.type),
+                    shadowBlur: 15,
+                    shadowColor: getAttackColor(attack.type)
+                  }
+                }))
+              }
+            ]
+          };
+          mapChart.setOption(option);
+        }
+      }
+
+      function toggleMapAnimation() {
+        animationEnabled = !animationEnabled;
+        const button = document.getElementById('animation-toggle');
+        button.textContent = animationEnabled ? 'Pause' : 'Play';
+      }
+
+      function zoomIn() {
+        if (mapChart) {
+          mapChart.dispatchAction({
+            type: 'geoRoam',
+            zoom: 1.2
+          });
+        }
+      }
+
+      function zoomOut() {
+        if (mapChart) {
+          mapChart.dispatchAction({
+            type: 'geoRoam',
+            zoom: 0.8
+          });
+        }
+      }
+
+      function resetZoom() {
+        if (mapChart) {
+          mapChart.dispatchAction({
+            type: 'geoRoam',
+            zoom: 1.2,
+            x: 0,
+            y: 0
+          });
+        }
+      }
+
+      // Utility Functions
+      function getTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMinutes = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
+        
+        if (diffMinutes < 60) {
+          return `${diffMinutes} minutes ago`;
+        } else if (diffHours < 24) {
+          return `${diffHours} hours ago`;
+        } else {
+          return `${diffDays} days ago`;
+        }
+      }
+
+      function updateLastUpdateTime() {
+        const now = new Date();
+        document.getElementById('last-update-time').textContent = 
+          now.toLocaleTimeString('en-US', { hour12: false });
+      }
+
+      function startAutoRefresh() {
+        clearInterval(refreshInterval);
+        refreshInterval = setInterval(() => {
+          if (Math.random() < 0.3) { // 30% chance to generate new alert
+            const alertTypes = ['high', 'medium', 'low'];
+            const messages = {
+              high: ['New phishing campaign detected', 'Malware outbreak spreading'],
+              medium: ['Suspicious network activity', 'Authentication anomalies'],
+              low: ['Security scan completed', 'Policy update available']
+            };
+            
+            const level = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+            const messageList = messages[level];
+            const message = messageList[Math.floor(Math.random() * messageList.length)];
+            
+            addThreatAlert(level, message, 1);
+            updateAlertCount();
+          }
+          
+          updateStatistics();
+          updateLastUpdateTime();
+        }, 30000); // 30 seconds
+      }
+    </script>
+
+    <!-- Add world map data for ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script>
+      // Load world map data
+      fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson')
+        .then(response => response.json())
+        .then(worldGeoJson => {
+          if (typeof echarts !== 'undefined') {
+            echarts.registerMap('world', worldGeoJson);
+          }
+        })
+        .catch(() => {
+          // Fallback: register a simple world map
+          if (typeof echarts !== 'undefined') {
+            echarts.registerMap('world', {
+              type: 'FeatureCollection',
+              features: []
+            });
+          }
+        });
+    </script>
+
+    <!-- Custom CSS for animations -->
+    <style>
+      @keyframes fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .animate-fade-in {
+        animation: fade-in 0.3s ease-out;
+      }
+      
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      .animate-spin {
+        animation: spin 1s linear infinite;
+      }
+      
+      .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      
+      /* Scrollbar styling for threat containers */
+      #threat-alerts-container::-webkit-scrollbar,
+      #bulletins-container::-webkit-scrollbar,
+      #attack-timeline::-webkit-scrollbar {
+        width: 4px;
+      }
+      
+      #threat-alerts-container::-webkit-scrollbar-track,
+      #bulletins-container::-webkit-scrollbar-track,
+      #attack-timeline::-webkit-scrollbar-track {
+        background: #334155;
+      }
+      
+      #threat-alerts-container::-webkit-scrollbar-thumb,
+      #bulletins-container::-webkit-scrollbar-thumb,
+      #attack-timeline::-webkit-scrollbar-thumb {
+        background: #64748b;
+        border-radius: 2px;
+      }
+    </style>
+
+ <!-- Floating AI Chatbot Button -->
+    <div id="floating-chatbot" class="fixed bottom-6 right-6 z-50">
+      <a href="ai-chatbot.html" 
+         class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group"
+         title="AI Assistant - Get real-time cybersecurity guidance">
+        <i class="ri-robot-line text-2xl group-hover:animate-pulse"></i>
+        
+        <!-- Notification Badge -->
+        <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+          <span class="text-xs font-bold text-white">AI</span>
+        </div>
+        
+        <!-- Hover Tooltip -->
+        <div class="absolute bottom-full right-0 mb-2 px-3 py-2 bg-slate-800 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          Ask AI Assistant
+          <div class="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-800"></div>
+        </div>
+      </a>
+      
+      <!-- Quick Chat Preview (hidden by default) -->
+      <div id="quick-chat-preview" class="absolute bottom-20 right-0 w-80 bg-slate-800 rounded-lg shadow-xl border border-slate-700 transform scale-0 origin-bottom-right transition-transform duration-200 hidden">
+        <div class="p-4 border-b border-slate-700">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <i class="ri-robot-line text-white text-sm"></i>
+              </div>
+              <div>
+                <h4 class="text-white font-semibold text-sm">CyberGuard AI</h4>
+                <p class="text-gray-400 text-xs">Online & Ready</p>
+              </div>
+            </div>
+            <button onclick="closeQuickChat()" class="text-gray-400 hover:text-white" title="Close chat preview">
+              <i class="ri-close-line"></i>
+            </button>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-gray-300 text-sm mb-3">👋 Hi! I'm your AI cybersecurity assistant. I can help with:</p>
+          <ul class="text-xs text-gray-400 space-y-1 mb-4">
+            <li>• Threat analysis & guidance</li>
+            <li>• Security best practices</li>
+            <li>• Incident response help</li>
+            <li>• Real-time security advice</li>
+          </ul>
+          <a href="ai-chatbot.html" class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-lg text-sm transition-colors">
+            Start Conversation
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Floating chatbot functionality
+      let quickChatVisible = false;
+      
+      function toggleQuickChat() {
+        const preview = document.getElementById('quick-chat-preview');
+        if (quickChatVisible) {
+          preview.classList.add('scale-0');
+          preview.classList.add('hidden');
+          quickChatVisible = false;
+        } else {
+          preview.classList.remove('hidden');
+          setTimeout(() => {
+            preview.classList.remove('scale-0');
+            preview.classList.add('scale-100');
+          }, 10);
+          quickChatVisible = true;
+        }
+      }
+      
+      function closeQuickChat() {
+        const preview = document.getElementById('quick-chat-preview');
+        preview.classList.add('scale-0');
+        preview.classList.remove('scale-100');
+        setTimeout(() => {
+          preview.classList.add('hidden');
+        }, 200);
+        quickChatVisible = false;
+      }
+      
+      // Show floating chatbot after page load
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+          const floatingChatbot = document.getElementById('floating-chatbot');
+          if (floatingChatbot) {
+            floatingChatbot.style.opacity = '0';
+            floatingChatbot.style.transform = 'translateY(20px)';
+            floatingChatbot.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            setTimeout(() => {
+              floatingChatbot.style.opacity = '1';
+              floatingChatbot.style.transform = 'translateY(0)';
+            }, 100);
+          }
+        }, 2000); // Show after 2 seconds
+      });
+    </script>
+
+  </body>
+</html>

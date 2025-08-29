@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard - Security Quiz Arena</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="secquiz.css">
+    <script src="js/auth.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header fixed top-0 left-0 right-0 z-50 py-4 shadow-lg">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <a href="index.html" class="text-2xl font-bold" style="font-family: 'Pacifico', cursive; color: white; text-decoration: none;">CyberGuard</a>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="index.html" class="text-gray-300 hover:text-blue-300 transition-colors">Home</a>
+                        <a href="phishing-training.html" class="text-gray-300 hover:text-blue-300 transition-colors">Phishing</a>
+                        <a href="hygiene-hub.html" class="text-gray-300 hover:text-blue-300 transition-colors">Cyber Hygiene</a>
+                        <a href="ransomware-simulation.html" class="text-gray-300 hover:text-blue-300 transition-colors">Ransomware</a>
+                        <a href="quiz-hub.html" class="text-blue-300 font-medium">Quiz Hub</a>
+                        <a href="quiz-hub.html#leaderboard" class="text-gray-300 hover:text-blue-300 transition-colors">Leaderboard</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-2 bg-slate-800 px-4 py-2 rounded-full" id="user-display">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+                            <span class="font-bold text-white" id="user-initials">--</span>
+                        </div>
+                        <span class="text-gray-200" id="user-name">Loading...</span>
+                        <span class="text-purple-400 font-bold" id="user-score">0 pts</span>
+                    </div>
+                    <a href="quiz-hub.html" class="text-gray-300 hover:text-blue-300 transition-colors hidden md:flex items-center">
+                        <i class="ri-arrow-left-line mr-2"></i> Back to Hub
+                    </a>
+                    <button class="md:hidden text-white">
+                        <i class="ri-menu-line text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quiz Arena Hero -->
+    <section class="pt-32 pb-8 relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/30 to-purple-900/20 z-0"></div>
+        <div class="container mx-auto px-4 md:px-8 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">Security Quiz Arena</span>
+                </h1>
+                <p class="text-lg text-gray-300 mb-6">Test your cybersecurity knowledge with real-world scenarios</p>
+                
+                <!-- Quick Stats Bar -->
+                <div class="grid grid-cols-3 gap-4 bg-slate-800/50 rounded-xl p-4 backdrop-blur-sm">
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-purple-400" id="quiz-attempts">0</div>
+                        <div class="text-sm text-gray-400">Attempts</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-green-400" id="personal-best">0</div>
+                        <div class="text-sm text-gray-400">Best Score</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-blue-400" id="avg-accuracy">0%</div>
+                        <div class="text-sm text-gray-400">Avg Accuracy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiz Container -->
+    <section id="quiz" class="py-8">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="max-w-4xl mx-auto quiz-container p-6 md:p-8">
+                <!-- Quiz Header -->
+                <div class="flex flex-wrap justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold mb-2">Security Knowledge Test</h2>
+                        <p class="text-gray-400">Answer all questions to complete the challenge</p>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-4 md:mt-0">
+                        <div class="flex items-center space-x-2 bg-slate-800 px-4 py-2 rounded-full">
+                            <span class="text-gray-300">Score:</span>
+                            <span id="score" class="text-purple-400 font-bold">0</span>
+                            <span class="text-gray-400">pts</span>
+                        </div>
+                        <button id="hint-btn" class="hint-btn bg-yellow-600/20 border border-yellow-600/30 text-yellow-400 px-3 py-2 rounded-lg hover:bg-yellow-600/30 transition-all flex items-center text-sm">
+                            <i class="ri-lightbulb-line mr-1"></i> Hint
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Progress -->
+                <div class="mb-8">
+                    <div class="flex justify-between text-sm text-gray-400 mb-2">
+                        <span>Question <span id="current-question">1</span> of <span id="total-questions">10</span></span>
+                        <span id="progress-percent">10%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill" style="width: 10%"></div>
+                    </div>
+                    
+                    <!-- Category Progress Indicators -->
+                    <div class="category-progress-indicators mt-4">
+                        <div class="flex justify-between items-center text-xs text-gray-400 mb-2">
+                            <span>Category Progress</span>
+                            <span id="category-stats">0/10 categories</span>
+                        </div>
+                        <div class="grid grid-cols-5 gap-2" id="category-indicators">
+                            <!-- Category indicators will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question Container -->
+                <div id="question-container" class="question-card p-6 mb-8">
+                    <div class="text-lg font-medium mb-4 text-gray-300" id="question-text">
+                        Loading question...
+                    </div>
+                    
+                    <!-- Hint Display -->
+                    <div id="hint-display" class="hidden bg-yellow-600/10 border border-yellow-600/30 rounded-lg p-4 mb-4">
+                        <div class="flex items-start">
+                            <i class="ri-lightbulb-line text-yellow-400 text-lg mr-2 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-yellow-400 font-medium mb-1">Hint</h4>
+                                <p class="text-gray-300 text-sm" id="hint-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Options -->
+                    <div class="space-y-4" id="options-container">
+                        <!-- Options will be populated by JavaScript -->
+                        <div class="text-center text-gray-400 py-8">
+                            <i class="ri-loader-line text-3xl mb-2 animate-spin"></i>
+                            <p>Loading quiz...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quiz Controls -->
+                <div class="flex flex-wrap justify-between gap-4">
+                    <button id="prev-btn" class="btn-secondary px-6 py-3 rounded-xl font-medium flex items-center opacity-50 cursor-not-allowed" disabled>
+                        <i class="ri-arrow-left-line mr-2"></i> Previous
+                    </button>
+                    <div class="flex gap-3">
+                        <button id="skip-btn" class="bg-gray-600/20 border border-gray-600/30 text-gray-300 px-4 py-3 rounded-xl hover:bg-gray-600/30 transition-all font-medium flex items-center">
+                            <i class="ri-skip-forward-line mr-2"></i> Skip
+                        </button>
+                        <button id="next-btn" class="btn-primary px-8 py-3 rounded-xl font-medium flex items-center">
+                            Next Question <i class="ri-arrow-right-line ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Timer and Stats -->
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="bg-slate-800/50 rounded-lg p-3">
+                        <div class="text-lg font-bold text-blue-400" id="time-elapsed">00:00</div>
+                        <div class="text-xs text-gray-400">Time Elapsed</div>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-lg p-3">
+                        <div class="text-lg font-bold text-green-400" id="correct-count">0</div>
+                        <div class="text-xs text-gray-400">Correct</div>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-lg p-3">
+                        <div class="text-lg font-bold text-orange-400" id="streak-count">0</div>
+                        <div class="text-xs text-gray-400">Streak</div>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-lg p-3">
+                        <div class="text-lg font-bold text-purple-400" id="accuracy-display">0%</div>
+                        <div class="text-xs text-gray-400">Accuracy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" class="py-16 hidden">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="max-w-3xl mx-auto result-card p-8 text-center">
+                <!-- Celebration Overlay -->
+                <div class="celebration-overlay" id="celebration-overlay"></div>
+                
+                <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center mb-6 pulse">
+                    <i class="ri-trophy-line text-white text-4xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-4">Quiz Completed!</h2>
+                <p class="text-2xl text-purple-400 font-bold mb-2">Your Score: <span id="final-score">0</span> Points</p>
+                <p class="text-xl text-gray-300 mb-4" id="percentile-text">Calculating your ranking...</p>
+                <p class="text-lg text-gray-400 mb-8" id="completion-time">Completed in 0 seconds</p>
+                
+                <!-- Detailed Results -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-slate-800 rounded-xl p-6 text-center" data-stat="correct">
+                        <div class="text-4xl font-bold text-green-400 mb-2" id="final-correct">0</div>
+                        <div class="text-gray-400">Correct Answers</div>
+                    </div>
+                    <div class="bg-slate-800 rounded-xl p-6 text-center" data-stat="incorrect">
+                        <div class="text-4xl font-bold text-red-400 mb-2" id="final-incorrect">0</div>
+                        <div class="text-gray-400">Incorrect Answers</div>
+                    </div>
+                    <div class="bg-slate-800 rounded-xl p-6 text-center" data-stat="accuracy">
+                        <div class="text-4xl font-bold text-blue-400 mb-2 accuracy-display" id="final-accuracy">0%</div>
+                        <div class="text-gray-400">Accuracy</div>
+                    </div>
+                </div>
+                
+                <!-- Performance Breakdown -->
+                <div class="bg-slate-800/50 rounded-xl p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4">Performance by Category</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="category-breakdown">
+                        <!-- Category performance will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Achievements and Recommendations -->
+                <div class="mb-8" id="achievements-section">
+                    <!-- Achievements will be populated by JavaScript -->
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button id="retry-btn" class="btn-primary px-8 py-4 rounded-xl shadow-lg font-bold flex items-center">
+                        <i class="ri-restart-line mr-2"></i> Try Again
+                    </button>
+                    <a href="quiz-hub.html" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-colors shadow-lg font-bold flex items-center no-underline">
+                        <i class="ri-home-line mr-2"></i> Back to Hub
+                    </a>
+                    <a href="hygiene-hub.html" class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-colors shadow-lg font-bold flex items-center no-underline">
+                        <i class="ri-shield-check-line mr-2"></i> Cyber Hygiene
+                    </a>
+                    <a href="phishing-training.html" class="bg-gradient-to-r from-orange-600 to-red-600 text-white px-8 py-4 rounded-xl hover:from-orange-700 hover:to-red-700 transition-colors shadow-lg font-bold flex items-center no-underline">
+                        <i class="ri-fishing-line mr-2"></i> Phishing Training
+                    </a>
+                    <button onclick="shareQuizResults()" class="btn-secondary px-8 py-4 rounded-xl shadow-lg font-bold flex items-center">
+                        <i class="ri-share-line mr-2"></i> Share Results
+                    </button>
+                    <button onclick="downloadCertificate()" class="btn-secondary px-8 py-4 rounded-xl shadow-lg font-bold flex items-center">
+                        <i class="ri-download-line mr-2"></i> Certificate
+                    </button>
+                    <button onclick="exportDetailedReport()" class="btn-secondary px-8 py-4 rounded-xl shadow-lg font-bold flex items-center">
+                        <i class="ri-file-download-line mr-2"></i> Export Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-16">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-4 gap-8 mb-12">
+          <div>
+            <div class="text-2xl font-['Pacifico'] text-white mb-4">
+              CyberGuard
+            </div>
+            <p class="text-gray-300 mb-6">
+              Protecting organizations through comprehensive cybersecurity
+              awareness, training, and incident response capabilities.
+            </p>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
+              >
+                <i class="ri-twitter-line"></i>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
+              >
+                <i class="ri-linkedin-line"></i>
+              </a>
+              <a
+                href="#"
+                class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
+              >
+                <i class="ri-youtube-line"></i>
+              </a>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#training"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Security Training</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#threats"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Threat Intelligence</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#incident-report"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Report Incident</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#resources"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Resources</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold mb-4">Support</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Help Center</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Contact Us</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >Emergency Hotline</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-300 hover:text-white transition-colors"
+                  >System Status</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold mb-4">Security Newsletter</h3>
+            <p class="text-gray-300 mb-4">
+              Stay updated with the latest security threats and best practices.
+            </p>
+            <div class="flex gap-2">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                class="flex-1 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-white"
+              />
+              <button
+                class="bg-primary text-white px-4 py-2 !rounded-button hover:bg-blue-700 transition-colors whitespace-nowrap"
+              >
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-slate-800 pt-8">
+          <div class="flex flex-col md:flex-row justify-between items-center">
+            <p class="text-gray-400 text-sm">
+              © 2024 CyberGuard. All rights reserved.
+            </p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white text-sm transition-colors"
+                >Privacy Policy</a
+              >
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white text-sm transition-colors"
+                >Terms of Service</a
+              >
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white text-sm transition-colors"
+                >Security Policy</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="quiz-script.js"></script>
+</body>
+</html>

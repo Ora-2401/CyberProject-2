@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard - Phishing Awareness Training (Part 1)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --secondary: #dc2626;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 2rem;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .back-btn i {
+            margin-right: 8px;
+        }
+        
+        .module-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .module-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .module-header p {
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+            line-height: 1.6;
+        }
+        
+        .part-indicator {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            color: #60a5fa;
+            margin-bottom: 20px;
+        }
+        
+        .part-indicator i {
+            margin-right: 8px;
+        }
+        
+        .user-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: var(--gray);
+            z-index: 1000;
+        }
+        
+        .user-info.authenticated {
+            color: var(--success);
+        }
+        
+        .engagement-tracker {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: var(--gray);
+            max-width: 250px;
+            z-index: 1000;
+        }
+        
+        .engagement-tracker h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .engagement-metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        
+        .content-section {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            color: #3b82f6;
+        }
+        
+        .section-title i {
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+        
+        .content-section p {
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .content-section ul {
+            padding-left: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .content-section li {
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .content-section li:before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .example-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .example-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+        
+        .email-example {
+            background: white;
+            color: #1e293b;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: monospace;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+        
+        .warning {
+            color: #ef4444;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .warning i {
+            margin-right: 8px;
+        }
+        
+        .knowledge-check {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .knowledge-check h3 {
+            color: #a78bfa;
+            margin-bottom: 15px;
+        }
+        
+        .checkpoint {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .checkpoint:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        .checkpoint.completed {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+        }
+        
+        .completion-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(90deg, #10b981, #059669);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .completion-badge i {
+            margin-right: 5px;
+        }
+        
+        .progress-container {
+            margin: 30px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            transition: width 0.3s ease;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-btn {
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        }
+        
+        .part-summary {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .part-summary h3 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+        }
+        
+        .learning-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 70px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="phishing">
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo">CyberGuard</a>
+            <a href="index.html" class="back-btn">
+                <i class="ri-arrow-left-line"></i> Back to Dashboard
+            </a>
+        </header>
+        
+        <div class="module-header">
+            <div class="part-indicator">
+                <i class="ri-book-open-line"></i> Part 1: Learning & Theory
+            </div>
+            <h1>Phishing Awareness Training</h1>
+            <p>Learn to identify and avoid phishing attacks through comprehensive theory and real-world examples.</p>
+            
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Part 1 Progress</span>
+                    <span class="progress-text">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info Display -->
+        <div class="user-info" id="userInfo">
+            <i class="ri-user-line"></i> Loading...
+        </div>
+        
+        <!-- Real-time Engagement Tracker -->
+        <div class="engagement-tracker" id="engagementTracker">
+            <h4><i class="ri-dashboard-line"></i> Session Stats</h4>
+            <div class="engagement-metric">
+                <span>Time Spent:</span>
+                <span id="timeSpent">0:00</span>
+            </div>
+            <div class="engagement-metric">
+                <span>Sections Viewed:</span>
+                <span id="sectionsViewed">0/3</span>
+            </div>
+            <div class="engagement-metric">
+                <span>Interactions:</span>
+                <span id="interactionCount">0</span>
+            </div>
+            <div class="engagement-metric">
+                <span>Focus Score:</span>
+                <span id="focusScore">100%</span>
+            </div>
+        </div>
+        
+        <div class="content-section" data-section="introduction">
+            <h2 class="section-title"><i class="ri-mail-warning-line"></i> What is Phishing?</h2>
+            <p>Phishing is a type of cyber attack that uses disguised email as a weapon. The goal is to trick the email recipient into believing that the message is something they want or need — a request from their bank, for instance, or a note from someone in their company — and to click a link or download an attachment.</p>
+            
+            <div class="example-box">
+                <h3 class="example-title"><i class="ri-alert-line"></i> Real-World Example</h3>
+                <p>Here's an example of a typical phishing email:</p>
+                <div class="email-example">
+                    <p>From: "Your Bank" &lt;support@yourbank-example.com&gt;</p>
+                    <p>Subject: Urgent: Account Suspension Notice</p>
+                    <br>
+                    <p>Dear Customer,</p>
+                    <p>We have detected unusual activity on your account. To prevent your account from being suspended, please verify your identity by clicking the link below:</p>
+                    <p><a href="#" style="color: #1d4ed8;">https://fake-bank-verification.com</a></p>
+                    <p>If you do not take action within 24 hours, your account will be suspended.</p>
+                    <br>
+                    <p>Sincerely,<br>Security Team</p>
+                </div>
+                <p class="warning"><i class="ri-error-warning-line"></i> Warning: This is a simulated phishing email. Do not click on links from suspicious emails.</p>
+            </div>
+        </div>
+        
+        <div class="content-section" data-section="identification">
+            <h2 class="section-title"><i class="ri-search-eye-line"></i> How to Identify Phishing Emails</h2>
+            <p>Learning to identify phishing emails is crucial for cybersecurity. Here are the key red flags to watch for:</p>
+            
+            <ul>
+                <li><strong>Check the sender's email address:</strong> Hover over the "From" address to see if it matches the official domain of the organization.</li>
+                <li><strong>Look for generic greetings:</strong> Phishing emails often use generic greetings like "Dear Customer" instead of your name.</li>
+                <li><strong>Be wary of urgent language:</strong> Phishing attempts often create a sense of urgency to prompt quick action.</li>
+                <li><strong>Inspect links before clicking:</strong> Hover over links to see the actual URL. Be cautious of misspelled domains.</li>
+                <li><strong>Check for spelling and grammar mistakes:</strong> Legitimate organizations usually have professional communications.</li>
+                <li><strong>Verify unexpected attachments:</strong> Don't open attachments from unknown senders.</li>
+            </ul>
+            
+            <div class="knowledge-check">
+                <h3><i class="ri-lightbulb-line"></i> Knowledge Checkpoints</h3>
+                <p>Click each checkpoint to confirm your understanding:</p>
+                <div class="checkpoint" data-checkpoint="sender" onclick="markCheckpoint(this, 'sender')">
+                    <i class="ri-checkbox-blank-circle-line"></i> I know how to verify sender authenticity
+                </div>
+                <div class="checkpoint" data-checkpoint="urgency" onclick="markCheckpoint(this, 'urgency')">
+                    <i class="ri-checkbox-blank-circle-line"></i> I can recognize urgency tactics
+                </div>
+                <div class="checkpoint" data-checkpoint="links" onclick="markCheckpoint(this, 'links')">
+                    <i class="ri-checkbox-blank-circle-line"></i> I understand how to inspect links safely
+                </div>
+                <div class="checkpoint" data-checkpoint="attachments" onclick="markCheckpoint(this, 'attachments')">
+                    <i class="ri-checkbox-blank-circle-line"></i> I know when to avoid attachments
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section" data-section="types">
+            <h2 class="section-title"><i class="ri-shield-cross-line"></i> Types of Phishing Attacks</h2>
+            <p>Understanding different types helps you recognize threats:</p>
+            
+            <div class="example-box">
+                <h3 class="example-title"><i class="ri-mail-line"></i> Email Phishing</h3>
+                <p>Fraudulent emails appearing to be from legitimate sources.</p>
+            </div>
+            
+            <div class="example-box">
+                <h3 class="example-title"><i class="ri-smartphone-line"></i> Smishing (SMS)</h3>
+                <p>Phishing attacks conducted through text messages.</p>
+            </div>
+            
+            <div class="example-box">
+                <h3 class="example-title"><i class="ri-phone-line"></i> Vishing (Voice)</h3>
+                <p>Phone-based attacks impersonating legitimate organizations.</p>
+            </div>
+        </div>
+        
+        <div class="part-summary">
+            <h3><i class="ri-check-double-line"></i> Part 1 Summary</h3>
+            <p>You've completed the learning section! Ready for interactive practice?</p>
+            
+            <div class="learning-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="checkpointsCompleted">0/4</div>
+                    <div class="stat-label">Checkpoints</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="sectionsRead">0/3</div>
+                    <div class="stat-label">Sections</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="timeSpentStat">0m</div>
+                    <div class="stat-label">Time</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation-buttons">
+            <a href="cyber-hygiene.html" class="btn btn-secondary nav-btn">
+                <i class="ri-arrow-left-line"></i> Previous
+            </a>
+            <a href="index.html" class="btn btn-secondary nav-btn">
+                <i class="ri-home-line"></i> Dashboard
+            </a>
+            <a href="phishing-training-part2.html" class="btn btn-primary nav-btn" id="continueBtn">
+                Continue to Part 2 <i class="ri-arrow-right-line"></i>
+            </a>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2024 CyberGuard Security Training. All rights reserved.</p>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Part 1 Tracker
+        class PhishingPart1Tracker {
+            constructor() {
+                this.sessionId = 'part1_' + Date.now();
+                this.startTime = Date.now();
+                this.currentUser = null;
+                this.sessionData = {
+                    sectionsViewed: new Set(),
+                    checkpointsCompleted: new Set(),
+                    interactions: [],
+                    timeSpent: 0
+                };
+                this.isActive = true;
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.startTracking();
+            }
+            
+            setupEventListeners() {
+                document.addEventListener('click', (e) => this.trackInteraction('click', e));
+                document.addEventListener('scroll', (e) => this.trackInteraction('scroll', e));
+                window.addEventListener('beforeunload', () => this.saveProgress());
+            }
+            
+            trackInteraction(type, event) {
+                this.sessionData.interactions.push({
+                    type: type,
+                    timestamp: Date.now(),
+                    element: event.target.tagName
+                });
+                this.updateDisplay();
+            }
+            
+            startTracking() {
+                setInterval(() => {
+                    this.sessionData.timeSpent = Date.now() - this.startTime;
+                    this.updateDisplay();
+                }, 1000);
+            }
+            
+            updateDisplay() {
+                const timeElement = document.getElementById('timeSpent');
+                const sectionsElement = document.getElementById('sectionsViewed');
+                const interactionsElement = document.getElementById('interactionCount');
+                
+                if (timeElement) {
+                    const minutes = Math.floor(this.sessionData.timeSpent / 60000);
+                    const seconds = Math.floor((this.sessionData.timeSpent % 60000) / 1000);
+                    timeElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    const statElement = document.getElementById('timeSpentStat');
+                    if (statElement) statElement.textContent = `${minutes}m`;
+                }
+                
+                if (sectionsElement) {
+                    sectionsElement.textContent = `${this.sessionData.sectionsViewed.size}/3`;
+                }
+                
+                if (interactionsElement) {
+                    interactionsElement.textContent = this.sessionData.interactions.length;
+                }
+                
+                this.updateStats();
+            }
+            
+            updateStats() {
+                const checkpointsElement = document.getElementById('checkpointsCompleted');
+                const sectionsReadElement = document.getElementById('sectionsRead');
+                
+                if (checkpointsElement) {
+                    checkpointsElement.textContent = `${this.sessionData.checkpointsCompleted.size}/4`;
+                }
+                
+                if (sectionsReadElement) {
+                    sectionsReadElement.textContent = `${this.sessionData.sectionsViewed.size}/3`;
+                }
+            }
+            
+            markSectionViewed(sectionName) {
+                this.sessionData.sectionsViewed.add(sectionName);
+                this.updateProgress();
+            }
+            
+            updateProgress() {
+                const progress = Math.round((this.sessionData.sectionsViewed.size / 3) * 100);
+                const progressBar = document.querySelector('.progress-fill');
+                const progressText = document.querySelector('.progress-text');
+                
+                if (progressBar) progressBar.style.width = `${progress}%`;
+                if (progressText) progressText.textContent = `${progress}%`;
+                
+                if (window.cyberGuardAuth) {
+                    window.cyberGuardAuth.updateProgress('phishing_part1', progress);
+                }
+                
+                this.checkCompletion();
+            }
+            
+            checkCompletion() {
+                const isComplete = this.sessionData.sectionsViewed.size >= 3 && 
+                                 this.sessionData.checkpointsCompleted.size >= 4;
+                
+                const continueBtn = document.getElementById('continueBtn');
+                if (isComplete && continueBtn) {
+                    continueBtn.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+                    continueBtn.innerHTML = '<i class="ri-check-line"></i> Ready for Part 2 <i class="ri-arrow-right-line"></i>';
+                }
+            }
+            
+            saveProgress() {
+                localStorage.setItem('phishing_part1_data', JSON.stringify(this.sessionData));
+            }
+        }
+        
+        let tracker;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            tracker = new PhishingPart1Tracker();
+            
+            const checkAuth = () => {
+                if (!window.cyberGuardAuth) {
+                    setTimeout(checkAuth, 100);
+                    return;
+                }
+                
+                updateUserInfo();
+                
+                if (!window.cyberGuardAuth.isAuthenticated()) {
+                    window.cyberGuardAuth.showAuthModal();
+                    return;
+                }
+                
+                initializeTraining();
+            };
+            
+            checkAuth();
+        });
+        
+        function updateUserInfo() {
+            const userInfoElement = document.getElementById('userInfo');
+            if (!userInfoElement) return;
+            
+            if (window.cyberGuardAuth && window.cyberGuardAuth.isAuthenticated()) {
+                const user = window.cyberGuardAuth.getCurrentUser();
+                tracker.currentUser = user;
+                userInfoElement.innerHTML = `<i class="ri-user-3-line"></i> ${user.fullname}`;
+                userInfoElement.classList.add('authenticated');
+            } else {
+                userInfoElement.innerHTML = '<i class="ri-user-line"></i> Not Signed In';
+                userInfoElement.classList.remove('authenticated');
+            }
+        }
+        
+        function initializeTraining() {
+            // Section tracking with Intersection Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                        const sectionName = entry.target.getAttribute('data-section');
+                        if (sectionName) {
+                            setTimeout(() => tracker.markSectionViewed(sectionName), 2000);
+                        }
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            document.querySelectorAll('[data-section]').forEach(section => {
+                observer.observe(section);
+            });
+        }
+        
+        function markCheckpoint(element, checkpointId) {
+            if (element.classList.contains('completed')) return;
+            
+            element.classList.add('completed');
+            
+            const iconElement = element.querySelector('i');
+            if (iconElement) {
+                iconElement.className = 'ri-checkbox-circle-line';
+            }
+            
+            if (tracker) {
+                tracker.sessionData.checkpointsCompleted.add(checkpointId);
+                tracker.updateProgress();
+            }
+            
+            const badge = document.createElement('span');
+            badge.className = 'completion-badge';
+            badge.innerHTML = '<i class="ri-check-line"></i> Complete';
+            element.appendChild(badge);
+        }
+    </script>
+</body>
+</html>

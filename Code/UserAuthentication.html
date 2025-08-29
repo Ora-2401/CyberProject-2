@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard - User Authentication</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af',
+                        secondary: '#dc2626'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <script src="js/auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --secondary: #dc2626;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .auth-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .auth-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--light);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: none;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--gray);
+        }
+        
+        .auth-link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #10b981;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .user-menu {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .user-menu-item {
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-menu-item i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .user-info {
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .user-email {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .profile-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .toggle-checkbox {
+            appearance: none;
+            width: 50px;
+            height: 25px;
+            background: #374151;
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .toggle-checkbox:checked {
+            background: var(--primary);
+        }
+        
+        .toggle-checkbox::before {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            border-radius: 50%;
+            background: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-checkbox:checked::before {
+            transform: translateX(25px);
+        }
+        
+        .achievement-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        
+        .achievement-badge:hover {
+            transform: translateY(-3px);
+        }
+        
+        .achievement-badge.locked {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            opacity: 0.6;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--dark);
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with User Avatar -->
+    <header class="fixed top-0 left-0 right-0 bg-slate-900 text-white z-50 shadow-lg">
+        <div class="w-full px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-8">
+                    <div class="text-2xl font-['Pacifico'] text-white">CyberGuard</div>
+                    <nav class="hidden lg:flex space-x-8">
+                        <a href="index.html" class="hover:text-blue-300 transition-colors">Home</a>
+                        <a href="#training" class="hover:text-blue-300 transition-colors">Training</a>
+                        <a href="#threats" class="hover:text-blue-300 transition-colors">Threat Intel</a>
+                        <a href="#leaderboard" class="hover:text-blue-300 transition-colors">Leaderboard</a>
+                    </nav>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- User Avatar (shown when logged in) -->
+                    <div id="user-avatar" class="user-avatar hidden" onclick="toggleUserMenu()">JD</div>
+                    
+                    <!-- Login/Signup Buttons (shown when not logged in) -->
+                    <div id="auth-buttons" class="flex items-center space-x-2">
+                        <a href="login.html" class="bg-slate-800 text-white px-4 py-2 !rounded-button hover:bg-slate-700 transition-colors">
+                            Login
+                        </a>
+                        <a href="register.html" class="bg-primary text-white px-4 py-2 !rounded-button hover:bg-blue-700 transition-colors">
+                            Sign Up
+                        </a>
+                    </div>
+
+                    <button class="lg:hidden text-white" id="mobile-menu-btn">
+                        <div class="w-6 h-6 flex items-center justify-center">
+                            <i class="ri-menu-line"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Menu Dropdown -->
+        <div id="user-menu" class="user-menu">
+            <div class="user-info">
+                <div class="user-name" id="menu-user-name">John Doe</div>
+                <div class="user-email" id="menu-user-email">john.doe@example.com</div>
+            </div>
+            <div class="user-menu-item" onclick="window.location.href='profile.html'">
+                <i class="ri-user-line"></i> My Profile
+            </div>
+            <div class="user-menu-item" onclick="window.location.href='index.html#training'">
+                <i class="ri-book-line"></i> My Progress
+            </div>
+            <div class="user-menu-item" onclick="window.location.href='index.html#leaderboard'">
+                <i class="ri-medal-line"></i> Leaderboard
+            </div>
+            <div class="user-menu-item" onclick="logout()">
+                <i class="ri-logout-box-r-line"></i> Logout
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="lg:hidden bg-slate-800 hidden" id="mobile-menu">
+            <div class="px-6 py-4 space-y-4">
+                <a href="index.html" class="block hover:text-blue-300">Home</a>
+                <a href="#training" class="block hover:text-blue-300">Training</a>
+                <a href="#threats" class="block hover:text-blue-300">Threat Intel</a>
+                <a href="#leaderboard" class="block hover:text-blue-300">Leaderboard</a>
+                <div id="mobile-auth-buttons" class="pt-4 border-t border-slate-700">
+                    <a href="login.html" class="block mb-2 text-center bg-slate-800 text-white px-4 py-2 !rounded-button hover:bg-slate-700 transition-colors">
+                        Login
+                    </a>
+                    <a href="register.html" class="block text-center bg-primary text-white px-4 py-2 !rounded-button hover:bg-blue-700 transition-colors">
+                        Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="pt-24 pb-16">
+        <div class="container">
+            <!-- Login Form -->
+            <div id="login-page" class="auth-container">
+                <div class="auth-card">
+                    <h2 class="text-2xl font-bold mb-6 text-center">Login to Your Account</h2>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" id="login-email" placeholder="Enter your email" required>
+                            <div class="error-message" id="login-email-error">Please enter a valid email address</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-input" id="login-password" placeholder="Enter your password" required>
+                            <div class="error-message" id="login-password-error">Please enter your password</div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                        <div class="success-message" id="login-success">Login successful! Redirecting...</div>
+                        <div class="error-message" id="login-error">Invalid email or password</div>
+                    </form>
+                    <div class="auth-footer">
+                        Don't have an account? <a href="register.html" class="auth-link">Sign up here</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div id="register-page" class="auth-container hidden">
+                <div class="auth-card">
+                    <h2 class="text-2xl font-bold mb-6 text-center">Create an Account</h2>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" id="register-name" placeholder="Enter your full name" required>
+                            <div class="error-message" id="register-name-error">Please enter your name</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" id="register-email" placeholder="Enter your email" required>
+                            <div class="error-message" id="register-email-error">Please enter a valid email address</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-input" id="register-password" placeholder="Create a password" required>
+                            <div class="error-message" id="register-password-error">Password must be at least 8 characters</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-input" id="register-confirm-password" placeholder="Confirm your password" required>
+                            <div class="error-message" id="register-confirm-password-error">Passwords do not match</div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Create Account</button>
+                        </div>
+                        <div class="success-message" id="register-success">Account created successfully! Redirecting...</div>
+                        <div class="error-message" id="register-error">Error creating account. Please try again.</div>
+                    </form>
+                    <div class="auth-footer">
+                        Already have an account? <a href="login.html" class="auth-link">Login here</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profile-page" class="profile-container hidden">
+                <h2 class="text-3xl font-bold mb-8 text-center">My Profile</h2>
+                
+                <div class="profile-card">
+                    <h3 class="text-xl font-bold mb-6">Personal Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" id="profile-name" placeholder="Your full name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" id="profile-email" placeholder="Your email address" disabled>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mt-4">Save Changes</button>
+                </div>
+
+                <div class="profile-card">
+                    <h3 class="text-xl font-bold mb-6">Training Progress</h3>
+                    
+                    <div class="mb-8">
+                        <div class="progress-label">
+                            <span>Phishing Awareness</span>
+                            <span id="phishing-progress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-blue-500" id="phishing-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-8">
+                        <div class="progress-label">
+                            <span>Cyber Hygiene</span>
+                            <span id="hygiene-progress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-green-500" id="hygiene-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-8">
+                        <div class="progress-label">
+                            <span>Ransomware Simulation</span>
+                            <span id="ransomware-progress">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-red-500" id="ransomware-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="progress-label">
+                            <span>Security Quiz</span>
+                            <span id="quiz-progress">0 pts</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-purple-500" id="quiz-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <h3 class="text-xl font-bold mb-6">Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-modules">0</div>
+                            <div class="stat-label">Modules Completed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-score">0</div>
+                            <div class="stat-label">Total Points</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="leaderboard-rank">-</div>
+                            <div class="stat-label">Leaderboard Rank</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="days-active">0</div>
+                            <div class="stat-label">Days Active</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Achievements Section -->
+                <div class="profile-card">
+                    <h3 class="text-xl font-bold mb-6">Achievements</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="achievements-container">
+                        <!-- Achievements will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Security Settings -->
+                <div class="profile-card">
+                    <h3 class="text-xl font-bold mb-6">Security Settings</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold">Two-Factor Authentication</h4>
+                                <p class="text-gray-400 text-sm">Add an extra layer of security to your account</p>
+                            </div>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                Enable 2FA
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold">Change Password</h4>
+                                <p class="text-gray-400 text-sm">Update your account password</p>
+                            </div>
+                            <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors" onclick="openPasswordChangeModal()">
+                                Change
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold">Login History</h4>
+                                <p class="text-gray-400 text-sm">View recent login activity</p>
+                            </div>
+                            <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors" onclick="viewLoginHistory()">
+                                View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Training Preferences -->
+                <div class="profile-card">
+                    <h3 class="text-xl font-bold mb-6">Training Preferences</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label class="font-semibold">Email Notifications</label>
+                            <input type="checkbox" id="email-notifications" class="toggle-checkbox" checked>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="font-semibold">Training Reminders</label>
+                            <input type="checkbox" id="training-reminders" class="toggle-checkbox" checked>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="font-semibold">Progress Reports</label>
+                            <input type="checkbox" id="progress-reports" class="toggle-checkbox">
+                        </div>
+                        <div>
+                            <label class="font-semibold mb-2 block">Preferred Training Time</label>
+                            <select class="form-input w-full">
+                                <option>Morning (9:00 - 12:00)</option>
+                                <option>Afternoon (12:00 - 17:00)</option>
+                                <option>Evening (17:00 - 20:00)</option>
+                                <option>No preference</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Management -->
+                <div class="profile-card">
+                    <h3 class="text-xl font-bold mb-6">Data Management</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold">Export Training Data</h4>
+                                <p class="text-gray-400 text-sm">Download your progress and achievements</p>
+                            </div>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onclick="cyberGuardAuth.exportUserData()">
+                                <i class="ri-download-line mr-2"></i>Export
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold">Reset Progress</h4>
+                                <p class="text-gray-400 text-sm">Clear all training progress and start over</p>
+                            </div>
+                            <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors" onclick="cyberGuardAuth.resetProgress()">
+                                <i class="ri-refresh-line mr-2"></i>Reset
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold">Delete Account</h4>
+                                <p class="text-gray-400 text-sm">Permanently delete your account and data</p>
+                            </div>
+                            <button class="bg-red-800 text-white px-4 py-2 rounded-lg hover:bg-red-900 transition-colors" onclick="deleteAccount()">
+                                <i class="ri-delete-bin-line mr-2"></i>Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-white py-12 mt-16">
+        <div class="container">
+            <div class="text-center">
+                <div class="text-2xl font-['Pacifico'] text-white mb-4">CyberGuard</div>
+                <p class="text-gray-400 max-w-2xl mx-auto mb-8">
+                    Empowering organizations with cybersecurity awareness and training to defend against evolving digital threats.
+                </p>
+                <p class="text-gray-500">© 2024 CyberGuard. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // User Management Functions
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('currentUser'));
+        }
+
+        function setCurrentUser(user) {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            updateUIForAuthState();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        function getAllUsers() {
+            return JSON.parse(localStorage.getItem('users')) || [];
+        }
+
+        function saveUser(user) {
+            const users = getAllUsers();
+            const existingUserIndex = users.findIndex(u => u.email === user.email);
+            
+            if (existingUserIndex !== -1) {
+                users[existingUserIndex] = user;
+            } else {
+                users.push(user);
+            }
+            
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        function updateUIForAuthState() {
+            const currentUser = getCurrentUser();
+            const userAvatar = document.getElementById('user-avatar');
+            const authButtons = document.getElementById('auth-buttons');
+            const mobileAuthButtons = document.getElementById('mobile-auth-buttons');
+            
+            if (currentUser) {
+                // User is logged in
+                userAvatar.classList.remove('hidden');
+                authButtons.classList.add('hidden');
+                if (mobileAuthButtons) mobileAuthButtons.classList.add('hidden');
+                
+                // Set avatar initials
+                const names = currentUser.name.split(' ');
+                let initials = '';
+                if (names.length > 0) {
+                    initials = names[0].charAt(0);
+                    if (names.length > 1) {
+                        initials += names[names.length - 1].charAt(0);
+                    }
+                }
+                userAvatar.textContent = initials;
+                
+                // Update menu user info
+                const menuUserName = document.getElementById('menu-user-name');
+                const menuUserEmail = document.getElementById('menu-user-email');
+                if (menuUserName) menuUserName.textContent = currentUser.name;
+                if (menuUserEmail) menuUserEmail.textContent = currentUser.email;
+                
+                // Update profile page if visible
+                if (window.location.pathname.endsWith('profile.html') || window.location.hash === '#profile') {
+                    document.getElementById('profile-page').classList.remove('hidden');
+                    document.getElementById('login-page').classList.add('hidden');
+                    document.getElementById('register-page').classList.add('hidden');
+                    
+                    // Populate profile data
+                    document.getElementById('profile-name').value = currentUser.name;
+                    document.getElementById('profile-email').value = currentUser.email;
+                    
+                    // Update progress
+                    updateProgressBars(currentUser);
+                    
+                    // Update stats
+                    updateUserStats(currentUser);
+                }
+            } else {
+                // User is not logged in
+                userAvatar.classList.add('hidden');
+                authButtons.classList.remove('hidden');
+                if (mobileAuthButtons) mobileAuthButtons.classList.remove('hidden');
+                
+                // Show login/register pages based on URL
+                if (window.location.pathname.endsWith('register.html') || window.location.hash === '#register') {
+                    document.getElementById('register-page').classList.remove('hidden');
+                    document.getElementById('login-page').classList.add('hidden');
+                } else {
+                    document.getElementById('login-page').classList.remove('hidden');
+                    document.getElementById('register-page').classList.add('hidden');
+                }
+                
+                document.getElementById('profile-page').classList.add('hidden');
+            }
+        }
+
+        function updateProgressBars(user) {
+            const progressData = user.progress || {};
+            
+            // Phishing Awareness
+            const phishingProgress = progressData.phishing || 0;
+            document.getElementById('phishing-progress').textContent = `${phishingProgress}%`;
+            document.getElementById('phishing-progress-bar').style.width = `${phishingProgress}%`;
+            
+            // Cyber Hygiene
+            const hygieneProgress = progressData.hygiene || 0;
+            document.getElementById('hygiene-progress').textContent = `${hygieneProgress}%`;
+            document.getElementById('hygiene-progress-bar').style.width = `${hygieneProgress}%`;
+            
+            // Ransomware Simulation
+            const ransomwareProgress = progressData.ransomware || 0;
+            document.getElementById('ransomware-progress').textContent = `${ransomwareProgress}%`;
+            document.getElementById('ransomware-progress-bar').style.width = `${ransomwareProgress}%`;
+            
+            // Security Quiz
+            const quizProgress = progressData.quiz || 0;
+            const quizPercentage = Math.min(100, (quizProgress / 1000) * 100);
+            document.getElementById('quiz-progress').textContent = `${quizProgress} pts`;
+            document.getElementById('quiz-progress-bar').style.width = `${quizPercentage}%`;
+        }
+
+        function updateUserStats(user) {
+            const progressData = user.progress || {};
+            
+            // Calculate completed modules
+            let completedModules = 0;
+            if (progressData.phishing >= 100) completedModules++;
+            if (progressData.hygiene >= 100) completedModules++;
+            if (progressData.ransomware >= 100) completedModules++;
+            
+            document.getElementById('total-modules').textContent = completedModules;
+            
+            // Calculate total score (quiz score + progress percentages)
+            const totalScore = (progressData.phishing || 0) + (progressData.hygiene || 0) + 
+                              (progressData.ransomware || 0) + (progressData.quiz || 0);
+            document.getElementById('total-score').textContent = totalScore;
+            
+            // Calculate leaderboard rank
+            const users = getAllUsers();
+            const rankedUsers = users.map(u => {
+                const uProgress = u.progress || {};
+                const uScore = (uProgress.phishing || 0) + (uProgress.hygiene || 0) + 
+                              (uProgress.ransomware || 0) + (uProgress.quiz || 0);
+                return { ...u, score: uScore };
+            }).sort((a, b) => b.score - a.score);
+            
+            const userRank = rankedUsers.findIndex(u => u.email === user.email) + 1;
+            document.getElementById('leaderboard-rank').textContent = userRank > 0 ? `#${userRank}` : '-';
+            
+            // Calculate days active (placeholder)
+            const daysActive = Math.floor(Math.random() * 30) + 1; // Random for demo
+            document.getElementById('days-active').textContent = daysActive;
+        }
+
+        function toggleUserMenu() {
+            const userMenu = document.getElementById('user-menu');
+            userMenu.style.display = userMenu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('user-menu');
+            const userAvatar = document.getElementById('user-avatar');
+            
+            if (userMenu && userAvatar && 
+                !userMenu.contains(event.target) && 
+                !userAvatar.contains(event.target)) {
+                userMenu.style.display = 'none';
+            }
+        });
+
+        // Form Handling
+        document.getElementById('login-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Basic validation
+            let isValid = true;
+            
+            if (!email || !/\S+@\S+\.\S+/.test(email)) {
+                document.getElementById('login-email-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('login-email-error').style.display = 'none';
+            }
+            
+            if (!password || password.length < 6) {
+                document.getElementById('login-password-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('login-password-error').style.display = 'none';
+            }
+            
+            if (!isValid) return;
+            
+            // Check if user exists
+            const users = getAllUsers();
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Login successful
+                setCurrentUser(user);
+                document.getElementById('login-success').style.display = 'block';
+                document.getElementById('login-error').style.display = 'none';
+                
+                // Redirect to home page after a brief delay
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } else {
+                // Login failed
+                document.getElementById('login-error').style.display = 'block';
+                document.getElementById('login-success').style.display = 'none';
+            }
+        });
+
+        document.getElementById('register-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            
+            // Basic validation
+            let isValid = true;
+            
+            if (!name) {
+                document.getElementById('register-name-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('register-name-error').style.display = 'none';
+            }
+            
+            if (!email || !/\S+@\S+\.\S+/.test(email)) {
+                document.getElementById('register-email-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('register-email-error').style.display = 'none';
+            }
+            
+            if (!password || password.length < 8) {
+                document.getElementById('register-password-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('register-password-error').style.display = 'none';
+            }
+            
+            if (password !== confirmPassword) {
+                document.getElementById('register-confirm-password-error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('register-confirm-password-error').style.display = 'none';
+            }
+            
+            if (!isValid) return;
+            
+            // Check if user already exists
+            const users = getAllUsers();
+            if (users.some(u => u.email === email)) {
+                document.getElementById('register-error').textContent = 'User with this email already exists';
+                document.getElementById('register-error').style.display = 'block';
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now().toString(),
+                name: name,
+                email: email,
+                password: password,
+                progress: {
+                    phishing: 0,
+                    hygiene: 0,
+                    ransomware: 0,
+                    quiz: 0
+                },
+                joined: new Date().toISOString()
+            };
+            
+            // Save user and log them in
+            saveUser(newUser);
+            setCurrentUser(newUser);
+            
+            document.getElementById('register-success').style.display = 'block';
+            document.getElementById('register-error').style.display = 'none';
+            
+            // Redirect to home page after a brief delay
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        });
+
+        // Initialize the page based on authentication state
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is authenticated
+            if (!cyberGuardAuth.isAuthenticated()) {
+                window.location.href = 'Login.html';
+                return;
+            }
+            
+            updateUIForAuthState();
+            loadAchievements();
+            
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+        
+        function loadAchievements() {
+            const currentUser = cyberGuardAuth.getCurrentUser();
+            if (!currentUser) return;
+            
+            const progress = currentUser.progress || {};
+            const achievements = [
+                {
+                    title: 'First Steps',
+                    description: 'Started your cybersecurity journey',
+                    icon: 'ri-footprint-line',
+                    unlocked: true
+                },
+                {
+                    title: 'Phishing Expert',
+                    description: 'Completed phishing awareness training',
+                    icon: 'ri-mail-check-line',
+                    unlocked: progress.phishing >= 100
+                },
+                {
+                    title: 'Hygiene Master',
+                    description: 'Completed cyber hygiene training',
+                    icon: 'ri-shield-check-line',
+                    unlocked: progress.hygiene >= 100
+                },
+                {
+                    title: 'Ransomware Defender',
+                    description: 'Completed ransomware simulation',
+                    icon: 'ri-lock-unlock-line',
+                    unlocked: progress.ransomware >= 100
+                },
+                {
+                    title: 'Quiz Champion',
+                    description: 'Scored 90% or higher on security quiz',
+                    icon: 'ri-trophy-line',
+                    unlocked: progress.quiz >= 900
+                },
+                {
+                    title: 'Training Complete',
+                    description: 'Completed all training modules',
+                    icon: 'ri-medal-line',
+                    unlocked: progress.phishing >= 100 && progress.hygiene >= 100 && progress.ransomware >= 100
+                }
+            ];
+            
+            const container = document.getElementById('achievements-container');
+            container.innerHTML = '';
+            
+            achievements.forEach(achievement => {
+                const badge = document.createElement('div');
+                badge.className = `achievement-badge ${achievement.unlocked ? '' : 'locked'}`;
+                badge.innerHTML = `
+                    <div class="text-3xl mb-2">
+                        <i class="${achievement.icon}"></i>
+                    </div>
+                    <h4 class="font-bold mb-1">${achievement.title}</h4>
+                    <p class="text-sm opacity-90">${achievement.description}</p>
+                    ${achievement.unlocked ? '<div class="mt-2 text-xs">✓ Unlocked</div>' : '<div class="mt-2 text-xs">🔒 Locked</div>'}
+                `;
+                container.appendChild(badge);
+            });
+        }
+        
+        function openPasswordChangeModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold">Change Password</h3>
+                        <button onclick="this.closest('.modal').remove()" class="text-gray-400 hover:text-white">
+                            <i class="ri-close-line text-2xl"></i>
+                        </button>
+                    </div>
+                    <form id="password-change-form" class="space-y-4">
+                        <div>
+                            <label class="form-label">Current Password</label>
+                            <input type="password" id="current-password" class="form-input" required>
+                        </div>
+                        <div>
+                            <label class="form-label">New Password</label>
+                            <input type="password" id="new-password" class="form-input" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" id="confirm-password" class="form-input" required>
+                        </div>
+                        <div class="flex gap-3 pt-4">
+                            <button type="submit" class="btn btn-primary flex-1">Update Password</button>
+                            <button type="button" onclick="this.closest('.modal').remove()" class="btn bg-gray-600 text-white hover:bg-gray-700 flex-1">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Handle form submission
+            document.getElementById('password-change-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                
+                if (newPassword !== confirmPassword) {
+                    alert('New passwords do not match!');
+                    return;
+                }
+                
+                if (newPassword.length < 6) {
+                    alert('Password must be at least 6 characters long!');
+                    return;
+                }
+                
+                // Here you would typically verify the current password and update
+                // For demo purposes, we'll just show success
+                alert('Password updated successfully!');
+                modal.remove();
+            });
+        }
+        
+        function viewLoginHistory() {
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold">Login History</h3>
+                        <button onclick="this.closest('.modal').remove()" class="text-gray-400 hover:text-white">
+                            <i class="ri-close-line text-2xl"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-3 max-h-96 overflow-y-auto">
+                        <div class="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
+                            <div>
+                                <div class="font-semibold">Current Session</div>
+                                <div class="text-sm text-gray-400">Chrome on Windows</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-green-400">Active</div>
+                                <div class="text-xs text-gray-400">${new Date().toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
+                            <div>
+                                <div class="font-semibold">Previous Login</div>
+                                <div class="text-sm text-gray-400">Chrome on Windows</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-400">Ended</div>
+                                <div class="text-xs text-gray-400">${new Date(Date.now() - 86400000).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button onclick="this.closest('.modal').remove()" class="btn bg-gray-600 text-white hover:bg-gray-700 w-full">Close</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data.')) {
+                if (confirm('This is your final warning. Are you absolutely sure you want to delete your account?')) {
+                    // Remove user from users array
+                    const currentUser = cyberGuardAuth.getCurrentUser();
+                    if (currentUser) {
+                        const users = cyberGuardAuth.getAllUsers();
+                        const updatedUsers = users.filter(u => u.email !== currentUser.email);
+                        localStorage.setItem('cyberguard_users', JSON.stringify(updatedUsers));
+                        
+                        // Clear current user session
+                        localStorage.removeItem('cyberguard_current_user');
+                        
+                        alert('Account deleted successfully. You will be redirected to the home page.');
+                        window.location.href = 'index.html';
+                    }
+                }
+            }
+        }
+
+        // Function to update user progress (to be called from training modules)
+        function updateUserProgress(module, value) {
+            const currentUser = getCurrentUser();
+            if (!currentUser) return false;
+            
+            // Update progress
+            if (!currentUser.progress) {
+                currentUser.progress = {};
+            }
+            
+            currentUser.progress[module] = value;
+            
+            // Save updated user
+            saveUser(currentUser);
+            setCurrentUser(currentUser);
+            
+            return true;
+        }
+
+        // Function to get leaderboard data
+        function getLeaderboardData() {
+            const users = getAllUsers();
+            return users.map(user => {
+                const progress = user.progress || {};
+                const score = (progress.phishing || 0) + (progress.hygiene || 0) + 
+                             (progress.ransomware || 0) + (progress.quiz || 0);
+                
+                return {
+                    name: user.name,
+                    department: 'User', // Placeholder - could be added to user profile
+                    score: score,
+                    completion: Math.round(((progress.phishing >= 100 ? 1 : 0) + 
+                                          (progress.hygiene >= 100 ? 1 : 0) + 
+                                          (progress.ransomware >= 100 ? 1 : 0)) / 3 * 100)
+                };
+            }).sort((a, b) => b.score - a.score);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIEM Analytics - Advanced Security Intelligence</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            dark: "#0a0a23",
+                            blue: "#00d4ff",
+                            green: "#39ff14",
+                            orange: "#ff6b35",
+                            purple: "#8a2be2"
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    
+    <!-- External Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    
+    <!-- Project Dependencies -->
+    <script src="js/auth.js"></script>
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="siem-styles.css">
+    
+    <style>
+        .analytics-card {
+            background: linear-gradient(135deg, rgba(10, 10, 35, 0.95), rgba(30, 41, 59, 0.9));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .forensic-timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #00d4ff, #39ff14);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00d4ff;
+            border: 2px solid rgba(10, 10, 35, 1);
+        }
+        
+        .severity-critical { border-left: 4px solid #ff0000; }
+        .severity-high { border-left: 4px solid #ff6b35; }
+        .severity-medium { border-left: 4px solid #fbbf24; }
+        .severity-low { border-left: 4px solid #10b981; }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-cyber-dark border-b border-cyber-blue/30 sticky top-0 z-50 backdrop-blur-sm">
+        <div class="max-w-full mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-6">
+                    <a href="javascript:void(0)" data-nav="siem-dashboard" class="text-2xl font-bold text-cyber-blue hover:text-cyan-300 transition-colors">
+                        📊 SIEM Analytics
+                    </a>
+                    <nav class="hidden lg:flex space-x-6">
+                        <a href="javascript:void(0)" data-nav="siem-dashboard" class="text-gray-300 hover:text-cyber-blue transition-colors font-medium">Dashboard</a>
+                        <a href="javascript:void(0)" data-nav="analytics" class="text-cyber-blue font-semibold border-b-2 border-cyber-blue pb-1">Analytics</a>
+                        <a href="javascript:void(0)" data-nav="incident-report" class="text-gray-300 hover:text-cyber-blue transition-colors font-medium">Incidents</a>
+                        <a href="javascript:void(0)" data-nav="portal" class="text-gray-300 hover:text-cyber-blue transition-colors font-medium">Portal</a>
+                    </nav>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="lg:hidden text-gray-300 hover:text-cyber-blue transition-colors">
+                    <i class="ri-menu-line text-2xl"></i>
+                </button>
+                
+                <!-- Quick Search -->
+                <div class="hidden lg:flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" id="global-search" placeholder="Search events, IPs, users..." 
+                               class="bg-gray-800 text-white px-4 py-2 pl-10 rounded border border-gray-600 focus:border-cyber-blue focus:outline-none w-64">
+                        <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <div id="user-info" class="text-sm text-gray-300"></div>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="lg:hidden hidden mt-4 pb-4 border-t border-gray-700">
+                <nav class="flex flex-col space-y-4 mt-4">
+                    <a href="javascript:void(0)" data-nav="siem-dashboard" class="text-gray-300 hover:text-cyber-blue transition-colors font-medium">Dashboard</a>
+                    <a href="javascript:void(0)" data-nav="analytics" class="text-cyber-blue font-semibold">Analytics</a>
+                    <a href="javascript:void(0)" data-nav="incident-report" class="text-gray-300 hover:text-cyber-blue transition-colors font-medium">Incidents</a>
+                    <a href="javascript:void(0)" data-nav="portal" class="text-gray-300 hover:text-cyber-blue transition-colors font-medium">Portal</a>
+                    <div class="relative mt-4">
+                        <input type="text" placeholder="Search events, IPs, users..." 
+                               class="bg-gray-800 text-white px-4 py-2 pl-10 rounded border border-gray-600 focus:border-cyber-blue focus:outline-none w-full">
+                        <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-full mx-auto p-6">
+        <!-- Analytics Navigation -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-3xl font-bold text-cyber-blue">Security Analytics & Intelligence</h1>
+                <div class="flex space-x-2">
+                    <button onclick="exportReport()" class="bg-cyber-green/20 text-cyber-green px-4 py-2 rounded border border-cyber-green/50 hover:bg-cyber-green/30 transition-colors">
+                        <i class="ri-download-line mr-2"></i>Export Report
+                    </button>
+                    <button onclick="scheduledReports()" class="bg-cyber-blue/20 text-cyber-blue px-4 py-2 rounded border border-cyber-blue/50 hover:bg-cyber-blue/30 transition-colors">
+                        <i class="ri-time-line mr-2"></i>Schedule Reports
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="flex space-x-1 bg-gray-800 rounded-lg p-1">
+                <button class="analytics-tab active px-4 py-2 rounded-md text-sm font-medium transition-colors" data-tab="overview">
+                    Overview
+                </button>
+                <button class="analytics-tab px-4 py-2 rounded-md text-sm font-medium transition-colors" data-tab="forensics">
+                    Forensic Analysis
+                </button>
+                <button class="analytics-tab px-4 py-2 rounded-md text-sm font-medium transition-colors" data-tab="reports">
+                    Threat Reports
+                </button>
+                <button class="analytics-tab px-4 py-2 rounded-md text-sm font-medium transition-colors" data-tab="intelligence">
+                    Threat Intelligence
+                </button>
+            </div>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview-tab" class="tab-content">
+            <!-- Advanced Analytics Dashboard -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                <!-- Threat Trend Analysis -->
+                <div class="xl:col-span-2 analytics-card rounded-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold text-cyber-blue">Threat Trend Analysis</h3>
+                        <select id="trend-period" class="bg-gray-700 text-white rounded px-3 py-1 text-sm border border-gray-600">
+                            <option value="7d">Last 7 Days</option>
+                            <option value="30d" selected>Last 30 Days</option>
+                            <option value="90d">Last 90 Days</option>
+                            <option value="1y">Last Year</option>
+                        </select>
+                    </div>
+                    <div id="threat-trend-chart" style="height: 350px;"></div>
+                </div>
+
+                <!-- Top Attack Vectors -->
+                <div class="analytics-card rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-cyber-blue mb-6">Top Attack Vectors</h3>
+                    <div id="attack-vectors-chart" style="height: 350px;"></div>
+                </div>
+            </div>
+
+            <!-- Geographic & Asset Analysis -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Geographic Attack Distribution -->
+                <div class="analytics-card rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-cyber-blue mb-6">Geographic Attack Distribution</h3>
+                    <div id="geo-distribution-chart" style="height: 300px;"></div>
+                </div>
+
+                <!-- Asset Risk Assessment -->
+                <div class="analytics-card rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-cyber-blue mb-6">Asset Risk Assessment</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                <span>Critical Assets</span>
+                            </div>
+                            <span class="text-red-400 font-semibold">12</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-orange-500 rounded-full"></div>
+                                <span>High Risk Assets</span>
+                            </div>
+                            <span class="text-orange-400 font-semibold">47</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                <span>Medium Risk Assets</span>
+                            </div>
+                            <span class="text-yellow-400 font-semibold">156</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <span>Low Risk Assets</span>
+                            </div>
+                            <span class="text-green-400 font-semibold">632</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forensic Analysis Tab -->
+        <div id="forensics-tab" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Investigation Timeline -->
+                <div class="lg:col-span-2 analytics-card rounded-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold text-cyber-blue">Investigation Timeline</h3>
+                        <div class="flex items-center space-x-2">
+                            <input type="date" id="forensic-date" class="bg-gray-700 text-white rounded px-3 py-1 text-sm border border-gray-600">
+                            <button onclick="filterTimeline()" class="bg-cyber-blue/20 text-cyber-blue px-3 py-1 rounded text-sm border border-cyber-blue/50">
+                                Filter
+                            </button>
+                        </div>
+                    </div>
+                    <div class="forensic-timeline relative max-h-96 overflow-y-auto">
+                        <!-- Timeline items -->
+                        <div class="timeline-item">
+                            <div class="bg-gray-700/50 p-4 rounded severity-critical">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-red-400 font-semibold">CRITICAL ALERT</span>
+                                    <span class="text-xs text-gray-400">14:32:15</span>
+                                </div>
+                                <p class="text-sm mb-2">Unauthorized access attempt detected on production server</p>
+                                <div class="text-xs text-gray-400">
+                                    Source: 192.168.1.247 | User: admin_backup | Protocol: SSH
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="bg-gray-700/50 p-4 rounded severity-high">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-orange-400 font-semibold">HIGH PRIORITY</span>
+                                    <span class="text-xs text-gray-400">14:28:42</span>
+                                </div>
+                                <p class="text-sm mb-2">Multiple failed login attempts detected</p>
+                                <div class="text-xs text-gray-400">
+                                    Source: 192.168.1.247 | Attempts: 15 | Target: root
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evidence Collection -->
+                <div class="analytics-card rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-cyber-blue mb-6">Evidence Collection</h3>
+                    <div class="space-y-4">
+                        <div class="p-3 bg-gray-700/50 rounded">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">Log Files</span>
+                                <i class="ri-file-text-line text-cyber-blue"></i>
+                            </div>
+                            <div class="text-xs text-gray-400">247 entries collected</div>
+                        </div>
+                        <div class="p-3 bg-gray-700/50 rounded">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">Network Packets</span>
+                                <i class="ri-network-line text-cyber-green"></i>
+                            </div>
+                            <div class="text-xs text-gray-400">1.2GB captured</div>
+                        </div>
+                        <button onclick="generateForensicReport()" class="w-full bg-cyber-blue/20 text-cyber-blue py-2 rounded border border-cyber-blue/50 hover:bg-cyber-blue/30 transition-colors text-sm">
+                            Generate Forensic Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Threat Reports Tab -->
+        <div id="reports-tab" class="tab-content hidden">
+            <div class="analytics-card rounded-lg p-6">
+                <h3 class="text-xl font-bold text-cyber-blue mb-6">Threat Intelligence Reports</h3>
+                <div class="space-y-4">
+                    <div class="p-4 bg-gray-700/50 rounded border border-gray-600">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-cyber-blue">Weekly Security Assessment</h4>
+                                <p class="text-sm text-gray-400">Comprehensive analysis of security posture</p>
+                            </div>
+                            <button class="text-cyber-blue hover:text-cyan-300">
+                                <i class="ri-download-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-gray-700/50 rounded border border-gray-600">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-cyber-blue">Incident Response Summary</h4>
+                                <p class="text-sm text-gray-400">Analysis of recent security incidents</p>
+                            </div>
+                            <button class="text-cyber-blue hover:text-cyan-300">
+                                <i class="ri-download-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Threat Intelligence Tab -->
+        <div id="intelligence-tab" class="tab-content hidden">
+            <div class="analytics-card rounded-lg p-6">
+                <h3 class="text-xl font-bold text-cyber-blue mb-6">Indicators of Compromise (IOCs)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-gray-700/50 rounded text-center">
+                        <div class="text-2xl font-bold text-red-400">1,247</div>
+                        <div class="text-sm text-gray-400">Malicious IPs</div>
+                    </div>
+                    <div class="p-4 bg-gray-700/50 rounded text-center">
+                        <div class="text-2xl font-bold text-orange-400">3,892</div>
+                        <div class="text-sm text-gray-400">File Hashes</div>
+                    </div>
+                    <div class="p-4 bg-gray-700/50 rounded text-center">
+                        <div class="text-2xl font-bold text-yellow-400">756</div>
+                        <div class="text-sm text-gray-400">Malicious Domains</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/siem-manager.js"></script>
+    <script>
+        // Initialize Analytics
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAuth();
+            initializeSIEMAnalytics();
+            setupTabNavigation();
+            setupMobileMenu();
+            initializeSecureNavigation();
+        });
+
+        function initializeAuth() {
+            if (window.cyberGuardAuth) {
+                const userInfo = document.getElementById('user-info');
+                
+                if (window.cyberGuardAuth.isAuthenticated()) {
+                    const user = window.cyberGuardAuth.getCurrentUser();
+                    if (userInfo) {
+                        userInfo.innerHTML = `
+                            <div class="flex items-center space-x-3">
+                                <span>Welcome, ${user.fullname}</span>
+                                <button onclick="window.cyberGuardAuth.logout()" class="text-red-400 hover:text-red-300 text-sm">
+                                    <i class="ri-logout-line"></i> Logout
+                                </button>
+                            </div>
+                        `;
+                    }
+                } else {
+                    if (userInfo) {
+                        userInfo.innerHTML = `
+                            <a href="login.html" class="bg-cyber-blue/20 text-cyber-blue px-3 py-1 rounded text-sm border border-cyber-blue/50 hover:bg-cyber-blue/30 transition-colors">
+                                Login
+                            </a>
+                        `;
+                    }
+                }
+            }
+        }
+
+        function setupTabNavigation() {
+            const tabs = document.querySelectorAll('.analytics-tab');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active', 'bg-cyber-blue', 'text-white'));
+                    contents.forEach(c => c.classList.add('hidden'));
+
+                    // Add active class to clicked tab
+                    tab.classList.add('active', 'bg-cyber-blue', 'text-white');
+
+                    // Show corresponding content
+                    const targetTab = tab.getAttribute('data-tab');
+                    document.getElementById(targetTab + '-tab').classList.remove('hidden');
+                });
+            });
+        }
+
+        function setupMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    if (mobileMenu.classList.contains('hidden')) {
+                        icon.classList.remove('ri-close-line');
+                        icon.classList.add('ri-menu-line');
+                    } else {
+                        icon.classList.remove('ri-menu-line');
+                        icon.classList.add('ri-close-line');
+                    }
+                });
+            }
+        }
+
+        function initializeSecureNavigation() {
+            // Define secure navigation mapping for SIEM
+            const navigationMap = {
+                'siem-dashboard': 'siem-dashboard.html',
+                'analytics': 'siem-analytics.html',
+                'incident-report': 'incident-report.html', 
+                'portal': 'index.html'
+            };
+            
+            // Add click handlers to all navigation links
+            const navLinks = document.querySelectorAll('[data-nav]');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const navTarget = this.getAttribute('data-nav');
+                    const destination = navigationMap[navTarget];
+                    
+                    if (!destination) {
+                        console.warn('Navigation target not found:', navTarget);
+                        return;
+                    }
+                    
+                    // Navigate to page
+                    window.location.href = destination;
+                });
+                
+                // Prevent right-click context menu that might expose navigation
+                link.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                });
+                
+                // Prevent dragging that might expose URLs
+                link.addEventListener('dragstart', function(e) {
+                    e.preventDefault();
+                });
+            });
+        }
+
+        function exportReport() {
+            alert('Report export functionality - would generate PDF/CSV reports in production');
+        }
+
+        function scheduledReports() {
+            alert('Scheduled reports configuration - would open scheduling interface in production');
+        }
+
+        function filterTimeline() {
+            alert('Timeline filtering functionality - would filter events by date in production');
+        }
+
+        function generateForensicReport() {
+            alert('Forensic report generation - would compile evidence and analysis in production');
+        }
+    </script>
+</body>
+</html>

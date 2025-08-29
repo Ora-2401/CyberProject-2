@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard - Cyber Hygiene Activity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link href="common.css" rel="stylesheet">
+    
+    <script src="js/auth.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo">CyberGuard</a>
+            
+            <nav style="display: flex; align-items: center; gap: 20px;">
+                <div class="nav-menu" style="display: flex; gap: 15px; align-items: center;">
+                    <a href="phishing-training.html" style="color: var(--gray); text-decoration: none; padding: 8px 12px; border-radius: 6px; transition: all 0.3s ease;">Phishing</a>
+                    <a href="ransomware-simulation.html" style="color: var(--gray); text-decoration: none; padding: 8px 12px; border-radius: 6px; transition: all 0.3s ease;">Ransomware</a>
+                    <a href="security-quiz.html" style="color: var(--gray); text-decoration: none; padding: 8px 12px; border-radius: 6px; transition: all 0.3s ease;">Quiz</a>
+                    
+                    <div style="display: flex; align-items: center; gap: 10px; margin-left: 20px; padding-left: 20px; border-left: 1px solid rgba(255, 255, 255, 0.2);">
+                        <span style="color: var(--gray); font-size: 0.9rem;">Progress:</span>
+                        <div style="width: 60px; height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden;">
+                            <div id="header-progress" style="height: 100%; background: var(--hygiene-primary); width: 0%; transition: width 0.5s ease;"></div>
+                        </div>
+                        <span id="header-progress-text" style="color: var(--hygiene-primary); font-size: 0.9rem; font-weight: 600;">0%</span>
+                    </div>
+                    
+                    <div class="quick-actions" style="display: flex; gap: 10px; margin-left: 20px;">
+                        <button onclick="exportProgress()" class="action-btn" title="Export Progress" style="
+                            background: rgba(255, 255, 255, 0.1);
+                            border: none;
+                            color: white;
+                            padding: 8px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        ">
+                            <i class="ri-download-line"></i>
+                        </button>
+                        <button onclick="openReviewPage()" class="action-btn" title="Review Tips" style="
+                            background: rgba(255, 255, 255, 0.1);
+                            border: none;
+                            color: white;
+                            padding: 8px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        ">
+                            <i class="ri-book-open-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+            
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="user-info" id="user-info" style="color: var(--gray); font-size: 0.9rem;"></div>
+                <a href="hygiene-hub.html" class="back-btn">
+                    <i class="ri-arrow-left-line"></i> Back to Hub
+                </a>
+            </div>
+        </header>
+        
+        <!-- Dynamic Content Section -->
+        <div class="content-section">
+            <h2 class="section-title" id="activity-title">
+                <!-- Dynamically populated based on topic parameter -->
+            </h2>
+            
+            <div id="activity-content">
+                <!-- Dynamically populated content including description and tip boxes -->
+            </div>
+            
+            <div id="interactive-widget">
+                <!-- Dynamically populated interactive widget based on topic -->
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="hygiene-hub.html" class="btn btn-secondary">
+                <i class="ri-arrow-left-line"></i> Back to Hub
+            </a>
+            <button class="btn" onclick="openReviewPage()">
+                <i class="ri-eye-line"></i> Review Tips
+            </button>
+            <button class="btn" onclick="markModuleComplete()" id="complete-btn">
+                <i class="ri-check-line"></i> Mark as Complete
+            </button>
+        </div>
+        
+        <div class="notification" id="notification"></div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2024 CyberGuard Security Training. All rights reserved.</p>
+        <p>Protecting organizations through cybersecurity awareness and training.</p>
+    </footer>
+
+    <script src="hygiene-script.js"></script>
+</body>
+</html>

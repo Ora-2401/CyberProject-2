@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard - Phishing Awareness Training</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --secondary: #dc2626;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 2rem;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .back-btn i {
+            margin-right: 8px;
+        }
+        
+        .module-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .module-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .training-parts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+        
+        .part-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .part-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            border-color: var(--primary);
+        }
+        
+        .part-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            margin: 0 auto 20px auto;
+        }
+        
+        .part-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--light);
+        }
+        
+        .part-card p {
+            color: var(--gray);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .part-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .part-features span {
+            text-align: left;
+        }
+        
+        .part-card .btn {
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .module-header p {
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .user-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: var(--gray);
+            z-index: 1000;
+        }
+        
+        .user-info.authenticated {
+            color: var(--success);
+        }
+        
+        .engagement-tracker {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: var(--gray);
+            max-width: 250px;
+            z-index: 1000;
+        }
+        
+        .engagement-tracker h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .engagement-metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 70px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .module-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="phishing">
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo">CyberGuard</a>
+            <a href="index.html" class="back-btn">
+                <i class="ri-arrow-left-line"></i> Back to Dashboard
+            </a>
+        </header>
+        
+        <div class="module-header">
+            <h1>Phishing Awareness Training</h1>
+            <p>This training has been restructured into two comprehensive parts for better learning experience.</p>
+            
+            <div class="training-parts">
+                <div class="part-card" onclick="window.location.href='phishing-training-part1.html'">
+                    <div class="part-number">Part 1</div>
+                    <h3>Learning & Theory</h3>
+                    <p>Understand phishing concepts, tactics, and prevention strategies</p>
+                    <div class="part-features">
+                        <span>• Knowledge checkpoints</span>
+                        <span>• Interactive learning</span>
+                        <span>• Real-world examples</span>
+                    </div>
+                    <button class="btn btn-primary">Start Part 1</button>
+                </div>
+                
+                <div class="part-card" onclick="window.location.href='phishing-training-part2.html'">
+                    <div class="part-number">Part 2</div>
+                    <h3>Practice & Assessment</h3>
+                    <p>Apply your knowledge with email simulations and earn your certificate</p>
+                    <div class="part-features">
+                        <span>• Email simulators</span>
+                        <span>• Interactive quiz</span>
+                        <span>• Completion certificate</span>
+                    </div>
+                    <button class="btn btn-secondary">Start Part 2</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center" style="margin: 50px 0;">
+            <h3 style="color: var(--gray); margin-bottom: 20px;">Training Flow</h3>
+            <p style="color: var(--gray);">Complete Part 1 first to understand the concepts, then move to Part 2 for hands-on practice and certification.</p>
+        </div>
+    </div>
+    
+    <!-- User Info -->
+    <div class="user-info" id="userInfo">
+        <i class="ri-user-line"></i> Not Signed In
+    </div>
+    
+    <!-- Real-time Engagement Tracker -->
+    <div class="engagement-tracker" id="engagementTracker">
+        <h4><i class="ri-dashboard-line"></i> Session Stats</h4>
+        <div class="engagement-metric">
+            <span>Time Spent:</span>
+            <span id="timeSpent">0:00</span>
+        </div>
+        <div class="engagement-metric">
+            <span>Interactions:</span>
+            <span id="interactionCount">0</span>
+        </div>
+        <div class="engagement-metric">
+            <span>Focus Score:</span>
+            <span id="focusScore">100%</span>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2024 CyberGuard Security Training. All rights reserved.</p>
+        <p>Protecting organizations through cybersecurity awareness and training.</p>
+    </footer>
+
+    <script>
+        // Simplified Engagement Tracker for Overview Page
+        class OverviewTracker {
+            constructor() {
+                this.sessionId = this.generateSessionId();
+                this.startTime = Date.now();
+                this.currentUser = null;
+                this.sessionData = {
+                    interactions: [],
+                    timeSpent: 0,
+                    focusEvents: []
+                };
+                this.engagementMetrics = {
+                    totalTime: 0,
+                    activeTime: 0,
+                    tabSwitches: 0
+                };
+                this.lastActivity = Date.now();
+                this.isActive = true;
+                this.init();
+            }
+            
+            generateSessionId() {
+                return 'overview_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.startSessionTracking();
+            }
+            
+            setupEventListeners() {
+                document.addEventListener('click', (e) => this.trackInteraction('click', e));
+                document.addEventListener('scroll', (e) => this.trackInteraction('scroll', e));
+                window.addEventListener('focus', () => this.handleFocus());
+                window.addEventListener('blur', () => this.handleBlur());
+                window.addEventListener('beforeunload', () => this.saveSessionData());
+            }
+            
+            trackInteraction(type, event) {
+                const interaction = {
+                    type: type,
+                    timestamp: Date.now(),
+                    element: event.target.tagName,
+                    sessionTime: Date.now() - this.startTime
+                };
+                
+                this.sessionData.interactions.push(interaction);
+                this.lastActivity = Date.now();
+                this.updateEngagementDisplay();
+            }
+            
+            handleFocus() {
+                this.isActive = true;
+                this.sessionData.focusEvents.push({ type: 'focus', timestamp: Date.now() });
+            }
+            
+            handleBlur() {
+                this.isActive = false;
+                this.engagementMetrics.tabSwitches++;
+                this.sessionData.focusEvents.push({ type: 'blur', timestamp: Date.now() });
+            }
+            
+            startSessionTracking() {
+                setInterval(() => {
+                    this.updateSessionMetrics();
+                    this.updateEngagementDisplay();
+                }, 1000);
+            }
+            
+            updateSessionMetrics() {
+                this.sessionData.timeSpent = Date.now() - this.startTime;
+                if (this.isActive) {
+                    this.engagementMetrics.activeTime += 1000;
+                }
+                this.engagementMetrics.totalTime = this.sessionData.timeSpent;
+            }
+            
+            updateEngagementDisplay() {
+                const timeSpentElement = document.getElementById('timeSpent');
+                const interactionCountElement = document.getElementById('interactionCount');
+                const focusScoreElement = document.getElementById('focusScore');
+                
+                if (timeSpentElement) {
+                    const minutes = Math.floor(this.sessionData.timeSpent / 60000);
+                    const seconds = Math.floor((this.sessionData.timeSpent % 60000) / 1000);
+                    timeSpentElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+                
+                if (interactionCountElement) {
+                    interactionCountElement.textContent = this.sessionData.interactions.length;
+                }
+                
+                if (focusScoreElement) {
+                    const focusPercentage = this.engagementMetrics.totalTime > 0 ? 
+                        Math.round((this.engagementMetrics.activeTime / this.engagementMetrics.totalTime) * 100) : 100;
+                    focusScoreElement.textContent = `${focusPercentage}%`;
+                }
+            }
+            
+            saveSessionData() {
+                const sessionData = {
+                    sessionId: this.sessionId,
+                    userId: this.currentUser?.email || 'anonymous',
+                    startTime: this.startTime,
+                    endTime: Date.now(),
+                    ...this.sessionData,
+                    engagementMetrics: this.engagementMetrics
+                };
+                
+                const existingData = JSON.parse(localStorage.getItem('overview_sessions') || '[]');
+                existingData.push(sessionData);
+                
+                if (existingData.length > 50) {
+                    existingData.splice(0, existingData.length - 50);
+                }
+                
+                localStorage.setItem('overview_sessions', JSON.stringify(existingData));
+            }
+        }
+        
+        let overviewTracker;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            overviewTracker = new OverviewTracker();
+            
+            // Check if auth system exists
+            const checkAuthSystem = () => {
+                if (typeof window.cyberGuardAuth !== 'undefined') {
+                    updateUserInfo();
+                    
+                    if (window.cyberGuardAuth && window.cyberGuardAuth.isAuthenticated()) {
+                        const user = window.cyberGuardAuth.getCurrentUser();
+                        overviewTracker.currentUser = user;
+                    }
+                } else {
+                    setTimeout(checkAuthSystem, 100);
+                }
+            };
+            
+            checkAuthSystem();
+        });
+        
+        function updateUserInfo() {
+            const userInfoElement = document.getElementById('userInfo');
+            if (!userInfoElement) return;
+            
+            if (window.cyberGuardAuth && window.cyberGuardAuth.isAuthenticated()) {
+                const user = window.cyberGuardAuth.getCurrentUser();
+                userInfoElement.innerHTML = `<i class="ri-user-3-line"></i> ${user.fullname}`;
+                userInfoElement.classList.add('authenticated');
+            } else {
+                userInfoElement.innerHTML = '<i class="ri-user-line"></i> Not Signed In';
+                userInfoElement.classList.remove('authenticated');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard - Ransomware Simulation</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af',
+                        secondary: '#dc2626'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --secondary: #dc2626;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero-bg {
+            background-image: url('https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .module-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .progress-container {
+            margin-bottom: 25px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #ef4444, #b91c1c);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .simulation-container {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .step.active {
+            display: block;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .step-dot.active {
+            background-color: #ef4444;
+        }
+        
+        .simulation-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            color: white;
+            margin: 15px 0;
+        }
+        
+        .simulation-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .simulation-btn i {
+            margin-right: 8px;
+        }
+        
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.3);
+            border-left: 4px solid #10b981;
+        }
+        
+        .quiz-option.incorrect {
+            background: rgba(239, 68, 68, 0.3);
+            border-left: 4px solid #ef4444;
+        }
+        
+        .simulation-result {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            border-radius: 15px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .training-modules {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-title h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="fixed top-0 left-0 right-0 bg-slate-900 text-white z-50 shadow-lg">
+        <div class="w-full px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-8">
+                    <div class="text-2xl font-['Pacifico'] text-white">CyberGuard</div>
+                    <nav class="hidden lg:flex space-x-8">
+                        <a href="index.html" class="hover:text-blue-300 transition-colors">Home</a>
+                        <a href="#about" class="hover:text-blue-300 transition-colors">About</a>
+                        <a href="#training" class="hover:text-blue-300 transition-colors">Training</a>
+                        <a href="#threats" class="hover:text-blue-300 transition-colors">Threat Intel</a>
+                        <a href="#resources" class="hover:text-blue-300 transition-colors">Resources</a>
+                        <a href="#contact" class="hover:text-blue-300 transition-colors">Contact</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="report-incident-btn"
+                        class="bg-secondary text-white px-6 py-2 !rounded-button hover:bg-red-700 transition-colors whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center inline-block mr-2">
+                            <i class="ri-alarm-warning-line"></i>
+                        </div>
+                        Report Incident
+                    </button>
+                    <button class="lg:hidden text-white" id="mobile-menu-btn">
+                        <div class="w-6 h-6 flex items-center justify-center">
+                            <i class="ri-menu-line"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="lg:hidden bg-slate-800 hidden" id="mobile-menu">
+            <div class="px-6 py-4 space-y-4">
+                <a href="index.html" class="block hover:text-blue-300">Home</a>
+                <a href="#about" class="block hover:text-blue-300">About</a>
+                <a href="#training" class="block hover:text-blue-300">Training</a>
+                <a href="#threats" class="block hover:text-blue-300">Threat Intel</a>
+                <a href="#resources" class="block hover:text-blue-300">Resources</a>
+                <a href="#contact" class="block hover:text-blue-300">Contact</a>
+            </div>
+        </div>
+    </header>
+
+    <section id="hero" class="hero-bg pt-32 pb-20 flex items-center relative">
+        <div class="absolute inset-0 bg-slate-900 bg-opacity-80"></div>
+        <div class="container relative z-10">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                    Ransomware Attack Simulation
+                </h1>
+                <p class="text-xl mb-8 text-gray-200 max-w-3xl mx-auto leading-relaxed">
+                    Experience a controlled ransomware scenario to understand attack vectors, recognize threats, and learn prevention strategies.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button id="start-simulation"
+                        class="bg-secondary text-white px-8 py-4 !rounded-button hover:bg-red-700 transition-colors text-lg font-semibold whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center inline-block mr-2">
+                            <i class="ri-play-circle-line"></i>
+                        </div>
+                        Start Simulation
+                    </button>
+                    <a href="#resources" class="inline-block">
+                        <button
+                            class="border-2 border-white text-white px-8 py-4 !rounded-button hover:bg-white hover:text-slate-900 transition-colors text-lg font-semibold whitespace-nowrap">
+                            <div class="w-5 h-5 flex items-center justify-center inline-block mr-2">
+                                <i class="ri-download-line"></i>
+                            </div>
+                            Download Resources
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="training" class="py-16">
+        <div class="container">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Ransomware Simulation Training</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Learn through a realistic, step-by-step ransomware scenario to understand how attacks unfold and how to prevent them.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="module-card">
+                    <div class="p-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-700 rounded-xl flex items-center justify-center mb-4">
+                            <i class="ri-bug-line text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">How Ransomware Spreads</h3>
+                        <p class="text-gray-300 mb-4">Learn the common infection vectors including phishing emails, malicious downloads, and vulnerable systems.</p>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span>45%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="p-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-700 rounded-xl flex items-center justify-center mb-4">
+                            <i class="ri-shield-cross-line text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Prevention Strategies</h3>
+                        <p class="text-gray-300 mb-4">Discover essential security measures to protect your systems from ransomware attacks.</p>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span>30%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 30%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="p-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-700 rounded-xl flex items-center justify-center mb-4">
+                            <i class="ri-history-line text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Recovery Procedures</h3>
+                        <p class="text-gray-300 mb-4">Learn how to respond effectively if your systems are compromised by ransomware.</p>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span>20%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 20%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="simulation-container">
+                <!-- Real-time Statistics Dashboard -->
+                <div class="bg-slate-800 rounded-xl p-6 mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-center">Simulation Performance Dashboard</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-slate-700 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-yellow-400" id="current-score">0</div>
+                            <div class="text-sm text-gray-300">Current Score</div>
+                        </div>
+                        <div class="bg-slate-700 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-blue-400" id="time-spent">0s</div>
+                            <div class="text-sm text-gray-300">Time Spent</div>
+                        </div>
+                        <div class="bg-slate-700 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-green-400" id="decisions-made">0</div>
+                            <div class="text-sm text-gray-300">Decisions Made</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-indicator">
+                    <div class="step-dot active" data-step="1"></div>
+                    <div class="step-dot" data-step="2"></div>
+                    <div class="step-dot" data-step="3"></div>
+                    <div class="step-dot" data-step="4"></div>
+                    <div class="step-dot" data-step="5"></div>
+                    <div class="step-dot" data-step="6"></div>
+                </div>
+                
+                <div id="step-1" class="step active">
+                    <h3 class="text-2xl font-bold mb-4">Scenario Introduction</h3>
+                    <div class="bg-slate-800 rounded-xl p-6 mb-6">
+                        <p class="mb-4">You are a system administrator at a medium-sized company. It's Monday morning, and you've just received an email that appears to be from your company's HR department regarding a policy update.</p>
+                        <div class="bg-gray-900 p-4 rounded-lg border-l-4 border-red-500">
+                            <div class="flex items-center mb-2">
+                                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10 mr-3"></div>
+                                <div>
+                                    <p class="font-semibold">HR Department &lt;hr@yourcompany.com&gt;</p>
+                                    <p class="text-sm text-gray-400">To: You</p>
+                                </div>
+                            </div>
+                            <p class="font-bold text-lg mb-1">Important: Updated Employee Benefits Policy</p>
+                            <p class="text-gray-300">Dear Employee,</p>
+                            <p class="text-gray-300">Please review the updated employee benefits policy attached to this email. All employees must acknowledge receipt by EOD today.</p>
+                            <p class="text-gray-300 mt-2">Best regards,<br>Human Resources Department</p>
+                            <div class="mt-4 flex items-center">
+                                <i class="ri-attachment-2 mr-2"></i>
+                                <span class="text-sm bg-red-500 text-white px-2 py-1 rounded">Employee_Benefits_Policy.pdf.exe</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-lg mb-6">What do you do?</p>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Opening suspicious attachments is the primary way ransomware spreads. The .exe extension disguised as .pdf is a clear red flag.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>A</span>
+                            </div>
+                            <p>Open the attachment to review the policy</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Forwarding malicious emails spreads the threat to other employees, potentially causing a company-wide infection.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>B</span>
+                            </div>
+                            <p>Forward the email to your colleagues to ensure they see it</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="true" data-explanation="Excellent! Always verify sender authenticity and check file extensions. The .exe extension indicates an executable file, not a PDF document.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>C</span>
+                            </div>
+                            <p>Verify the sender's email address and file extension before taking any action</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Replying to suspicious emails confirms your email is active and may lead to more targeted attacks.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>D</span>
+                            </div>
+                            <p>Reply to the email asking for more information</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="step-2" class="step">
+                    <h3 class="text-2xl font-bold mb-4">The Infection</h3>
+                    <div class="bg-slate-800 rounded-xl p-6 mb-6">
+                        <p class="mb-4">You decided to open the attachment. The file appeared to be a PDF but was actually a disguised executable file. Your computer screen flashes and displays a warning message:</p>
+                        <div class="bg-black p-6 rounded-lg text-center border-2 border-red-500">
+                            <div class="text-4xl text-red-500 mb-4"><i class="ri-lock-fill"></i></div>
+                            <h4 class="text-2xl font-bold text-red-500 mb-2">YOUR FILES HAVE BEEN ENCRYPTED!</h4>
+                            <p class="text-gray-300 mb-4">All your important documents, photos, databases and other files are encrypted.</p>
+                            <p class="text-gray-300 mb-4">To decrypt your files you need to pay 2 Bitcoin within 72 hours.</p>
+                            <p class="text-gray-300">Send payment to: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</p>
+                        </div>
+                    </div>
+                    <p class="text-lg mb-6">What should be your immediate response?</p>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Disconnecting from the network is good, but keeping the computer running allows the ransomware to continue encrypting local files.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>A</span>
+                            </div>
+                            <p>Disconnect from the network but keep the computer running</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="true" data-explanation="Perfect! Immediate isolation prevents network spread and powering off stops local encryption. This is the first and most critical step.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>B</span>
+                            </div>
+                            <p>Immediately disconnect the computer from the network and power it off</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Never negotiate with cybercriminals. Payment doesn't guarantee file recovery and funds criminal operations.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>C</span>
+                            </div>
+                            <p>Contact the attackers to negotiate a lower ransom</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="While searching for decryption tools is good later, immediate containment is the priority to prevent further damage.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>D</span>
+                            </div>
+                            <p>Try to find decryption tools online</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="step-3" class="step">
+                    <h3 class="text-2xl font-bold mb-4">Containment & Analysis</h3>
+                    <div class="bg-slate-800 rounded-xl p-6 mb-6">
+                        <p class="mb-4">You've isolated the infected machine. Now it's time to assess the situation and prevent further spread.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-700 p-4 rounded-lg">
+                                <h4 class="font-bold mb-2">Infected Systems</h4>
+                                <ul class="list-disc pl-5 text-gray-300">
+                                    <li>Workstation-045 (Finance Dept)</li>
+                                    <li>File-Server-02</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-700 p-4 rounded-lg">
+                                <h4 class="font-bold mb-2">Compromised Data</h4>
+                                <ul class="list-disc pl-5 text-gray-300">
+                                    <li>Financial reports</li>
+                                    <li>Employee records</li>
+                                    <li>Client database</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-lg mb-6">What steps should you take to contain the attack?</p>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Scanning only the infected machine misses potential lateral spread. A comprehensive network scan is essential.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>A</span>
+                            </div>
+                            <p>Scan only the infected machine with antivirus software</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="true" data-explanation="Correct! Isolating all potentially affected systems prevents lateral movement and contains the infection.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>B</span>
+                            </div>
+                            <p>Disconnect all potentially affected systems from the network</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Continuing normal operations during an active attack can lead to complete network compromise.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>C</span>
+                            </div>
+                            <p>Continue normal operations while investigating</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="true" data-explanation="Excellent! Verifying backup integrity is crucial for recovery planning. Without clean backups, recovery becomes much more difficult.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>D</span>
+                            </div>
+                            <p>Check if backups are available and intact</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="step-4" class="step">
+                    <h3 class="text-2xl font-bold mb-4">Recovery Process</h3>
+                    <div class="bg-slate-800 rounded-xl p-6 mb-6">
+                        <p class="mb-4">You've contained the infection. Now it's time to recover your systems and data.</p>
+                        <div class="bg-gray-900 p-4 rounded-lg">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h4 class="font-bold">Backup Status</h4>
+                                    <p class="text-sm text-gray-400">Last backup: 24 hours ago</p>
+                                </div>
+                                <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm">Verified</span>
+                            </div>
+                            <p class="mb-3">Available backup points:</p>
+                            <ul class="list-disc pl-5 text-gray-300 mb-4">
+                                <li>Daily backups for past 7 days</li>
+                                <li>Weekly backups for past 4 weeks</li>
+                            </ul>
+                            <div class="flex items-center text-sm">
+                                <i class="ri-alert-line text-yellow-400 mr-2"></i>
+                                <p>Backups were stored on a separate network share</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-lg mb-6">What is the best recovery approach?</p>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Never pay ransoms. It funds criminal activity, doesn't guarantee file recovery, and makes you a target for future attacks.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>A</span>
+                            </div>
+                            <p>Pay the ransom to get the decryption key</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Partial restoration can leave vulnerabilities and doesn't ensure complete system integrity.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>B</span>
+                            </div>
+                            <p>Restore only the most critical files from backup</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="true" data-explanation="Perfect! Complete system restoration from clean backups ensures no malware remnants remain and provides the best recovery outcome.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>C</span>
+                            </div>
+                            <p>Wipe infected systems and restore from clean backups</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Manual decryption is usually impossible with modern ransomware. It's better to rely on proper backup strategies.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>D</span>
+                            </div>
+                            <p>Attempt manual decryption of files</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="step-5" class="step">
+                    <h3 class="text-2xl font-bold mb-4">Post-Incident Analysis & Strengthening</h3>
+                    <div class="bg-slate-800 rounded-xl p-6 mb-6">
+                        <p class="mb-4">After successful recovery, it's crucial to conduct a thorough post-incident analysis and implement stronger defenses.</p>
+                        <div class="bg-gray-900 p-4 rounded-lg mb-4">
+                            <h4 class="font-bold mb-3">Security Assessment Results:</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-red-900 bg-opacity-30 p-3 rounded border-l-4 border-red-500">
+                                    <h5 class="font-semibold text-red-300 mb-2">Vulnerabilities Found:</h5>
+                                    <ul class="text-sm text-gray-300 space-y-1">
+                                        <li>• Outdated email security filters</li>
+                                        <li>• Missing endpoint protection</li>
+                                        <li>• Insufficient user training</li>
+                                        <li>• Delayed security patches</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-green-900 bg-opacity-30 p-3 rounded border-l-4 border-green-500">
+                                    <h5 class="font-semibold text-green-300 mb-2">Recommended Improvements:</h5>
+                                    <ul class="text-sm text-gray-300 space-y-1">
+                                        <li>• Advanced threat detection</li>
+                                        <li>• Multi-factor authentication</li>
+                                        <li>• Regular security training</li>
+                                        <li>• Automated patch management</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-blue-900 bg-opacity-30 p-4 rounded border-l-4 border-blue-500">
+                            <p class="text-sm"><i class="ri-lightbulb-line mr-2"></i><strong>Key Insight:</strong> This attack could have been prevented with proper email filtering and user awareness training.</p>
+                        </div>
+                    </div>
+                    <p class="text-lg mb-6">What should be the organization's top priority moving forward?</p>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="While security tools are important, human awareness is often the first and most critical line of defense.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>A</span>
+                            </div>
+                            <p>Immediately purchase the most expensive security software</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="true" data-explanation="Excellent! Comprehensive security awareness training addresses the human factor, which is often the weakest link in cybersecurity.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>B</span>
+                            </div>
+                            <p>Implement comprehensive security awareness training for all employees</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Restricting internet access may impact productivity. A balanced approach with proper security measures is more effective.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>C</span>
+                            </div>
+                            <p>Restrict all internet access for employees</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-option" data-correct="false" data-explanation="Ignoring the incident means missing valuable learning opportunities and remaining vulnerable to similar attacks.">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-full border-2 border-white mr-3 flex items-center justify-center">
+                                <span>D</span>
+                            </div>
+                            <p>Return to normal operations without any changes</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="step-6" class="step">
+                    <div class="simulation-result text-center py-10">
+                        <div class="w-24 h-24 bg-gradient-to-br from-red-500 to-red-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="ri-medal-line text-white text-4xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-4">Advanced Simulation Complete!</h3>
+                        <div class="bg-slate-800 rounded-xl p-6 mb-6 text-center">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div>
+                                    <div class="text-2xl font-bold text-yellow-400" id="final-score-display">85%</div>
+                                    <div class="text-sm text-gray-300">Final Score</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-blue-400" id="final-time-display">12m</div>
+                                    <div class="text-sm text-gray-300">Completion Time</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-green-400" id="final-decisions-display">15</div>
+                                    <div class="text-sm text-gray-300">Total Decisions</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="max-w-2xl mx-auto bg-slate-800 rounded-xl p-6 mb-8 text-left">
+                            <h4 class="text-xl font-bold mb-4">Advanced Key Takeaways:</h4>
+                            <ul class="list-disc pl-5 space-y-2">
+                                <li>Immediate response is critical - every second counts in containing ransomware</li>
+                                <li>Network isolation prevents lateral movement and limits damage scope</li>
+                                <li>Regular, tested backups stored offline are your best defense against data loss</li>
+                                <li>Employee training significantly reduces the risk of successful phishing attacks</li>
+                                <li>Post-incident analysis helps strengthen defenses against future attacks</li>
+                                <li>Multi-layered security approach provides the most comprehensive protection</li>
+                                <li>Never pay ransoms - it encourages criminal activity and doesn't guarantee recovery</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button id="retry-simulation"
+                                class="bg-secondary text-white px-8 py-3 !rounded-button hover:bg-red-700 transition-colors font-semibold whitespace-nowrap">
+                                <div class="w-5 h-5 flex items-center justify-center inline-block mr-2">
+                                    <i class="ri-restart-line"></i>
+                                </div>
+                                Retry Advanced Simulation
+                            </button>
+                            <button id="download-certificate"
+                                class="border-2 border-white text-white px-8 py-3 !rounded-button hover:bg-white hover:text-slate-900 transition-colors font-semibold whitespace-nowrap">
+                                <div class="w-5 h-5 flex items-center justify-center inline-block mr-2">
+                                    <i class="ri-download-line"></i>
+                                </div>
+                                Download Advanced Certificate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="next-step" class="simulation-btn">
+                    <i class="ri-arrow-right-line"></i> Next Step
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="resources" class="py-16 bg-slate-800">
+        <div class="container">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Ransomware Prevention Resources</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Essential tools and information to protect your organization from ransomware attacks.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-700 rounded-xl p-6">
+                    <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mb-4">
+                        <i class="ri-file-text-line text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Ransomware Response Checklist</h3>
+                    <p class="text-gray-300 mb-4">Step-by-step guide for responding to ransomware incidents effectively.</p>
+                    <button class="bg-red-600 text-white px-4 py-2 !rounded-button hover:bg-red-700 transition-colors text-sm">
+                        <i class="ri-download-line mr-1"></i> Download PDF
+                    </button>
+                </div>
+                
+                <div class="bg-slate-700 rounded-xl p-6">
+                    <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mb-4">
+                        <i class="ri-shield-check-line text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Backup Best Practices</h3>
+                    <p class="text-gray-300 mb-4">How to implement effective backup strategies that protect against ransomware.</p>
+                    <button class="bg-red-600 text-white px-4 py-2 !rounded-button hover:bg-red-700 transition-colors text-sm">
+                        <i class="ri-download-line mr-1"></i> Download Guide
+                    </button>
+                </div>
+                
+                <div class="bg-slate-700 rounded-xl p-6">
+                    <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mb-4">
+                        <i class="ri-mail-send-line text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Phishing Test Templates</h3>
+                    <p class="text-gray-300 mb-4">Ready-to-use phishing email templates to test employee awareness.</p>
+                    <button class="bg-red-600 text-white px-4 py-2 !rounded-button hover:bg-red-700 transition-colors text-sm">
+                        <i class="ri-download-line mr-1"></i> Download Templates
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="stats" class="py-16">
+        <div class="container">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-6">Ransomware Attack Statistics</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-300">Global ransomware attacks (2023)</span>
+                                <span class="font-bold text-red-400">493.33M</span>
+                            </div>
+                            <div class="w-full bg-slate-700 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 95%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-300">Average ransom payment</span>
+                                <span class="font-bold text-red-400">$1.54M</span>
+                            </div>
+                            <div class="w-full bg-slate-700 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 78%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-300">Businesses paying ransoms</span>
+                                <span class="font-bold text-red-400">76%</span>
+                            </div>
+                            <div class="w-full bg-slate-700 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 76%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-300">Recovery cost without paying ransom</span>
+                                <span class="font-bold text-red-400">$1.4M</span>
+                            </div>
+                            <div class="w-full bg-slate-700 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-2xl font-bold mb-6">Prevention Effectiveness</h3>
+                    <div class="bg-slate-800 rounded-xl p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-300">Security Awareness Training</span>
+                                <span class="font-bold text-green-400">70% reduction</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-300">Multi-factor Authentication</span>
+                                <span class="font-bold text-green-400">99% prevention</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-300">Regular Backups</span>
+                                <span class="font-bold text-green-400">93% recovery</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-300">Email Filtering</span>
+                                <span class="font-bold text-green-400">90% block rate</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-300">Patch Management</span>
+                                <span class="font-bold text-green-400">85% vulnerability reduction</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 text-white py-12">
+        <div class="container">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="text-2xl font-['Pacifico'] text-white mb-4">CyberGuard</div>
+                    <p class="text-gray-300 mb-6">Protecting organizations through comprehensive cybersecurity awareness, training, and incident response capabilities.</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Training Modules</h3>
+                    <ul class="space-y-2">
+                        <li><a href="phishing.html" class="text-gray-300 hover:text-white transition-colors">Phishing Awareness</a></li>
+                        <li><a href="ransomware.html" class="text-gray-300 hover:text-white transition-colors">Ransomware Simulation</a></li>
+                        <li><a href="hygiene.html" class="text-gray-300 hover:text-white transition-colors">Cyber Hygiene</a></li>
+                        <li><a href="quiz.html" class="text-gray-300 hover:text-white transition-colors">Security Quiz</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Security Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Policies & Guidelines</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Threat Intelligence</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Incident Reporting</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Best Practices</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact Security</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="ri-phone-line mt-1 mr-2"></i>
+                            <span>+1 (555) 123-SECURITY</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="ri-mail-line mt-1 mr-2"></i>
+                            <span>security@cyberguard.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="ri-map-pin-line mt-1 mr-2"></i>
+                            <span>1234 Security Blvd, Cyber City</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-800 pt-8 text-center">
+                <p class="text-gray-400">© 2024 CyberGuard. All rights reserved. | Cybersecurity Awareness Portal</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="notification" id="notification">
+        Preparing ransomware simulation...
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Advanced Ransomware Simulation with Authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if global auth system is loaded
+            const checkAuthSystem = () => {
+                if (!window.cyberGuardAuth) {
+                    setTimeout(checkAuthSystem, 100);
+                    return;
+                }
+                
+                if (!window.cyberGuardAuth.isAuthenticated()) {
+                    // Show authentication modal
+                    window.cyberGuardAuth.showAuthModal();
+                    return;
+                }
+                
+                initializeAdvancedSimulation();
+            };
+            
+            checkAuthSystem();
+        });
+        
+        function initializeAdvancedSimulation() {
+            const currentUser = window.cyberGuardAuth.getCurrentUser();
+            console.log(`${currentUser.fullname} started ransomware simulation`);
+            
+            // Advanced simulation state management
+            let simulationState = {
+                currentStep: 1,
+                totalSteps: 6, // Increased from 5 to 6 steps
+                score: 0,
+                maxScore: 100,
+                timeSpent: 0,
+                startTime: Date.now(),
+                decisions: [],
+                detectionAttempts: 0,
+                recoveryActions: [],
+                preventionMeasures: [],
+                isSimulationActive: false
+            };
+            
+            // Load previous progress if available
+            const progress = currentUser.progress || {};
+            if (progress.ransomware) {
+                const savedProgress = progress.ransomware;
+                simulationState.currentStep = Math.min(6, Math.ceil((savedProgress / 100) * 6));
+            }
+            
+            // Advanced progress tracking with detailed analytics
+            function updateProgressTracking(stepCompleted, scoreGained = 0, actionTaken = null) {
+                simulationState.score += scoreGained;
+                simulationState.timeSpent = Date.now() - simulationState.startTime;
+                
+                if (actionTaken) {
+                    simulationState.decisions.push({
+                        step: stepCompleted,
+                        action: actionTaken,
+                        timestamp: Date.now(),
+                        scoreGained: scoreGained
+                    });
+                }
+                
+                const progressPercentage = Math.round((stepCompleted / simulationState.totalSteps) * 100);
+                
+                // Update progress bar
+                const progressBar = document.querySelector('.progress-fill');
+                const progressText = document.querySelector('.progress-text');
+                
+                if (progressBar) progressBar.style.width = `${progressPercentage}%`;
+                if (progressText) progressText.textContent = `${progressPercentage}%`;
+                
+                // Save progress using global auth system
+                window.cyberGuardAuth.updateProgress('ransomware', progressPercentage);
+                
+                // Update real-time statistics
+                updateSimulationStats();
+                
+                // Show completion notification
+                if (progressPercentage === 100) {
+                    showAdvancedCompletionNotification();
+                }
+            }
+            
+            function updateSimulationStats() {
+                // Update real-time performance indicators
+                const scoreElement = document.getElementById('current-score');
+                const timeElement = document.getElementById('time-spent');
+                const decisionsElement = document.getElementById('decisions-made');
+                
+                if (scoreElement) scoreElement.textContent = simulationState.score;
+                if (timeElement) timeElement.textContent = Math.round(simulationState.timeSpent / 1000) + 's';
+                if (decisionsElement) decisionsElement.textContent = simulationState.decisions.length;
+            }
+            
+            function showAdvancedCompletionNotification() {
+                const finalScore = Math.round((simulationState.score / simulationState.maxScore) * 100);
+                const timeInMinutes = Math.round(simulationState.timeSpent / 60000);
+                
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-gradient-to-r from-red-600 to-pink-600 text-white p-6 rounded-lg shadow-lg z-50 max-w-sm';
+                notification.innerHTML = `
+                    <div class="flex items-center mb-2">
+                        <i class="ri-shield-check-line text-green-300 text-2xl mr-3"></i>
+                        <h4 class="font-bold text-lg">Simulation Complete!</h4>
+                    </div>
+                    <div class="text-sm space-y-1">
+                        <p>Final Score: <span class="font-bold">${finalScore}%</span></p>
+                        <p>Time: <span class="font-bold">${timeInMinutes} minutes</span></p>
+                        <p>Decisions: <span class="font-bold">${simulationState.decisions.length}</span></p>
+                    </div>
+                    <p class="text-sm opacity-90 mt-2">Ransomware Simulation Training completed!</p>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 8000);
+                
+                // Check for achievements
+                window.cyberGuardAuth.checkAchievements('ransomware', finalScore);
+            }
+            
+            // Enhanced step navigation with validation
+            function navigateToStep(stepNumber, validatePrevious = true) {
+                if (validatePrevious && stepNumber > simulationState.currentStep + 1) {
+                    showNotification('Please complete the current step first.', 'warning');
+                    return;
+                }
+                
+                // Hide current step
+                document.querySelector('.step.active')?.classList.remove('active');
+                
+                // Show new step
+                const newStep = document.getElementById(`step-${stepNumber}`);
+                if (newStep) {
+                    newStep.classList.add('active');
+                    simulationState.currentStep = stepNumber;
+                    updateStepIndicators();
+                    
+                    // Update next button visibility
+                    const nextBtn = document.getElementById('next-step');
+                    if (nextBtn) {
+                        if (stepNumber === simulationState.totalSteps) {
+                            nextBtn.style.display = 'none';
+                        } else {
+                            nextBtn.style.display = 'block';
+                            nextBtn.textContent = stepNumber === simulationState.totalSteps - 1 ? 'Complete Simulation' : 'Next Step';
+                        }
+                    }
+                }
+            }
+            
+            function updateStepIndicators() {
+                const indicators = document.querySelectorAll('.step-dot');
+                indicators.forEach((dot, index) => {
+                    if (index + 1 <= simulationState.currentStep) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            function showAdvancedNotification(message, type = 'info', duration = 3000, additionalData = null) {
+                // Create enhanced notification system
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-full mx-4';
+                
+                const colors = {
+                    'info': 'bg-blue-600 border-blue-500',
+                    'success': 'bg-green-600 border-green-500',
+                    'warning': 'bg-yellow-600 border-yellow-500',
+                    'error': 'bg-red-600 border-red-500',
+                    'critical': 'bg-red-800 border-red-700'
+                };
+                
+                const icons = {
+                    'info': 'ri-information-line',
+                    'success': 'ri-check-circle-line',
+                    'warning': 'ri-alert-line',
+                    'error': 'ri-close-circle-line',
+                    'critical': 'ri-alarm-warning-line'
+                };
+                
+                notification.innerHTML = `
+                    <div class="${colors[type] || colors.info} text-white p-4 rounded-lg shadow-lg border-l-4 transform -translate-y-full transition-all duration-300">
+                        <div class="flex items-start">
+                            <i class="${icons[type] || icons.info} text-xl mr-3 mt-0.5"></i>
+                            <div class="flex-1">
+                                <p class="font-medium">${message}</p>
+                                ${additionalData ? `<p class="text-sm mt-1 opacity-90">${additionalData}</p>` : ''}
+                            </div>
+                            <button onclick="this.closest('.fixed').remove()" class="ml-2 text-white hover:text-gray-200">
+                                <i class="ri-close-line text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Slide down animation
+                setTimeout(() => {
+                    notification.querySelector('div').style.transform = 'translateY(0)';
+                }, 100);
+                
+                // Auto-remove
+                setTimeout(() => {
+                    const inner = notification.querySelector('div');
+                    inner.style.transform = 'translateY(-100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }, duration);
+            }
+            
+            // Advanced quiz handling with real-time threat simulation
+            function handleQuizSelection(option, isCorrect, explanation) {
+                // Prevent multiple selections
+                if (option.classList.contains('selected')) return;
+                
+                // Remove previous selections
+                document.querySelectorAll('.quiz-option').forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect', 'selected');
+                });
+                
+                // Mark selected option
+                option.classList.add('selected');
+                option.classList.add(isCorrect ? 'correct' : 'incorrect');
+                
+                // Advanced scoring with multiple factors
+                const stepTime = Date.now() - simulationState.startTime;
+                const timeBonus = Math.max(0, 15 - Math.floor(stepTime / 8000)); // Faster response = more points
+                const baseScore = isCorrect ? 20 : 5;
+                const difficultyMultiplier = simulationState.currentStep <= 2 ? 1 : 1.2; // Later steps worth more
+                const scoreGained = Math.round((baseScore + timeBonus) * difficultyMultiplier);
+                
+                // Record detailed decision data
+                const decisionData = {
+                    choice: option.textContent.trim(),
+                    correct: isCorrect,
+                    explanation: explanation,
+                    responseTime: stepTime,
+                    step: simulationState.currentStep,
+                    threatImpact: calculateThreatImpact(isCorrect, simulationState.currentStep)
+                };
+                
+                // Show immersive feedback with threat simulation
+                showAdvancedFeedback(isCorrect, explanation, scoreGained, decisionData);
+                
+                // Update progress with threat impact
+                updateProgressTracking(simulationState.currentStep, scoreGained, decisionData, decisionData.threatImpact);
+                
+                // Simulate network effects based on decision
+                simulateNetworkEffects(decisionData);
+                
+                // Enable next step with delay for impact
+                setTimeout(() => {
+                    enableNextStep();
+                }, 2000);
+            }
+            
+            function calculateThreatImpact(isCorrect, step) {
+                if (isCorrect) {
+                    return { type: 'CONTAINED', severity: 0, description: 'Threat successfully mitigated' };
+                }
+                
+                const impacts = {
+                    1: { type: 'INFECTION', severity: 40, description: 'Malware executed, system compromised' },
+                    2: { type: 'SPREAD', severity: 60, description: 'Lateral movement detected across network' },
+                    3: { type: 'DATA_LOSS', severity: 80, description: 'Critical data encrypted, backups at risk' },
+                    4: { type: 'FINANCIAL', severity: 90, description: 'Ransom paid, encouraging future attacks' },
+                    5: { type: 'REPUTATION', severity: 70, description: 'Security posture weakened' },
+                    6: { type: 'RECURRING', severity: 50, description: 'Vulnerability remains unaddressed' }
+                };
+                
+                return impacts[step] || { type: 'UNKNOWN', severity: 30, description: 'Unidentified threat impact' };
+            }
+            
+            function simulateNetworkEffects(decisionData) {
+                if (!decisionData.correct && decisionData.step <= 3) {
+                    // Show network infection simulation
+                    const networkSim = document.createElement('div');
+                    networkSim.className = 'fixed bottom-4 left-4 bg-red-900 border border-red-500 text-white p-4 rounded-lg z-50 max-w-sm';
+                    networkSim.innerHTML = `
+                        <div class="flex items-center mb-2">
+                            <div class="animate-pulse w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                            <h4 class="font-bold text-sm">Network Alert</h4>
+                        </div>
+                        <p class="text-xs mb-2">${decisionData.threatImpact.description}</p>
+                        <div class="text-xs text-red-300">Severity: ${decisionData.threatImpact.severity}%</div>
+                    `;
+                    
+                    document.body.appendChild(networkSim);
+                    
+                    setTimeout(() => {
+                        networkSim.style.transform = 'translateX(-100%)';
+                        setTimeout(() => networkSim.remove(), 300);
+                    }, 4000);
+                }
+            }
+            
+            function showAdvancedFeedback(isCorrect, explanation, scoreGained, decisionData) {
+                const feedbackContainer = document.createElement('div');
+                const bgColor = isCorrect ? 'bg-gradient-to-r from-green-600 to-emerald-600' : 'bg-gradient-to-r from-red-600 to-rose-600';
+                
+                feedbackContainer.className = `fixed bottom-4 right-4 max-w-lg p-5 rounded-xl shadow-2xl z-50 ${bgColor} text-white transform translate-y-full transition-transform duration-300`;
+                
+                const responseTime = Math.round(decisionData.responseTime / 1000);
+                const efficencyRating = responseTime < 10 ? 'Fast' : responseTime < 20 ? 'Moderate' : 'Slow';
+                
+                feedbackContainer.innerHTML = `
+                    <div class="flex items-start mb-3">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full ${isCorrect ? 'bg-green-500' : 'bg-red-500'} flex items-center justify-center mr-4">
+                            <i class="${isCorrect ? 'ri-shield-check-line' : 'ri-alarm-warning-line'} text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg mb-1">${isCorrect ? 'Excellent Decision!' : 'Critical Error!'}</h4>
+                            <p class="text-sm opacity-90 mb-3">${explanation}</p>
+                            
+                            <div class="grid grid-cols-2 gap-3 text-xs">
+                                <div class="bg-white bg-opacity-20 rounded p-2">
+                                    <div class="font-bold">+${scoreGained}</div>
+                                    <div>Points Earned</div>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded p-2">
+                                    <div class="font-bold">${responseTime}s</div>
+                                    <div>Response Time</div>
+                                </div>
+                            </div>
+                            
+                            ${!isCorrect ? `
+                                <div class="mt-3 p-2 bg-red-800 bg-opacity-50 rounded text-xs">
+                                    <strong>Impact:</strong> ${decisionData.threatImpact.description}
+                                </div>
+                            ` : `
+                                <div class="mt-3 p-2 bg-green-800 bg-opacity-50 rounded text-xs">
+                                    <strong>Result:</strong> Threat successfully mitigated
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                    
+                    <div class="text-xs text-center opacity-75">
+                        Response Efficiency: ${efficencyRating} • Step ${decisionData.step} of ${simulationState.totalSteps}
+                    </div>
+                `;
+                
+                document.body.appendChild(feedbackContainer);
+                
+                // Slide up animation
+                setTimeout(() => {
+                    feedbackContainer.style.transform = 'translateY(0)';
+                }, 100);
+                
+                // Auto-remove after delay
+                setTimeout(() => {
+                    feedbackContainer.style.transform = 'translateY(100%)';
+                    setTimeout(() => feedbackContainer.remove(), 300);
+                }, 6000);
+            }
+            
+            function enableNextStep() {
+                const nextBtn = document.getElementById('next-step');
+                if (nextBtn) {
+                    nextBtn.disabled = false;
+                    nextBtn.style.opacity = '1';
+                    nextBtn.style.cursor = 'pointer';
+                    
+                    // Add visual indicator that step is complete
+                    nextBtn.innerHTML = `
+                        <i class="ri-check-line mr-2"></i>
+                        ${simulationState.currentStep === simulationState.totalSteps - 1 ? 'Complete Simulation' : 'Continue to Next Step'}
+                    `;
+                }
+            }
+            
+            // Initialize event listeners
+            initializeEventListeners();
+            
+            function initializeEventListeners() {
+                // Mobile menu toggle
+                const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenuBtn && mobileMenu) {
+                    mobileMenuBtn.addEventListener('click', function() {
+                        mobileMenu.classList.toggle('hidden');
+                    });
+                }
+                
+                // Start simulation button
+                const startBtn = document.getElementById('start-simulation');
+                if (startBtn) {
+                    startBtn.addEventListener('click', function() {
+                        // Check authentication first
+                        if (!window.cyberGuardAuth || !window.cyberGuardAuth.isAuthenticated()) {
+                            window.cyberGuardAuth.showAuthModal();
+                            return;
+                        }
+                        
+                        // Show loading notification
+                        showAdvancedNotification('🚀 Launching Advanced Interactive Simulation...', 'info', 2000);
+                        
+                        // Redirect to advanced simulation page
+                        setTimeout(() => {
+                            window.location.href = 'start-simulation.html';
+                        }, 1000);
+                    });
+                }
+                
+                // Next step button
+                const nextBtn = document.getElementById('next-step');
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', function() {
+                        if (simulationState.currentStep < simulationState.totalSteps) {
+                            navigateToStep(simulationState.currentStep + 1);
+                        }
+                    });
+                }
+                
+                // Retry simulation button
+                const retryBtn = document.getElementById('retry-simulation');
+                if (retryBtn) {
+                    retryBtn.addEventListener('click', function() {
+                        // Reset simulation state
+                        simulationState = {
+                            currentStep: 1,
+                            totalSteps: 6,
+                            score: 0,
+                            maxScore: 100,
+                            timeSpent: 0,
+                            startTime: Date.now(),
+                            decisions: [],
+                            detectionAttempts: 0,
+                            recoveryActions: [],
+                            preventionMeasures: [],
+                            isSimulationActive: true
+                        };
+                        
+                        navigateToStep(1, false);
+                        updateSimulationStats();
+                        showNotification('Simulation restarted', 'info');
+                    });
+                }
+                
+                // Enhanced quiz interaction with advanced analytics
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.quiz-option')) {
+                        const option = e.target.closest('.quiz-option');
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        const explanation = option.getAttribute('data-explanation') || 'No explanation available.';
+                        
+                        // Track click analytics
+                        const clickTime = Date.now();
+                        const stepStartTime = simulationState.startTime;
+                        const responseTime = clickTime - stepStartTime;
+                        
+                        // Add visual feedback immediately
+                        option.style.transform = 'scale(0.98)';
+                        option.style.transition = 'transform 0.1s';
+                        
+                        setTimeout(() => {
+                            option.style.transform = 'scale(1)';
+                            handleQuizSelection(option, isCorrect, explanation);
+                        }, 100);
+                    }
+                });
+                
+                // Add keyboard navigation support
+                document.addEventListener('keydown', function(e) {
+                    if (simulationState.isSimulationActive) {
+                        const options = document.querySelectorAll('.step.active .quiz-option');
+                        if (options.length > 0) {
+                            let selectedIndex = -1;
+                            
+                            // Support A, B, C, D key selection
+                            const keyMap = { '65': 0, '66': 1, '67': 2, '68': 3 }; // A, B, C, D
+                            if (keyMap.hasOwnProperty(e.keyCode)) {
+                                selectedIndex = keyMap[e.keyCode];
+                            }
+                            
+                            if (selectedIndex >= 0 && selectedIndex < options.length) {
+                                e.preventDefault();
+                                options[selectedIndex].click();
+                            }
+                        }
+                        
+                        // Space or Enter to continue
+                        if ((e.keyCode === 32 || e.keyCode === 13) && !document.querySelector('.quiz-option.selected')) {
+                            const nextBtn = document.getElementById('next-step');
+                            if (nextBtn && !nextBtn.disabled) {
+                                e.preventDefault();
+                                nextBtn.click();
+                            }
+                        }
+                    }
+                });
+                
+                // Download certificate button
+                const downloadCertBtn = document.getElementById('download-certificate');
+                if (downloadCertBtn) {
+                    downloadCertBtn.addEventListener('click', function() {
+                        generateSimulationCertificate();
+                    });
+                }
+            }
+            
+            function generateSimulationCertificate() {
+                const finalScore = Math.round((simulationState.score / simulationState.maxScore) * 100);
+                const timeInMinutes = Math.round(simulationState.timeSpent / 60000);
+                const accuracy = Math.round((simulationState.perfectSteps / Math.max(1, simulationState.decisions.length)) * 100);
+                
+                const certificateData = {
+                    userName: currentUser.fullname,
+                    userEmail: currentUser.email,
+                    courseName: 'Advanced Ransomware Simulation Training',
+                    completionDate: new Date().toLocaleDateString(),
+                    score: finalScore,
+                    accuracy: accuracy,
+                    timeSpent: timeInMinutes,
+                    decisions: simulationState.decisions.length,
+                    achievements: simulationState.achievements.length,
+                    threatLevel: simulationState.threatLevel,
+                    performanceRating: getPerformanceRating(finalScore),
+                    certificateId: `CYBER-ADV-RANSOM-${Date.now()}`
+                };
+                
+                const certificateContent = `
+╔════════════════════════════════════════════════════════════════╗
+║                    CYBERGUARD SECURITY TRAINING                ║
+║                     ADVANCED CERTIFICATION                     ║
+╚════════════════════════════════════════════════════════════════╝
+
+🛡️  ADVANCED RANSOMWARE SIMULATION CERTIFICATE  🛡️
+
+This certifies that:
+
+    ${certificateData.userName.toUpperCase()}
+    📧 ${certificateData.userEmail}
+
+has successfully completed the
+
+    ${certificateData.courseName.toUpperCase()}
+
+with ADVANCED proficiency in cybersecurity incident response.
+
+📊 PERFORMANCE METRICS:
+${'─'.repeat(60)}
+🎯 Final Score:           ${certificateData.score}% (${certificateData.performanceRating})
+🎱 Decision Accuracy:     ${certificateData.accuracy}%
+⏱️  Completion Time:      ${certificateData.timeSpent} minutes
+🤔 Decisions Made:        ${certificateData.decisions}
+🏆 Achievements Earned:   ${certificateData.achievements}
+🚨 Final Threat Level:    ${certificateData.threatLevel}
+📅 Completion Date:       ${certificateData.completionDate}
+🔒 Certificate ID:        ${certificateData.certificateId}
+
+🎓 COMPETENCIES DEMONSTRATED:
+${'─'.repeat(60)}
+✅ Advanced threat recognition and analysis
+✅ Rapid incident response decision-making
+✅ Network containment and isolation procedures
+✅ Data recovery and backup management
+✅ Post-incident analysis and improvement
+✅ Multi-layered cybersecurity defense strategies
+✅ Crisis communication and escalation protocols
+
+🌟 ACHIEVEMENT BREAKDOWN:
+${'─'.repeat(60)}
+${simulationState.achievements.map(id => {
+    const achievementNames = {
+        'PERFECT_STEP': '🎯 Perfect Response - Optimal decision under pressure',
+        'SPEED_DEMON': '⚡ Rapid Response - Quick threat identification',
+        'SECURITY_EXPERT': '🧠 Security Expert - Advanced incident handling'
+    };
+    return achievementNames[id] || `🏅 ${id} - Special achievement unlocked`;
+}).join('\n') || '📝 Focus on foundational skills in future training'}
+
+🔐 VALIDATION:
+${'─'.repeat(60)}
+This certificate validates advanced competency in ransomware
+incident response, threat analysis, and cybersecurity best practices.
+Recognized by cybersecurity industry standards.
+
+${'═'.repeat(60)}
+🌐 CyberGuard Advanced Security Training Platform
+📞 Emergency Hotline: +1-800-CYBER-GUARD
+🌍 www.cyberguard.com/advanced-training
+📧 certifications@cyberguard.com
+${'═'.repeat(60)}
+
+⚠️  IMPORTANT: This certificate demonstrates advanced cybersecurity
+    competency. Continue regular training to maintain expertise.
+`;
+                
+                const blob = new Blob([certificateContent], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `CyberGuard-Advanced-Ransomware-Certificate-${currentUser.email.replace('@', '-')}-${Date.now()}.txt`;
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                showAdvancedNotification('🎓 Advanced Certificate Downloaded!', 'success', 4000, `Performance: ${certificateData.performanceRating} | Score: ${finalScore}%`);
+                
+                // Also create a JSON backup of the certification data
+                const jsonData = JSON.stringify(certificateData, null, 2);
+                const jsonBlob = new Blob([jsonData], { type: 'application/json' });
+                const jsonUrl = URL.createObjectURL(jsonBlob);
+                const jsonLink = document.createElement('a');
+                jsonLink.href = jsonUrl;
+                jsonLink.download = `CyberGuard-Certificate-Data-${currentUser.email.replace('@', '-')}.json`;
+                // Uncomment the next line if you want to auto-download the JSON as well
+                // jsonLink.click();
+                URL.revokeObjectURL(jsonUrl);
+            }
+            
+            // Initialize advanced simulation interface
+            updateStepIndicators();
+            updateAdvancedSimulationStats();
+            updateThreatIndicators();
+            
+            // Add keyboard shortcuts help
+            const helpOverlay = document.createElement('div');
+            helpOverlay.className = 'fixed bottom-4 left-4 bg-slate-800 text-white p-3 rounded-lg text-xs opacity-70 z-40';
+            helpOverlay.innerHTML = `
+                <div class="font-bold mb-1">⌨️ Keyboard Shortcuts:</div>
+                <div>A, B, C, D - Select options</div>
+                <div>Space/Enter - Next step</div>
+            `;
+            document.body.appendChild(helpOverlay);
+            
+            // Auto-hide help after 10 seconds
+            setTimeout(() => {
+                helpOverlay.style.opacity = '0';
+                setTimeout(() => helpOverlay.remove(), 300);
+            }, 10000);
+            
+            // Initialize simulation start state
+            showAdvancedNotification('🚀 Advanced Ransomware Simulation Ready', 'info', 3000, 'Click "Start Simulation" to begin comprehensive training');
+        }
+        
+        // Global error handling for simulation
+        window.addEventListener('error', function(e) {
+            console.error('Simulation Error:', e.error);
+            if (typeof showAdvancedNotification === 'function') {
+                showAdvancedNotification('⚠️ Simulation Error Detected', 'error', 5000, 'Please refresh and try again if issues persist.');
+            }
+        });
+        
+        // Prevent accidental page navigation during active simulation
+        window.addEventListener('beforeunload', function(e) {
+            if (window.cyberGuardAuth && window.cyberGuardAuth.isAuthenticated()) {
+                const simulationActive = document.querySelector('.step.active');
+                if (simulationActive) {
+                    e.preventDefault();
+                    e.returnValue = 'Are you sure you want to leave? Your simulation progress will be saved.';
+                    return e.returnValue;
+                }
+            }
+        });
+    </script>
+
+    <script>
+        // Legacy fallback system for non-authenticated users
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if advanced simulation is already initialized
+            if (window.cyberGuardAuth && window.cyberGuardAuth.isAuthenticated()) {
+                // Advanced system is active, skip legacy initialization
+                return;
+            }
+            
+            // Provide basic functionality for non-authenticated users
+            console.log('Initializing legacy ransomware simulation...');
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+            
+            // Simulation navigation
+            let currentStep = 1;
+            const totalSteps = 5;
+            const nextStepBtn = document.getElementById('next-step');
+            const startSimulationBtn = document.getElementById('start-simulation');
+            const retrySimulationBtn = document.getElementById('retry-simulation');
+            
+            // Initialize step indicators
+            updateStepIndicators();
+            
+            // Start simulation
+            if (startSimulationBtn) {
+                startSimulationBtn.addEventListener('click', function() {
+                    const notification = document.getElementById('notification');
+                    notification.textContent = "Starting ransomware simulation...";
+                    notification.classList.add('show');
+                    
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        document.getElementById('step-1').classList.add('active');
+                        startSimulationBtn.textContent = "Restart Simulation";
+                    }, 1500);
+                });
+            }
+            
+            // Next step button
+            if (nextStepBtn) {
+                nextStepBtn.addEventListener('click', function() {
+                    if (currentStep < totalSteps) {
+                        document.getElementById(`step-${currentStep}`).classList.remove('active');
+                        currentStep++;
+                        document.getElementById(`step-${currentStep}`).classList.add('active');
+                        updateStepIndicators();
+                        
+                        if (currentStep === totalSteps) {
+                            nextStepBtn.style.display = 'none';
+                        }
+                    }
+                });
+            }
+            
+            // Retry simulation
+            if (retrySimulationBtn) {
+                retrySimulationBtn.addEventListener('click', function() {
+                    document.getElementById(`step-${currentStep}`).classList.remove('active');
+                    currentStep = 1;
+                    document.getElementById(`step-${currentStep}`).classList.add('active');
+                    nextStepBtn.style.display = 'block';
+                    updateStepIndicators();
+                });
+            }
+            
+            // Quiz option selection
+            const quizOptions = document.querySelectorAll('.quiz-option');
+            quizOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selection from all options
+                    quizOptions.forEach(opt => {
+                        opt.classList.remove('correct', 'incorrect');
+                    });
+                    
+                    // Mark selected option
+                    const isCorrect = this.getAttribute('data-correct') === 'true';
+                    this.classList.add(isCorrect ? 'correct' : 'incorrect');
+                    
+                    // Show feedback
+                    const notification = document.getElementById('notification');
+                    if (isCorrect) {
+                        notification.textContent = "✓ Correct! This is the right action to take.";
+                        notification.style.background = '#10b981';
+                    } else {
+                        notification.textContent = "✗ Incorrect. This action could make the situation worse.";
+                        notification.style.background = '#ef4444';
+                    }
+                    notification.classList.add('show');
+                    
+                    // Auto-hide notification
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                    }, 3000);
+                });
+            });
+            
+            // Update step indicators
+            function updateStepIndicators() {
+                const indicators = document.querySelectorAll('.step-dot');
+                indicators.forEach((dot, index) => {
+                    if (index + 1 <= currentStep) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        const headerHeight = document.querySelector('header').offsetHeight;
+                        const targetPosition = targetElement.offsetTop - headerHeight;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

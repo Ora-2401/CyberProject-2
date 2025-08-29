@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard - Authentication System Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <script src="js/auth.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+            <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
+                <i class="ri-shield-check-line text-green-600 mr-2"></i>
+                CyberGuard Authentication System Test
+            </h1>
+            
+            <!-- Authentication Status -->
+            <div class="mb-8 p-4 rounded-lg" id="auth-status">
+                <h2 class="text-xl font-semibold mb-4">Authentication Status</h2>
+                <div id="auth-info" class="bg-gray-100 p-4 rounded">
+                    <p>Loading authentication status...</p>
+                </div>
+            </div>
+            
+            <!-- User Management Test -->
+            <div class="mb-8 p-4 border rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">User Management Test</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="testCreateUser()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        <i class="ri-user-add-line mr-2"></i>Create Test User
+                    </button>
+                    <button onclick="testLogin()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                        <i class="ri-login-box-line mr-2"></i>Test Login
+                    </button>
+                    <button onclick="testLogout()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                        <i class="ri-logout-box-line mr-2"></i>Test Logout
+                    </button>
+                    <button onclick="showUsers()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                        <i class="ri-team-line mr-2"></i>Show All Users
+                    </button>
+                </div>
+                <div id="user-test-results" class="mt-4 p-3 bg-gray-50 rounded">
+                    <p>Test results will appear here...</p>
+                </div>
+            </div>
+            
+            <!-- Progress Tracking Test -->
+            <div class="mb-8 p-4 border rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">Progress Tracking Test</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <button onclick="testProgress('phishing', 75)" class="bg-blue-500 text-white px-3 py-2 rounded text-sm">
+                        Phishing 75%
+                    </button>
+                    <button onclick="testProgress('hygiene', 90)" class="bg-green-500 text-white px-3 py-2 rounded text-sm">
+                        Hygiene 90%
+                    </button>
+                    <button onclick="testProgress('ransomware', 60)" class="bg-red-500 text-white px-3 py-2 rounded text-sm">
+                        Ransomware 60%
+                    </button>
+                    <button onclick="testProgress('quiz', 850)" class="bg-purple-500 text-white px-3 py-2 rounded text-sm">
+                        Quiz 850pts
+                    </button>
+                </div>
+                <div id="progress-test-results" class="p-3 bg-gray-50 rounded">
+                    <p>Progress test results will appear here...</p>
+                </div>
+            </div>
+            
+            <!-- Leaderboard Test -->
+            <div class="mb-8 p-4 border rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">Leaderboard Test</h2>
+                <button onclick="testLeaderboard()" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 mb-4">
+                    <i class="ri-trophy-line mr-2"></i>Generate Leaderboard
+                </button>
+                <div id="leaderboard-test-results" class="p-3 bg-gray-50 rounded">
+                    <p>Leaderboard test results will appear here...</p>
+                </div>
+            </div>
+            
+            <!-- Achievement System Test -->
+            <div class="mb-8 p-4 border rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">Achievement System Test</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <button onclick="testAchievement('quiz', 950)" class="bg-yellow-500 text-white px-3 py-2 rounded text-sm">
+                        High Score Achievement
+                    </button>
+                    <button onclick="testAchievement('phishing', 100)" class="bg-blue-500 text-white px-3 py-2 rounded text-sm">
+                        Module Complete
+                    </button>
+                    <button onclick="testMultipleAchievements()" class="bg-green-500 text-white px-3 py-2 rounded text-sm">
+                        Multiple Achievements
+                    </button>
+                </div>
+                <div id="achievement-test-results" class="p-3 bg-gray-50 rounded">
+                    <p>Achievement test results will appear here...</p>
+                </div>
+            </div>
+            
+            <!-- Clear Test Data -->
+            <div class="text-center">
+                <button onclick="clearTestData()" class="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700">
+                    <i class="ri-delete-bin-line mr-2"></i>Clear All Test Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testUserCounter = 1;
+        
+        // Initialize test page
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                updateAuthStatus();
+            }, 500);
+        });
+        
+        function updateAuthStatus() {
+            const authInfo = document.getElementById('auth-info');
+            
+            if (!window.cyberGuardAuth) {
+                authInfo.innerHTML = '<p class="text-red-600">❌ Global auth system not loaded</p>';
+                return;
+            }
+            
+            const isAuth = window.cyberGuardAuth.isAuthenticated();
+            const currentUser = window.cyberGuardAuth.getCurrentUser();
+            const allUsers = window.cyberGuardAuth.getAllUsers();
+            
+            authInfo.innerHTML = `
+                <div class="space-y-2">
+                    <p><strong>Auth System Status:</strong> <span class="text-green-600">✅ Loaded</span></p>
+                    <p><strong>Current User:</strong> ${isAuth ? currentUser.fullname + ' (' + currentUser.email + ')' : '❌ Not authenticated'}</p>
+                    <p><strong>Total Users:</strong> ${allUsers.length}</p>
+                    <p><strong>Auth Status:</strong> <span class="${isAuth ? 'text-green-600' : 'text-red-600'}">${isAuth ? '✅ Authenticated' : '❌ Not authenticated'}</span></p>
+                </div>
+            `;
+        }
+        
+        function testCreateUser() {
+            if (!window.cyberGuardAuth) {
+                showResult('user-test-results', '❌ Auth system not loaded', 'error');
+                return;
+            }
+            
+            const userData = {
+                fullname: `Test User ${testUserCounter}`,
+                email: `testuser${testUserCounter}@cyberguard.test`,
+                password: 'testpass123'
+            };
+            
+            const result = window.cyberGuardAuth.register(userData);
+            
+            if (result.success) {
+                testUserCounter++;
+                showResult('user-test-results', `✅ User created: ${userData.fullname} (${userData.email})`, 'success');
+                updateAuthStatus();
+            } else {
+                showResult('user-test-results', `❌ Failed to create user: ${result.message}`, 'error');
+            }
+        }
+        
+        function testLogin() {
+            if (!window.cyberGuardAuth) {
+                showResult('user-test-results', '❌ Auth system not loaded', 'error');
+                return;
+            }
+            
+            // Try to login with the first test user
+            const result = window.cyberGuardAuth.login('testuser1@cyberguard.test', 'testpass123');
+            
+            if (result.success) {
+                showResult('user-test-results', `✅ Login successful: ${result.user.fullname}`, 'success');
+                updateAuthStatus();
+            } else {
+                showResult('user-test-results', `❌ Login failed: ${result.message}`, 'error');
+            }
+        }
+        
+        function testLogout() {
+            if (!window.cyberGuardAuth) {
+                showResult('user-test-results', '❌ Auth system not loaded', 'error');
+                return;
+            }
+            
+            if (window.cyberGuardAuth.isAuthenticated()) {
+                const userName = window.cyberGuardAuth.getCurrentUser().fullname;
+                // Don't use the logout method as it redirects, just clear the session
+                window.cyberGuardAuth.currentUser = null;
+                window.cyberGuardAuth.saveCurrentUser();
+                showResult('user-test-results', `✅ Logout successful for: ${userName}`, 'success');
+                updateAuthStatus();
+            } else {
+                showResult('user-test-results', '❌ No user logged in', 'error');
+            }
+        }
+        
+        function showUsers() {
+            if (!window.cyberGuardAuth) {
+                showResult('user-test-results', '❌ Auth system not loaded', 'error');
+                return;
+            }
+            
+            const users = window.cyberGuardAuth.getAllUsers();
+            let userList = `<strong>All Users (${users.length}):</strong><br>`;
+            
+            if (users.length === 0) {
+                userList += 'No users found.';
+            } else {
+                users.forEach((user, index) => {
+                    userList += `${index + 1}. ${user.fullname} (${user.email})<br>`;
+                });
+            }
+            
+            showResult('user-test-results', userList, 'info');
+        }
+        
+        function testProgress(module, value) {
+            if (!window.cyberGuardAuth) {
+                showResult('progress-test-results', '❌ Auth system not loaded', 'error');
+                return;
+            }
+            
+            if (!window.cyberGuardAuth.isAuthenticated()) {
+                showResult('progress-test-results', '❌ Must be logged in to test progress', 'error');
+                return;
+            }
+            
+            const success = window.cyberGuardAuth.updateProgress(module, value);
+            
+            if (success) {
+                const currentUser = window.cyberGuardAuth.getCurrentUser();
+                showResult('progress-test-results', `✅ Progress updated: ${module} = ${value}${module === 'quiz' ? ' pts' : '%'}`, 'success');
+                
+                // Show current progress
+                setTimeout(() => {
+                    const progressInfo = Object.entries(currentUser.progress || {})
+                        .map(([mod, val]) => `${mod}: ${val}${mod === 'quiz' ? 'pts' : '%'}`)
+                        .join(', ');
+                    showResult('progress-test-results', `Current progress: ${progressInfo}`, 'info');
+                }, 1000);
+            } else {
+                showResult('progress-test-results', `❌ Failed to update progress for ${module}`, 'error');
+            }
+        }
+        
+        function testLeaderboard() {
+            if (!window.cyberGuardAuth) {
+                showResult('leaderboard-test-results', '❌ Auth system not loaded', 'error');
+                return;
+            }
+            
+            const leaderboardData = window.cyberGuardAuth.getLeaderboardData();
+            
+            let leaderboardHTML = `<strong>Leaderboard (${leaderboardData.length} users):</strong><br>`;
+            
+            if (leaderboardData.length === 0) {
+                leaderboardHTML += 'No users with progress found.';
+            } else {
+                leaderboardData.slice(0, 5).forEach((user, index) => {
+                    leaderboardHTML += `${index + 1}. ${user.name} - ${user.score} pts (${user.completion}% complete)<br>`;
+                });
+            }
+            
+            showResult('leaderboard-test-results', leaderboardHTML, 'info');
+        }
+        
+        function testAchievement(module, value) {
+            if (!window.cyberGuardAuth) {
+                showResult('achievement-test-results', '❌ Auth system not loaded', 'error');
+                return;
+            }
+            
+            if (!window.cyberGuardAuth.isAuthenticated()) {
+                showResult('achievement-test-results', '❌ Must be logged in to test achievements', 'error');
+                return;
+            }
+            
+            // Update progress to trigger achievement
+            window.cyberGuardAuth.updateProgress(module, value);
+            window.cyberGuardAuth.checkAchievements(module, value);
+            
+            showResult('achievement-test-results', `✅ Achievement check triggered for ${module} = ${value}`, 'success');
+        }
+        
+        function testMultipleAchievements() {
+            if (!window.cyberGuardAuth.isAuthenticated()) {
+                showResult('achievement-test-results', '❌ Must be logged in to test achievements', 'error');
+                return;
+            }
+            
+            // Complete all modules to trigger multiple achievements
+            window.cyberGuardAuth.updateProgress('phishing', 100);
+            window.cyberGuardAuth.updateProgress('hygiene', 100);
+            window.cyberGuardAuth.updateProgress('ransomware', 100);
+            window.cyberGuardAuth.updateProgress('quiz', 950);
+            
+            window.cyberGuardAuth.checkAchievements('quiz', 950);
+            
+            showResult('achievement-test-results', '✅ Multiple achievements triggered (all modules complete + high quiz score)', 'success');
+        }
+        
+        function clearTestData() {
+            if (confirm('Are you sure you want to clear all test data? This will remove all users and progress.')) {
+                localStorage.removeItem('cyberguard_users');
+                localStorage.removeItem('cyberguard_current_user');
+                
+                // Reinitialize auth system
+                if (window.cyberGuardAuth) {
+                    window.cyberGuardAuth.users = [];
+                    window.cyberGuardAuth.currentUser = null;
+                }
+                
+                testUserCounter = 1;
+                
+                // Clear all result areas
+                ['user-test-results', 'progress-test-results', 'leaderboard-test-results', 'achievement-test-results']
+                    .forEach(id => {
+                        document.getElementById(id).innerHTML = '<p>Test results cleared...</p>';
+                    });
+                
+                updateAuthStatus();
+                
+                alert('✅ All test data cleared successfully!');
+            }
+        }
+        
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            const bgColor = type === 'success' ? 'bg-green-50' : type === 'error' ? 'bg-red-50' : 'bg-blue-50';
+            const textColor = type === 'success' ? 'text-green-800' : type === 'error' ? 'text-red-800' : 'text-blue-800';
+            
+            element.innerHTML = `<div class="${bgColor} ${textColor} p-3 rounded">${message}</div>`;
+        }
+    </script>
+</body>
+</html>

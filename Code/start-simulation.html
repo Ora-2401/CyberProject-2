@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard - Advanced Ransomware Simulation</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .simulation-grid {
+            display: grid;
+            grid-template-areas: 
+                "header header header"
+                "sidebar main progress"
+                "controls main progress";
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: 80px 1fr auto;
+            gap: 10px;
+            padding: 10px;
+            height: 100vh;
+        }
+        
+        .header { grid-area: header; }
+        .sidebar { grid-area: sidebar; }
+        .main-area { grid-area: main; }
+        .controls { grid-area: controls; }
+        .progress-area { grid-area: progress; }
+        
+        .panel {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .threat-indicator {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .network-node {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .infected {
+            background: #ef4444 !important;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+        }
+        
+        .secure {
+            background: #10b981 !important;
+        }
+        
+        @media (max-width: 1024px) {
+            .simulation-grid {
+                grid-template-areas: 
+                    "header"
+                    "main"
+                    "sidebar"
+                    "progress"
+                    "controls";
+                grid-template-columns: 1fr;
+                grid-template-rows: 80px 1fr auto auto auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="simulation-grid">
+        <!-- Header -->
+        <div class="header panel flex items-center justify-between px-6">
+            <div class="flex items-center space-x-4">
+                <button onclick="exitSimulation()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg flex items-center space-x-2">
+                    <i class="ri-arrow-left-line"></i>
+                    <span>Back to Training</span>
+                </button>
+                <h1 class="text-xl font-bold">Advanced Ransomware Simulation</h1>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="text-sm">Step <span id="current-step">1</span> of <span id="total-steps">6</span></div>
+                <div class="w-32 h-2 bg-gray-700 rounded-full">
+                    <div id="progress-bar" class="bg-blue-600 h-full rounded-full transition-all" style="width: 16%"></div>
+                </div>
+                <button onclick="emergencyExit()" class="bg-red-600 hover:bg-red-700 p-2 rounded-lg">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar panel p-4 overflow-y-auto">
+            <h3 class="text-lg font-bold mb-4">Current Objective</h3>
+            <div id="current-objective" class="mb-6">
+                <div class="bg-blue-900 bg-opacity-30 p-3 rounded border-l-4 border-blue-500">
+                    <p class="text-sm">Monitor your email inbox and identify potential security threats. Look for suspicious attachments or phishing attempts.</p>
+                </div>
+            </div>
+            
+            <h4 class="font-semibold mb-2">Instructions</h4>
+            <div id="step-instructions" class="text-sm space-y-2 mb-4">
+                <div class="flex items-start space-x-2">
+                    <span class="text-blue-400">1.</span>
+                    <span>Check the incoming email</span>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <span class="text-blue-400">2.</span>
+                    <span>Analyze the sender and content</span>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <span class="text-blue-400">3.</span>
+                    <span>Make your decision</span>
+                </div>
+            </div>
+            
+            <h4 class="font-semibold mb-2">Tips & Hints</h4>
+            <div class="text-sm bg-green-900 bg-opacity-20 p-3 rounded">
+                <div class="flex items-start space-x-2">
+                    <i class="ri-lightbulb-line text-yellow-400 mt-0.5"></i>
+                    <span>Always verify sender email addresses and be suspicious of unexpected attachments.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Simulation Area -->
+        <div class="main-area panel p-6 overflow-hidden relative">
+            <div id="simulation-screen" class="h-full">
+                <!-- Email Interface -->
+                <div id="email-view" class="h-full">
+                    <div class="bg-gray-900 rounded-lg h-full flex flex-col">
+                        <div class="bg-gray-800 p-4 rounded-t-lg border-b border-gray-700">
+                            <h3 class="text-lg font-semibold">Corporate Email - Inbox</h3>
+                        </div>
+                        <div class="flex-1 p-4 space-y-3">
+                            <div id="email-item" class="bg-red-900 bg-opacity-30 border border-red-500 rounded-lg p-4 cursor-pointer hover:bg-red-900 hover:bg-opacity-50 transition-colors">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <div class="font-semibold text-red-300">HR Department &lt;hr-update@company-portal.net&gt;</div>
+                                        <div class="text-sm text-gray-400">Received: Today, 9:15 AM</div>
+                                    </div>
+                                    <div class="threat-indicator">
+                                        <i class="ri-alert-line text-red-400"></i>
+                                    </div>
+                                </div>
+                                <div class="text-lg font-semibold mb-2">URGENT: Employee Benefits Update Required</div>
+                                <div class="text-sm text-gray-300 mb-2">
+                                    Please download and review the updated benefits policy. Action required by EOD today...
+                                </div>
+                                <div class="flex items-center text-sm">
+                                    <i class="ri-attachment-line mr-1 text-yellow-400"></i>
+                                    <span class="text-yellow-400">Benefits_Policy_2024.pdf.exe</span>
+                                    <span class="ml-2 text-red-400 text-xs">(Suspicious file type!)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Network View (Hidden initially) -->
+                <div id="network-view" class="h-full hidden">
+                    <h3 class="text-xl font-bold mb-4">Network Infrastructure</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 h-5/6">
+                        <div class="network-node secure bg-green-500 rounded-lg p-4 text-center" onclick="inspectNode('workstation1')">
+                            <i class="ri-computer-line text-2xl mb-2"></i>
+                            <div class="text-sm">Workstation 1</div>
+                            <div class="text-xs text-green-200">Secure</div>
+                        </div>
+                        <div class="network-node bg-yellow-500 rounded-lg p-4 text-center" onclick="inspectNode('workstation2')">
+                            <i class="ri-computer-line text-2xl mb-2"></i>
+                            <div class="text-sm">Workstation 2</div>
+                            <div class="text-xs text-yellow-200">At Risk</div>
+                        </div>
+                        <div class="network-node secure bg-green-500 rounded-lg p-4 text-center" onclick="inspectNode('server')">
+                            <i class="ri-server-line text-2xl mb-2"></i>
+                            <div class="text-sm">File Server</div>
+                            <div class="text-xs text-green-200">Protected</div>
+                        </div>
+                        <div class="network-node secure bg-green-500 rounded-lg p-4 text-center" onclick="inspectNode('database')">
+                            <i class="ri-database-line text-2xl mb-2"></i>
+                            <div class="text-sm">Database</div>
+                            <div class="text-xs text-green-200">Backed Up</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Decision Panel -->
+            <div id="decision-panel" class="absolute bottom-4 left-4 right-4 bg-slate-800 rounded-lg p-4 hidden">
+                <h4 class="font-semibold mb-3">What do you do?</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button onclick="makeDecision('open')" class="decision-btn bg-red-600 hover:bg-red-700 p-3 rounded text-left transition-colors">
+                        <div class="font-semibold">Open the attachment</div>
+                        <div class="text-sm opacity-75">Download and execute the file</div>
+                    </button>
+                    <button onclick="makeDecision('verify')" class="decision-btn bg-green-600 hover:bg-green-700 p-3 rounded text-left transition-colors">
+                        <div class="font-semibold">Verify sender first</div>
+                        <div class="text-sm opacity-75">Check with HR department</div>
+                    </button>
+                    <button onclick="makeDecision('delete')" class="decision-btn bg-blue-600 hover:bg-blue-700 p-3 rounded text-left transition-colors">
+                        <div class="font-semibold">Delete the email</div>
+                        <div class="text-sm opacity-75">Mark as spam and delete</div>
+                    </button>
+                    <button onclick="makeDecision('report')" class="decision-btn bg-purple-600 hover:bg-purple-700 p-3 rounded text-left transition-colors">
+                        <div class="font-semibold">Report to IT Security</div>
+                        <div class="text-sm opacity-75">Forward to security team</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls panel p-4">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="font-semibold">Simulation Controls</h4>
+                <button id="start-btn" onclick="startSimulation()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded flex items-center space-x-2">
+                    <i class="ri-play-line"></i>
+                    <span>Start</span>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="text-sm font-semibold mb-2">Timeline</h5>
+                <div id="timeline" class="space-y-1 text-xs bg-gray-900 rounded p-2 h-20 overflow-y-auto">
+                    <div class="text-gray-400">[09:15] Simulation ready</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-area panel p-4">
+            <h4 class="font-semibold mb-4">Progress Tracking</h4>
+            
+            <div class="space-y-3 mb-4">
+                <div class="flex justify-between text-sm">
+                    <span>Completion</span>
+                    <span id="completion-percentage">16%</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div id="completion-bar" class="bg-blue-600 h-2 rounded-full transition-all" style="width: 16%"></div>
+                </div>
+                
+                <div class="flex justify-between text-sm">
+                    <span>Score</span>
+                    <span id="current-score">0/100</span>
+                </div>
+                
+                <div class="flex justify-between text-sm">
+                    <span>Time</span>
+                    <span id="time-spent">0:00</span>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="text-sm font-semibold mb-2">Learning Resources</h5>
+                <div class="space-y-2">
+                    <button onclick="showResource('prevention')" class="w-full text-left bg-gray-800 hover:bg-gray-700 p-2 rounded text-sm">
+                        Prevention Strategies
+                    </button>
+                    <button onclick="showResource('response')" class="w-full text-left bg-gray-800 hover:bg-gray-700 p-2 rounded text-sm">
+                        Response Procedures
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-slate-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <div id="feedback-content"></div>
+            <button onclick="closeFeedback()" class="mt-4 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded w-full">
+                Continue
+            </button>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        let simulationState = {
+            currentStep: 1,
+            totalSteps: 6,
+            isRunning: false,
+            score: 0,
+            startTime: null,
+            decisions: []
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkAuth = () => {
+                if (!window.cyberGuardAuth) {
+                    setTimeout(checkAuth, 100);
+                    return;
+                }
+                
+                if (!window.cyberGuardAuth.isAuthenticated()) {
+                    window.cyberGuardAuth.showAuthModal();
+                    return;
+                }
+                
+                initializeSimulation();
+            };
+            
+            checkAuth();
+        });
+
+        function initializeSimulation() {
+            const currentUser = window.cyberGuardAuth.getCurrentUser();
+            console.log(`${currentUser.fullname} started advanced simulation`);
+            updateProgress();
+        }
+
+        function startSimulation() {
+            simulationState.isRunning = true;
+            simulationState.startTime = Date.now();
+            
+            document.getElementById('start-btn').innerHTML = '<i class="ri-pause-line"></i><span>Running</span>';
+            document.getElementById('start-btn').className = 'bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded flex items-center space-x-2';
+            
+            addTimelineEvent('Simulation started');
+            
+            setTimeout(() => {
+                document.getElementById('decision-panel').classList.remove('hidden');
+                addTimelineEvent('Threat email received');
+            }, 2000);
+            
+            startTimeTracking();
+        }
+
+        function makeDecision(choice) {
+            const decisions = {
+                'open': { score: 0, correct: false, feedback: 'Critical Error! Opening suspicious attachments is the primary way ransomware spreads. This action could compromise the entire network.' },
+                'verify': { score: 25, correct: true, feedback: 'Excellent! Always verify sender authenticity before taking action. This is a fundamental security practice.' },
+                'delete': { score: 15, correct: true, feedback: 'Good choice! Deleting suspicious emails prevents accidental execution and reduces risk.' },
+                'report': { score: 30, correct: true, feedback: 'Perfect! Reporting to IT Security is the best practice for threat handling and helps protect the organization.' }
+            };
+            
+            const result = decisions[choice];
+            simulationState.decisions.push({ choice, result, timestamp: Date.now() });
+            simulationState.score += result.score;
+            
+            showFeedback(result);
+            addTimelineEvent(`Decision: ${choice.charAt(0).toUpperCase() + choice.slice(1)}`);
+            
+            setTimeout(() => {
+                advanceSimulation();
+            }, 3000);
+        }
+
+        function showFeedback(result) {
+            const modal = document.getElementById('feedback-modal');
+            const content = document.getElementById('feedback-content');
+            
+            content.innerHTML = `
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${result.correct ? 'bg-green-600' : 'bg-red-600'}">
+                        <i class="${result.correct ? 'ri-check-line' : 'ri-close-line'} text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">${result.correct ? 'Correct Decision!' : 'Poor Choice'}</h3>
+                    <p class="text-gray-300 mb-4">${result.feedback}</p>
+                    <div class="text-lg font-semibold text-yellow-400">+${result.score} points</div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeFeedback() {
+            document.getElementById('feedback-modal').classList.add('hidden');
+        }
+
+        function advanceSimulation() {
+            simulationState.currentStep++;
+            updateProgress();
+            
+            if (simulationState.currentStep > simulationState.totalSteps) {
+                completeSimulation();
+                return;
+            }
+            
+            document.getElementById('decision-panel').classList.add('hidden');
+            
+            if (simulationState.currentStep === 2) {
+                showNetworkView();
+            }
+        }
+
+        function showNetworkView() {
+            document.getElementById('email-view').classList.add('hidden');
+            document.getElementById('network-view').classList.remove('hidden');
+            
+            updateObjective('Monitor the network for signs of lateral movement and identify compromised systems.');
+            addTimelineEvent('Switched to network monitoring');
+        }
+
+        function updateProgress() {
+            const progressPercent = Math.round((simulationState.currentStep / simulationState.totalSteps) * 100);
+            
+            document.getElementById('current-step').textContent = simulationState.currentStep;
+            document.getElementById('progress-bar').style.width = progressPercent + '%';
+            document.getElementById('completion-percentage').textContent = progressPercent + '%';
+            document.getElementById('completion-bar').style.width = progressPercent + '%';
+            document.getElementById('current-score').textContent = simulationState.score + '/100';
+            
+            if (window.cyberGuardAuth && window.cyberGuardAuth.isAuthenticated()) {
+                window.cyberGuardAuth.updateProgress('simulation', progressPercent);
+            }
+        }
+
+        function updateObjective(text) {
+            document.getElementById('current-objective').innerHTML = `
+                <div class="bg-blue-900 bg-opacity-30 p-3 rounded border-l-4 border-blue-500">
+                    <p class="text-sm">${text}</p>
+                </div>
+            `;
+        }
+
+        function addTimelineEvent(event) {
+            const timeline = document.getElementById('timeline');
+            const time = new Date().toLocaleTimeString().substring(0, 5);
+            const eventElement = document.createElement('div');
+            eventElement.className = 'text-gray-300';
+            eventElement.textContent = `[${time}] ${event}`;
+            timeline.appendChild(eventElement);
+            timeline.scrollTop = timeline.scrollHeight;
+        }
+
+        function startTimeTracking() {
+            setInterval(() => {
+                if (simulationState.isRunning && simulationState.startTime) {
+                    const elapsed = Date.now() - simulationState.startTime;
+                    const minutes = Math.floor(elapsed / 60000);
+                    const seconds = Math.floor((elapsed % 60000) / 1000);
+                    document.getElementById('time-spent').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function inspectNode(nodeId) {
+            addTimelineEvent(`Inspected ${nodeId}`);
+            alert(`Inspecting ${nodeId}...\\n\\nThis feature demonstrates network monitoring capabilities.`);
+        }
+
+        function showResource(type) {
+            const resources = {
+                'prevention': 'Email filtering, user training, regular updates, and backup strategies help prevent ransomware attacks.',
+                'response': 'Immediate isolation, threat assessment, containment procedures, and communication protocols are essential for effective incident response.'
+            };
+            
+            alert(`${type.charAt(0).toUpperCase() + type.slice(1)} Information:\\n\\n${resources[type]}`);
+        }
+
+        function completeSimulation() {
+            const finalScore = Math.min(100, simulationState.score);
+            
+            alert(`🎉 Simulation Complete!\\n\\nFinal Score: ${finalScore}/100\\nSteps Completed: ${simulationState.totalSteps}\\nDecisions Made: ${simulationState.decisions.length}\\n\\nThank you for completing the advanced ransomware simulation!`);
+            
+            if (window.cyberGuardAuth && window.cyberGuardAuth.isAuthenticated()) {
+                window.cyberGuardAuth.updateProgress('ransomware', 100);
+            }
+        }
+
+        function emergencyExit() {
+            if (confirm('Are you sure you want to exit the simulation? Your progress will be saved.')) {
+                exitSimulation();
+            }
+        }
+
+        function exitSimulation() {
+            if (window.cyberGuardAuth && window.cyberGuardAuth.isAuthenticated()) {
+                const progressPercent = Math.round((simulationState.currentStep / simulationState.totalSteps) * 100);
+                window.cyberGuardAuth.updateProgress('simulation', progressPercent);
+            }
+            
+            window.location.href = 'ransomware-simulation.html';
+        }
+
+        window.addEventListener('beforeunload', function(e) {
+            if (simulationState.isRunning) {
+                e.preventDefault();
+                e.returnValue = 'Simulation is in progress. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
+    </script>
+</body>
+</html>

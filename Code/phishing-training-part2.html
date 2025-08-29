@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard - Phishing Awareness Training (Part 2)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1e40af;
+            --secondary: #dc2626;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 2rem;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .back-btn i {
+            margin-right: 8px;
+        }
+        
+        .module-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .module-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #ef4444, #b91c1c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .module-header p {
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+            line-height: 1.6;
+        }
+        
+        .part-indicator {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            color: #f87171;
+            margin-bottom: 20px;
+        }
+        
+        .part-indicator i {
+            margin-right: 8px;
+        }
+        
+        .progress-container {
+            margin: 30px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            width: 0%;
+            background: linear-gradient(90deg, #ef4444, #b91c1c);
+            transition: width 0.5s ease;
+        }
+        
+        .user-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: var(--gray);
+            z-index: 1000;
+        }
+        
+        .user-info.authenticated {
+            color: var(--success);
+        }
+        
+        .engagement-tracker {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: var(--gray);
+            max-width: 250px;
+            z-index: 1000;
+        }
+        
+        .engagement-tracker h4 {
+            color: var(--secondary);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .engagement-metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        
+        .content-section {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            color: #ef4444;
+        }
+        
+        .section-title i {
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+        
+        .phishing-simulator {
+            background: white;
+            color: #1e293b;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .email-header {
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .email-body {
+            line-height: 1.6;
+        }
+        
+        .red-flag {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: #ef4444;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .red-flag.show {
+            opacity: 1;
+        }
+        
+        .assessment-area {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .assessment-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .assessment-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-safe {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-suspicious {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-safe:hover:not(:disabled), .btn-suspicious:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .assessment-feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+        }
+        
+        .feedback-correct {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            display: flex;
+        }
+        
+        .feedback-incorrect {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+            display: flex;
+        }
+        
+        .feedback-icon {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-success {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+        
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .certificate-container {
+            background: white;
+            color: #1e293b;
+            padding: 40px;
+            margin: 30px 0;
+            border-radius: 15px;
+            text-align: center;
+            border: 3px solid #10b981;
+            display: none;
+        }
+        
+        .certificate-header {
+            background: linear-gradient(90deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .certificate-seal {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin: 20px auto;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo">CyberGuard</a>
+            <a href="phishing-training-part1.html" class="back-btn">
+                <i class="ri-arrow-left-line"></i> Back to Part 1
+            </a>
+        </header>
+        
+        <div class="module-header">
+            <div class="part-indicator">
+                <i class="ri-shield-check-line"></i> Part 2: Interactive Practice & Assessment
+            </div>
+            <h1>Phishing Detection Practice</h1>
+            <p>Test your knowledge with real-world email simulations and receive your completion certificate.</p>
+            
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Practice Progress</span>
+                    <span class="progress-text">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info Display -->
+        <div class="user-info" id="userInfo">
+            <i class="ri-user-line"></i> Loading...
+        </div>
+
+        <!-- Engagement Tracker -->
+        <div class="engagement-tracker">
+            <h4>Session Analytics</h4>
+            <div class="engagement-metric">
+                <span>Time:</span>
+                <span id="timeSpent">0:00</span>
+            </div>
+            <div class="engagement-metric">
+                <span>Emails Assessed:</span>
+                <span id="emailsAssessed">0/2</span>
+            </div>
+            <div class="engagement-metric">
+                <span>Interactions:</span>
+                <span id="interactionCount">0</span>
+            </div>
+        </div>
+
+        <!-- Email Simulator Section -->
+        <div class="content-section" data-section="simulators">
+            <h2 class="section-title">
+                <i class="ri-mail-line"></i> Email Assessment Simulator
+            </h2>
+            <p>Analyze the following emails and determine whether they are safe or suspicious.</p>
+
+            <!-- Email 1 -->
+            <div class="phishing-simulator" data-email="1">
+                <div class="red-flag" onclick="showRedFlag(1)">🚩 Red Flags</div>
+                <div class="email-header">
+                    <strong>From:</strong> security-team@payp4l.com<br>
+                    <strong>To:</strong> user@company.com<br>
+                    <strong>Subject:</strong> URGENT: Account Suspended - Immediate Action Required
+                </div>
+                <div class="email-body">
+                    Dear Valued Customer,<br><br>
+                    
+                    Your account has been suspended due to suspicious activity. Please click the link below to verify your identity immediately or your account will be permanently deleted within 24 hours.<br><br>
+                    
+                    <a href="http://payp4l-security.tk/verify" style="color: blue;">CLICK HERE TO VERIFY NOW</a><br><br>
+                    
+                    Failure to verify will result in account termination.<br><br>
+                    
+                    PayPal Security Team
+                </div>
+                <div class="assessment-area">
+                    <button class="assessment-btn btn-safe" onclick="assessEmail(1, 'safe')">Safe Email</button>
+                    <button class="assessment-btn btn-suspicious" onclick="assessEmail(1, 'suspicious')">Suspicious Email</button>
+                </div>
+                <div class="assessment-feedback" id="feedback-1"></div>
+            </div>
+
+            <!-- Email 2 -->
+            <div class="phishing-simulator" data-email="2">
+                <div class="red-flag" onclick="showRedFlag(2)">🚩 Red Flags</div>
+                <div class="email-header">
+                    <strong>From:</strong> notifications@company.com<br>
+                    <strong>To:</strong> user@company.com<br>
+                    <strong>Subject:</strong> Weekly Security Report - March 2024
+                </div>
+                <div class="email-body">
+                    Hi John,<br><br>
+                    
+                    Here's your weekly security summary:<br>
+                    • No suspicious login attempts detected<br>
+                    • 2 password changes this week<br>
+                    • Security training completion: 85%<br><br>
+                    
+                    For detailed reports, visit your dashboard.<br><br>
+                    
+                    Best regards,<br>
+                    IT Security Team
+                </div>
+                <div class="assessment-area">
+                    <button class="assessment-btn btn-safe" onclick="assessEmail(2, 'safe')">Safe Email</button>
+                    <button class="assessment-btn btn-suspicious" onclick="assessEmail(2, 'suspicious')">Suspicious Email</button>
+                </div>
+                <div class="assessment-feedback" id="feedback-2"></div>
+            </div>
+        </div>
+
+        <!-- Certificate Section -->
+        <div class="certificate-container" id="certificateContainer">
+            <div class="certificate-seal">
+                <i class="ri-award-line"></i>
+            </div>
+            <h2 class="certificate-header">Certificate of Completion</h2>
+            <div class="certificate-content">
+                <p><strong>This certifies that</strong></p>
+                <h3 id="certificateUserName" style="color: #10b981; margin: 10px 0;">User Name</h3>
+                <p>has successfully completed the</p>
+                <h4 style="color: #1e40af; margin: 10px 0;">CyberGuard Phishing Awareness Training</h4>
+                <p>Demonstrated competency in identifying and avoiding phishing attacks</p>
+                <div style="margin-top: 30px; font-size: 0.9rem; color: #64748b;">
+                    <div>Completed on: <span id="certificateDate"></span></div>
+                    <div>Duration: <span id="certificateDuration"></span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center">
+            <button class="btn btn-success btn-full" id="generateCertificateBtn" onclick="generateCertificate()" style="display: none;">
+                <i class="ri-award-line"></i> Generate Completion Certificate
+            </button>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation-buttons">
+            <a href="phishing-training-part1.html" class="btn nav-btn">
+                <i class="ri-arrow-left-line"></i> Part 1: Learning
+            </a>
+            <a href="index.html" class="btn nav-btn">
+                <i class="ri-home-line"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Part 2 Tracker
+        class PhishingPart2Tracker {
+            constructor() {
+                this.sessionId = 'part2_' + Date.now();
+                this.startTime = Date.now();
+                this.currentUser = null;
+                this.sessionData = {
+                    emailsAssessed: new Set(),
+                    interactions: [],
+                    timeSpent: 0,
+                    completed: false
+                };
+                this.emailData = {
+                    1: { correct: 'suspicious', redFlags: ['Misspelled domain (payp4l)', 'Urgent language', 'Suspicious URL (.tk domain)', 'Threatens account deletion'] },
+                    2: { correct: 'safe', redFlags: ['This appears to be a legitimate internal email', 'Proper company domain', 'No suspicious requests'] }
+                };
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.startTracking();
+                this.loadPreviousData();
+            }
+            
+            setupEventListeners() {
+                document.addEventListener('click', (e) => this.trackInteraction('click', e));
+                document.addEventListener('scroll', (e) => this.trackInteraction('scroll', e));
+                window.addEventListener('beforeunload', () => this.saveProgress());
+            }
+            
+            trackInteraction(type, event) {
+                this.sessionData.interactions.push({
+                    type: type,
+                    timestamp: Date.now(),
+                    element: event.target.tagName,
+                    className: event.target.className
+                });
+                this.updateDisplay();
+            }
+            
+            startTracking() {
+                setInterval(() => {
+                    this.sessionData.timeSpent = Date.now() - this.startTime;
+                    this.updateDisplay();
+                    this.checkCompletion();
+                }, 1000);
+            }
+            
+            loadPreviousData() {
+                const part1Data = localStorage.getItem('phishing_part1_data');
+                if (part1Data) {
+                    console.log('Part 1 training completed successfully - continuity established');
+                }
+            }
+            
+            updateDisplay() {
+                const timeElement = document.getElementById('timeSpent');
+                const emailsElement = document.getElementById('emailsAssessed');
+                const interactionsElement = document.getElementById('interactionCount');
+                
+                if (timeElement) {
+                    const minutes = Math.floor(this.sessionData.timeSpent / 60000);
+                    const seconds = Math.floor((this.sessionData.timeSpent % 60000) / 1000);
+                    timeElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+                
+                if (emailsElement) {
+                    emailsElement.textContent = `${this.sessionData.emailsAssessed.size}/2`;
+                }
+                
+                if (interactionsElement) {
+                    interactionsElement.textContent = this.sessionData.interactions.length;
+                }
+                
+                this.updateProgress();
+            }
+            
+            updateProgress() {
+                const progress = Math.round((this.sessionData.emailsAssessed.size / 2) * 100);
+                const progressBar = document.querySelector('.progress-fill');
+                const progressText = document.querySelector('.progress-text');
+                
+                if (progressBar) progressBar.style.width = `${progress}%`;
+                if (progressText) progressText.textContent = `${progress}%`;
+                
+                if (window.cyberGuardAuth) {
+                    window.cyberGuardAuth.updateProgress('phishing_part2', progress);
+                }
+            }
+            
+            checkCompletion() {
+                if (this.sessionData.emailsAssessed.size >= 2 && !this.sessionData.completed) {
+                    this.sessionData.completed = true;
+                    document.getElementById('generateCertificateBtn').style.display = 'block';
+                    
+                    // Update overall phishing progress to 100%
+                    if (window.cyberGuardAuth) {
+                        window.cyberGuardAuth.updateProgress('phishing', 100);
+                    }
+                }
+            }
+            
+            assessEmail(emailId, assessment) {
+                this.sessionData.emailsAssessed.add(emailId);
+                this.updateDisplay();
+            }
+            
+            saveProgress() {
+                localStorage.setItem('phishing_part2_data', JSON.stringify(this.sessionData));
+                
+                // Save combined training data
+                const combinedData = {
+                    part1: JSON.parse(localStorage.getItem('phishing_part1_data') || '{}'),
+                    part2: this.sessionData,
+                    completedAt: new Date().toISOString(),
+                    totalDuration: this.sessionData.timeSpent
+                };
+                localStorage.setItem('phishing_training_complete', JSON.stringify(combinedData));
+            }
+        }
+
+        let tracker;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            tracker = new PhishingPart2Tracker();
+            
+            const checkAuth = () => {
+                if (!window.cyberGuardAuth) {
+                    setTimeout(checkAuth, 100);
+                    return;
+                }
+                
+                updateUserInfo();
+                
+                if (!window.cyberGuardAuth.isAuthenticated()) {
+                    window.cyberGuardAuth.showAuthModal();
+                    return;
+                }
+                
+                initializeTraining();
+            };
+            
+            checkAuth();
+        });
+        
+        function updateUserInfo() {
+            const userInfoElement = document.getElementById('userInfo');
+            if (!userInfoElement) return;
+            
+            if (window.cyberGuardAuth && window.cyberGuardAuth.isAuthenticated()) {
+                const user = window.cyberGuardAuth.getCurrentUser();
+                tracker.currentUser = user;
+                userInfoElement.innerHTML = `<i class="ri-user-3-line"></i> ${user.fullname}`;
+                userInfoElement.classList.add('authenticated');
+            } else {
+                userInfoElement.innerHTML = '<i class="ri-user-line"></i> Not Signed In';
+                userInfoElement.classList.remove('authenticated');
+            }
+        }
+        
+        function initializeTraining() {
+            console.log('Part 2 training initialized');
+        }
+        
+        function assessEmail(emailId, assessment) {
+            const emailData = tracker.emailData[emailId];
+            const isCorrect = assessment === emailData.correct;
+            
+            // Disable buttons
+            const buttons = document.querySelectorAll(`[data-email="${emailId}"] .assessment-btn`);
+            buttons.forEach(btn => btn.disabled = true);
+            
+            // Show feedback
+            const feedbackElement = document.getElementById(`feedback-${emailId}`);
+            feedbackElement.className = `assessment-feedback ${isCorrect ? 'feedback-correct' : 'feedback-incorrect'}`;
+            feedbackElement.innerHTML = `
+                <i class="feedback-icon ${isCorrect ? 'ri-check-line' : 'ri-close-line'}"></i>
+                <div>
+                    <strong>${isCorrect ? 'Correct!' : 'Incorrect'}</strong> 
+                    This email is ${emailData.correct}. 
+                    ${isCorrect ? 'Well done!' : 'Red flags: ' + emailData.redFlags.join(', ')}
+                </div>
+            `;
+            
+            tracker.assessEmail(emailId, assessment);
+        }
+        
+        function showRedFlag(emailId) {
+            const redFlagElement = document.querySelector(`[data-email="${emailId}"] .red-flag`);
+            redFlagElement.classList.add('show');
+            
+            const emailData = tracker.emailData[emailId];
+            redFlagElement.title = emailData.redFlags.join('\n');
+        }
+        
+        function generateCertificate() {
+            if (!tracker.currentUser) return;
+            
+            const certificateContainer = document.getElementById('certificateContainer');
+            const userNameElement = document.getElementById('certificateUserName');
+            const dateElement = document.getElementById('certificateDate');
+            const durationElement = document.getElementById('certificateDuration');
+            
+            userNameElement.textContent = tracker.currentUser.fullname;
+            dateElement.textContent = new Date().toLocaleDateString();
+            
+            const totalMinutes = Math.floor(tracker.sessionData.timeSpent / 60000);
+            durationElement.textContent = `${totalMinutes} minutes`;
+            
+            certificateContainer.style.display = 'block';
+            document.getElementById('generateCertificateBtn').style.display = 'none';
+            
+            // Save completion data
+            tracker.saveProgress();
+        }
+    </script>
+</body>
+</html>
